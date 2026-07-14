@@ -149,6 +149,15 @@ module DSPy
       # Create enhanced output struct with ReAct fields
       @enhanced_output_struct = create_enhanced_output_struct(signature_class)
       enhanced_output_struct = @enhanced_output_struct
+      input_descriptors = signature_class.input_field_descriptors
+      output_descriptors = input_descriptors.merge(signature_class.output_field_descriptors).merge(
+        history: DSPy::Signature::FieldDescriptor.new(
+          T::Array[T::Hash[Symbol, T.untyped]],
+          "ReAct execution history"
+        ),
+        iterations: DSPy::Signature::FieldDescriptor.new(Integer, "Number of iterations executed"),
+        tools_used: DSPy::Signature::FieldDescriptor.new(T::Array[String], "List of tools used during execution")
+      )
 
       # Create enhanced signature class
       enhanced_signature = Class.new(DSPy::Signature) do
@@ -157,9 +166,11 @@ module DSPy
 
         # Use the same input struct
         @input_struct_class = signature_class.input_struct_class
+        @input_field_descriptors = input_descriptors
 
         # Use the enhanced output struct with ReAct fields
         @output_struct_class = enhanced_output_struct
+        @output_field_descriptors = output_descriptors
 
         # Store original signature name
         @original_signature_name = signature_class.name
@@ -540,6 +551,11 @@ module DSPy
       deserialized_value = deserialize_final_answer(final_answer, output_field_type, reasoning_result[:history])
 
       output_data[output_field_name] = deserialized_value
+
+      @signature_class.validate_required_fields!(
+        output_data,
+        @signature_class.output_field_descriptors
+      )
 
       @enhanced_output_struct.new(**output_data)
     end

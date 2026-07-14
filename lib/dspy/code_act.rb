@@ -118,6 +118,18 @@ module DSPy
       # Create enhanced output struct with CodeAct fields
       @enhanced_output_struct = create_enhanced_output_struct(signature_class)
       enhanced_output_struct = @enhanced_output_struct
+      input_descriptors = signature_class.input_field_descriptors
+      output_descriptors = input_descriptors.merge(signature_class.output_field_descriptors).merge(
+        history: DSPy::Signature::FieldDescriptor.new(
+          T::Array[CodeActHistoryEntry],
+          "CodeAct execution history"
+        ),
+        iterations: DSPy::Signature::FieldDescriptor.new(Integer, "Number of iterations executed"),
+        execution_context: DSPy::Signature::FieldDescriptor.new(
+          T::Hash[Symbol, T.untyped],
+          "Variables and context from code execution"
+        )
+      )
 
       # Create enhanced signature class
       enhanced_signature = Class.new(DSPy::Signature) do
@@ -126,9 +138,11 @@ module DSPy
 
         # Use the same input struct
         @input_struct_class = signature_class.input_struct_class
+        @input_field_descriptors = input_descriptors
 
         # Use the enhanced output struct with CodeAct fields
         @output_struct_class = enhanced_output_struct
+        @output_field_descriptors = output_descriptors
 
         # Store original signature name
         @original_signature_name = signature_class.name
@@ -305,6 +319,11 @@ module DSPy
         execution_context: reasoning_result[:execution_context]
       })
       output_data[output_field_name] = reasoning_result[:final_answer]
+
+      @signature_class.validate_required_fields!(
+        output_data,
+        @signature_class.output_field_descriptors
+      )
 
       @enhanced_output_struct.new(**output_data)
     end

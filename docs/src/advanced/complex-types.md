@@ -27,7 +27,7 @@ DSPy.rb supports:
 - **Structs**: Complex objects with T::Struct
 - **Union Types**: Multiple possible types with T.any()
 - **Collections**: Arrays and hashes of typed elements
-- **Optional Fields**: Nullable types with T.nilable
+- **Nullable Fields**: Values that may be `nil`, declared with T.nilable
 - **JSON Schema Generation**: Automatic schema creation for LLM consumption
 
 ## Enum Types
@@ -314,15 +314,17 @@ end
 # { "readability" => 0.8, "sentiment_score" => 0.6, "complexity" => 0.4 }
 ```
 
-## Optional and Nullable Types
+## Nullable and Omittable Types
 
-### Optional Fields
+### Nullable Fields
+
+In a `DSPy::Signature`, `T.nilable` allows `nil`; it does not remove the field from the schema's `required` list. Add a default when omission is valid. See [Nullable and Omittable Fields](/dspy.rb/core-concepts/signatures/#nullable-and-omittable-fields) for the canonical rules and the standalone `T::Struct` boundary.
 
 ```ruby
 class ProductInfo < T::Struct
   const :name, String
-  const :price, T.nilable(Float)      # Optional price
-  const :description, T.nilable(String) # Optional description
+  const :price, T.nilable(Float)        # Value may be nil
+  const :description, T.nilable(String) # Value may be nil
   const :in_stock, T::Boolean
 end
 
@@ -342,7 +344,7 @@ end
 # Handles cases where price or description might not be available
 ```
 
-### Complex Optional Structures
+### Complex Nullable Structures
 
 ```ruby
 class Review < T::Struct
@@ -598,7 +600,7 @@ class AnalyzeContent < DSPy::Signature
 end
 ```
 
-**Tip**: For array fields in structs, prefer `T::Array[X], default: []` over `T.nilable(T::Array[X])`. The nilable form causes schema issues with OpenAI structured outputs.
+**Tip**: Use `T::Array[X], default: []` when omission should produce an empty collection and `nil` is not meaningful. This is a data-modeling choice, not a universal provider requirement. Check the generated schema for nested structs: a Ruby default does not necessarily remove an array property from the schema's `required` list.
 
 ## Automatic Type Conversion with DSPy::Prediction
 
@@ -694,7 +696,7 @@ end
 
 #### 3. Edge Cases
 
-- **Missing Fields**: Use struct defaults or nil for optional fields
+- **Missing Fields**: Use explicit defaults when omission is part of the contract
 - **Extra Fields**: Ignored during conversion
 - **Type Mismatches**: Falls back to original value
 - **Invalid Enums**: Raises KeyError (handle appropriately)
@@ -890,7 +892,7 @@ def process_extraction_result(result)
   return nil unless result.contact.name.present?
   return nil unless result.contact.email.present?
   
-  # Process optional fields carefully
+  # Process nullable values carefully
   contact_info = {
     name: result.contact.name,
     email: result.contact.email

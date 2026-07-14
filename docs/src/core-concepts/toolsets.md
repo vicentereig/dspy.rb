@@ -232,9 +232,9 @@ def configure(tags:, priorities:, config:, mappings:)
 end
 ```
 
-### Nilable Types
+### Nullable and Optional Parameters
 
-Optional parameters with `T.nilable()`:
+In Ruby tool methods, `T.nilable()` allows `nil`; the method's default value makes a keyword optional:
 
 ```ruby
 sig { params(
@@ -275,7 +275,7 @@ end
 | `T::Struct` | `{"type": "object", "properties": {...}}` | ✅ | Nested object conversion |
 | `T::Array[Type]` | `{"type": "array", "items": {...}}` | ✅ | Typed array elements |
 | `T::Hash[K,V]` | `{"type": "object", "additionalProperties": {...}}` | ✅ | Key-value constraints |
-| `T.nilable(Type)` | `{"type": [original, "null"]}` | ✅ | Optional parameters |
+| `T.nilable(Type)` | `{"type": [original, "null"]}` | ✅ | Null allowed; a Ruby default controls omission |
 | `T.any(T1, T2)` | `{"oneOf": [{...}, {...}]}` | ✅ | Union type handling |
 | `T.class_of(Class)` | `{"type": "string"}` | ✅ | Class name strings |
 

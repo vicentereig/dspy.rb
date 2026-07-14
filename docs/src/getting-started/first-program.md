@@ -126,7 +126,7 @@ result.confidence  # A Float; the description requests a value from 0.0 to 1.0
 
 ## Add Richer Result Types
 
-Enums and optional fields make the result contract more precise:
+Enums, nullable values, and defaults make the result contract more precise:
 
 ```ruby
 class SmartQuestionAnswering < DSPy::Signature
@@ -220,11 +220,11 @@ puts result.follow_up_questions  # ["What were the economic factors?", "How did 
 ```
 
 Notice how we're using **idiomatic Ruby with full Sorbet type support**:
-- `T.nilable(String)` for optional fields
+- `T.nilable(String)` when a value may be `nil` (the field is still required without `default:`)
 - `T::Enum` for constrained values
 - `T::Array[String]` for typed arrays
 - `T::Boolean` for boolean validation
-- `default:` for optional parameters
+- `default:` when a signature field may be omitted
 
 DSPy.rb validates these types at runtime and rejects responses that cannot be converted to the declared Ruby interface.
 

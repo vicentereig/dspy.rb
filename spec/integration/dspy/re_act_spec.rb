@@ -17,7 +17,43 @@ class DeepQA < DSPy::Signature
   end
 end
 
+class ReActNullableBoundary < DSPy::Signature
+  input do
+    const :context, T.nilable(String)
+    const :label, String, default: 'default'
+  end
+
+  output do
+    const :answer, String
+  end
+end
+
 RSpec.describe DSPy::ReAct do
+  describe 'enhanced final-result requiredness' do
+    let(:agent) { DSPy::ReAct.new(ReActNullableBoundary, tools: []) }
+    let(:reasoning_result) do
+      {
+        final_answer: 'done',
+        history: [],
+        iterations: 1,
+        tools_used: []
+      }
+    end
+
+    it 'builds a valid result with explicit nil and a defaulted omission' do
+      result = agent.send(:create_enhanced_result, { context: nil }, reasoning_result)
+
+      expect(result.context).to be_nil
+      expect(result.label).to eq('default')
+      expect(result.answer).to eq('done')
+    end
+
+    it 'rejects an omitted required-nullable input in the final result' do
+      expect { agent.send(:create_enhanced_result, {}, reasoning_result) }
+        .to raise_error(ArgumentError, /context/)
+    end
+  end
+
   describe 'when answering a question using a Sorbet signature (auto-augmented output)' do
     let(:question) { "What is 42 plus 58?" }
     let(:date_tool) { SorbetGetTodaysDate.new }

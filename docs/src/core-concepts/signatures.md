@@ -48,7 +48,7 @@ class BasicClassifier < DSPy::Signature
   
   input do
     const :text, String                    # Required string
-    const :context, T.nilable(String)      # Optional string
+    const :context, T.nilable(String)      # Required key; value may be nil
     const :max_length, Integer             # Required integer
     const :include_score, T::Boolean       # Boolean
     const :created_date, Date              # Date (ISO 8601 format)
@@ -70,7 +70,7 @@ class EventScheduler < DSPy::Signature
   
   input do
     const :start_date, Date                    # Required date
-    const :end_date, T.nilable(Date)           # Optional date
+    const :end_date, T.nilable(Date)           # Required key; value may be nil
     const :preferred_time, DateTime            # DateTime with timezone
     const :deadline, Time                      # Time (stored as UTC)
   end
@@ -189,7 +189,9 @@ end
 
 For more complex union types with structs and automatic type conversion, see the [Union Types section in Rich Types](/dspy.rb/advanced/complex-types/#union-types).
 
-## Optional Fields
+## Nullable and Omittable Fields
+
+`T.nilable(Type)` controls values: the field accepts either `Type` or `nil`. It does not make a `DSPy::Signature` field omittable. Add `default:` when callers or model responses may omit the field.
 
 ```ruby
 class ContentGeneration < DSPy::Signature
@@ -197,17 +199,34 @@ class ContentGeneration < DSPy::Signature
   
   input do
     const :topic, String
-    const :style, T.nilable(String)        # Optional field
+    const :source_note, T.nilable(String)          # Required, but may be nil
+    const :style, T.nilable(String), default: nil  # May be omitted
+    const :tags, T::Array[String], default: []     # Omission becomes []
     const :max_words, Integer
   end
   
   output do
     const :content, String
     const :word_count, Integer
-    const :estimated_time, T.nilable(Float)  # May not always be provided
+    const :estimated_time, T.nilable(Float), default: nil
   end
 end
+
+input = ContentGeneration.input_schema
+
+input.new(topic: "Sorbet", source_note: nil, max_words: 500) # style=nil, tags=[]
+input.new(topic: "Sorbet", max_words: 500)                   # raises ArgumentError
 ```
+
+The second construction fails because `source_note` remains in `ContentGeneration.input_json_schema[:required]`. The base DSPy schema and signature constructor therefore distinguish these cases:
+
+- **Required nullable:** `T.nilable(String)` — the key is required and its value may be `nil`.
+- **Omittable nullable:** `T.nilable(String), default: nil` — the key may be absent and defaults to `nil`.
+- **Omittable non-null:** `T::Array[String], default: []` — the key may be absent and defaults to an empty array; explicit `nil` is invalid.
+
+For a standalone `T::Struct`, Sorbet treats a nilable `const` or `prop` as fully optional and initializes omission to `nil`. DSPy signature structs add declaration-level requiredness on top of that constructor behavior. For nested structs, inspect the generated schema: a Ruby default controls construction, while the schema may still require a non-null array key from the model.
+
+Provider adapters may tighten the base schema. For example, OpenAI strict structured outputs mark every property as required, including fields with DSPy defaults. In that mode, the model must return the key; the default remains useful for non-strict responses and direct Ruby construction. Inspect the adapter schema you deploy instead of assuming every provider preserves base DSPy omission rules.
 
 ## Default Values (New in v0.7.0)
 
@@ -250,7 +269,7 @@ result = search.call(query: "Ruby programming")
    - Make APIs more user-friendly
    
 2. **Output Defaults**: Applied when LLM response is missing fields
-   - Supply declared values when a response omits optional fields
+   - Supply declared values when a response omits defaulted fields
    - Prevent errors from incomplete responses
 
 ## Practical Examples
@@ -586,7 +605,7 @@ class Priority < T::Enum
 end
 ```
 
-### 3. Use Optional Fields Appropriately
+### 3. Distinguish Nullable from Omittable Fields
 
 ```ruby
 class ConfigurableAnalysis < DSPy::Signature
@@ -594,14 +613,14 @@ class ConfigurableAnalysis < DSPy::Signature
   
   input do
     const :text, String
-    const :include_metadata, T.nilable(T::Boolean)  # Optional
-    const :max_words, T.nilable(Integer)            # Optional
+    const :include_metadata, T::Boolean, default: false
+    const :max_words, Integer, default: 500
   end
   
   output do
     const :analysis, String
     const :confidence, Float
-    const :metadata, T.nilable(T::Hash[String, String])  # Only if requested
+    const :metadata, T.nilable(T::Hash[String, String]), default: nil
   end
 end
 ```

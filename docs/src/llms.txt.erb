@@ -156,7 +156,7 @@ end
 
 The schema generator creates `#/$defs/TreeNode` references, compatible with OpenAI and Gemini.
 
-**Important**: Use `default: []` instead of `T.nilable(T::Array[...])` for OpenAI compatibility.
+Use `default: []` when omission means an empty array. In the base DSPy schema and constructor, `T.nilable` permits `nil` while `default:` permits omission. Adapters may tighten requiredness—OpenAI strict structured outputs require every property—so inspect the adapter schema you deploy.
 
 ### 6. Field Descriptions for T::Struct
 
@@ -402,7 +402,7 @@ When helping users with DSPy.rb:
 
 1. **Focus on signatures** - They define the contract with LLMs
 2. **Use proper types** - T::Enum for categories, T::Struct for complex data
-3. **Use defaults over nilables** - `default: []` instead of `T.nilable(T::Array[...])` for OpenAI compatibility
+3. **Separate nullability from omission** - `T.nilable` permits `nil`; `default:` permits omission in DSPy signatures
 4. **Add field descriptions** - Use `description:` kwarg on T::Struct fields for complex semantics
 5. **Leverage automatic type conversion** - Tools and toolsets automatically convert JSON strings to proper Ruby types
 6. **Compose modules** - Chain predictors for complex workflows

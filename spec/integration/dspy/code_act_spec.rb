@@ -16,7 +16,43 @@ class CodeActMathProblem < DSPy::Signature
   end
 end
 
+class CodeActNullableBoundary < DSPy::Signature
+  input do
+    const :context, T.nilable(String)
+    const :label, String, default: 'default'
+  end
+
+  output do
+    const :answer, String
+  end
+end
+
 RSpec.describe 'DSPy::CodeAct' do
+  describe 'enhanced final-result requiredness' do
+    let(:agent) { DSPy::CodeAct.new(CodeActNullableBoundary) }
+    let(:reasoning_result) do
+      {
+        final_answer: 'done',
+        history: [],
+        iterations: 1,
+        execution_context: {}
+      }
+    end
+
+    it 'builds a valid result with explicit nil and a defaulted omission' do
+      result = agent.send(:create_enhanced_result, { context: nil }, reasoning_result)
+
+      expect(result.context).to be_nil
+      expect(result.label).to eq('default')
+      expect(result.answer).to eq('done')
+    end
+
+    it 'rejects an omitted required-nullable input in the final result' do
+      expect { agent.send(:create_enhanced_result, {}, reasoning_result) }
+        .to raise_error(ArgumentError, /context/)
+    end
+  end
+
   describe 'when solving a mathematical problem using Ruby code execution' do
     let(:problem) { "Calculate the sum of numbers from 1 to 10" }
     let(:agent) { DSPy::CodeAct.new(CodeActMathProblem, max_iterations: 5) }

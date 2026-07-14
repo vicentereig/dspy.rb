@@ -163,18 +163,18 @@ parser = HtmlToMarkdown::HierarchicalParser.new
 document = parser.parse(complex_html)
 ```
 
-### 4. Defaults Over Nilables
+### 4. Empty Arrays Instead of Nullable Arrays
 
-For OpenAI structured outputs compatibility, use `default: []` instead of `T.nilable(T::Array[...])`:
+Use `default: []` when a missing child collection means "no children." The field remains an array and never needs a `nil` branch:
 
 ```ruby
-# ✅ Good - works with OpenAI structured outputs
+# Models absence as an empty collection
 class ASTNode < T::Struct
   const :children, T::Array[ASTNode], default: []
   const :text, String, default: ""
 end
 
-# ❌ Bad - causes schema issues
+# Models a distinct null state; use only when null has meaning
 class ASTNode < T::Struct
   const :children, T.nilable(T::Array[ASTNode])
   const :text, T.nilable(String)
@@ -256,7 +256,7 @@ At Haiku pricing ($1/$5 per 1M input/output tokens):
 ## Conclusion
 
 1. **OpenAI native structured outputs now work** with recursive schemas (issue #201 fixed)
-2. **Use `default: []` instead of nilables** for array fields
+2. **Use `default: []` when omission means an empty array**
 3. **Field descriptions** help LLMs understand complex schemas
 4. **Hierarchical parsing** handles documents that exceed token limits
 5. **Direct String wins for simple conversion** - Fast, cheap, reliable

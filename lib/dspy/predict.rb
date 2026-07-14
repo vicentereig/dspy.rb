@@ -246,6 +246,11 @@ module DSPy
     sig { params(input_values: T::Hash[Symbol, T.untyped], output_attributes: T::Hash[Symbol, T.untyped]).returns(T.untyped) }
     def create_prediction_result(input_values, output_attributes)
       begin
+        @signature_class.validate_required_fields!(
+          output_attributes,
+          @signature_class.output_field_descriptors
+        )
+
         combined_struct = create_combined_struct_class
         all_attributes = input_values.merge(output_attributes)
         

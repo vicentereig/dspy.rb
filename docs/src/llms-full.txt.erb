@@ -244,7 +244,7 @@ end
 ```ruby
 input do
   const :text, String                       # Required string
-  const :context, T.nilable(String)         # Optional string
+  const :context, T.nilable(String)         # Required key; value may be nil
   const :max_length, Integer                # Required integer
   const :include_score, T::Boolean          # Boolean
   const :tags, T::Array[String]             # Array of strings
@@ -719,13 +719,13 @@ end
 
 The schema generator automatically creates `#/$defs/TreeNode` references for recursive types, compatible with OpenAI and Gemini structured outputs.
 
-**Important**: Use `default: []` instead of `T.nilable(T::Array[...])` for OpenAI compatibility:
+Use `default: []` when omission means an empty array. In the base DSPy schema and constructor, `T.nilable` permits `nil` while `default:` permits omission. Adapters may tighten requiredness—OpenAI strict structured outputs require every property—so inspect the adapter schema you deploy:
 
 ```ruby
-# ✅ Good - works with OpenAI structured outputs
+# Models absence as an empty collection
 const :children, T::Array[TreeNode], default: []
 
-# ❌ Bad - causes schema issues with OpenAI
+# Models a distinct null state; use only when null has meaning
 const :children, T.nilable(T::Array[TreeNode])
 ```
 
@@ -2453,7 +2453,7 @@ end
 1. **Type Conversion Failures**
    - Check nesting depth (keep under 3 levels)
    - Verify enum values match exactly
-   - Use T.nilable for optional fields
+   - Use T.nilable when null is valid; add default: when omission is valid
 
 2. **JSON Extraction Errors**
    - Enable debug logging

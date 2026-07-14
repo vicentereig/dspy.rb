@@ -55,7 +55,7 @@ module DSPy
       sig { returns(T.class_of(T::Struct)) }
       def build_struct_class
         descriptors = @field_descriptors
-        Class.new(T::Struct) do
+        struct_class = Class.new(T::Struct) do
           extend T::Sig
           descriptors.each do |name, descriptor|
             opts = {}
@@ -64,6 +64,22 @@ module DSPy
             const name, descriptor.type, **opts
           end
         end
+
+        struct_class.instance_variable_set(:@dspy_field_descriptors, descriptors)
+
+        # Use a virtual source path so source-comment introspection does not mistake
+        # this generated method for the anonymous struct's class definition.
+        struct_class.singleton_class.class_eval(<<~RUBY, "(dspy-signature-struct)", 1)
+          def new(*args, **kwargs)
+            properties = DSPy::Signature.constructor_properties(args, kwargs)
+            descriptors = instance_variable_get(:@dspy_field_descriptors)
+            DSPy::Signature.validate_required_fields!(properties, descriptors)
+
+            args.empty? ? super(**kwargs) : super(args.first)
+          end
+        RUBY
+
+        struct_class
       end
     end
 
@@ -84,6 +100,26 @@ module DSPy
 
       sig { returns(T::Hash[Symbol, FieldDescriptor]) }
       attr_reader :output_field_descriptors
+
+      sig { params(args: T.untyped, kwargs: T.untyped).returns(T::Hash[T.untyped, T.untyped]) }
+      def constructor_properties(args, kwargs)
+        return kwargs if args.empty?
+        return args.first if args.length == 1 && args.first.is_a?(Hash) && kwargs.empty?
+
+        raise ArgumentError, "Expected properties as keywords or one positional hash, not both"
+      end
+
+      sig { params(properties: T::Hash[T.untyped, T.untyped], descriptors: T::Hash[Symbol, FieldDescriptor]).void }
+      def validate_required_fields!(properties, descriptors)
+        required_fields = descriptors.reject { |_name, descriptor| descriptor.has_default }.keys
+        missing_fields = required_fields.reject do |name|
+          properties.key?(name) || properties.key?(name.to_s)
+        end
+        return if missing_fields.empty?
+
+        names = missing_fields.map(&:inspect).join(', ')
+        raise ArgumentError, "Missing required properties: #{names}"
+      end
 
       sig { params(desc: T.nilable(String)).returns(T.nilable(String)) }
       def description(desc = nil)
