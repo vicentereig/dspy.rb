@@ -1,0 +1,185 @@
+version: 1
+verdicts: [KEEP technical, KEEP voice, EDIT, DELETE]
+# The two columns capture independent editorial lenses. `final` records the
+# adjudication; it does not authorize a corpus edit in this issue. A `present`
+# sample is checked verbatim. When an EDIT/DELETE is implemented, change it to
+# `resolved`, add `resolution_reference`, and leave the old excerpt as history;
+# the validator will then require that excerpt to be absent. `retired` means the
+# calibration case itself is no longer relevant and requires a reason.
+reviewers:
+  reviewer_a: economy-and-voice
+  reviewer_b: adversarial-correctness
+samples:
+  - id: structured-output-boundary
+    source: docs/src/_articles/json-parsing-reliability.md
+    excerpt: "Each stage catches a different failure. None guarantees that the answer is correct."
+    status: present
+    edge: technical-boundary
+    requires_exception: false
+    reviewer_a: KEEP technical
+    reviewer_b: KEEP technical
+    final: KEEP technical
+    why: The preceding sentence names three mechanisms and this line states their shared boundary.
+
+  - id: toon-activation
+    source: lib/sorbet/toon/README.md
+    excerpt: "# Extensions are enabled automatically when sorbet/toon is required."
+    status: present
+    edge: true-automatic
+    requires_exception: false
+    reviewer_a: KEEP technical
+    reviewer_b: KEEP technical
+    final: KEEP technical
+    why: Requiring sorbet/toon enables the T::Struct and T::Enum mixins automatically; installing or adding the gem remains manual.
+
+  - id: existing-rubyllm-configuration
+    source: lib/dspy/ruby_llm/README.md
+    excerpt: "If you already have RubyLLM configured, DSPy will use your existing setup automatically:"
+    status: present
+    edge: true-automatic
+    requires_exception: false
+    reviewer_a: KEEP technical
+    reviewer_b: EDIT
+    final: EDIT
+    why: Existing RubyLLM configuration is reused only when DSPy receives no api_key, base_url, timeout, or max_retries override; the sentence must name that boundary.
+
+  - id: mvc-headline
+    source: docs/src/_articles/ai-needs-its-mvc-moment.md
+    excerpt: "title: \"AI Needs Its MVC Moment\""
+    status: present
+    edge: playful-headline
+    requires_exception: true
+    reviewer_a: KEEP voice
+    reviewer_b: EDIT
+    final: KEEP voice
+    why: The article promptly grounds the analogy in contracts, tests, traces, and evaluation; it is not a framework guarantee.
+    exception:
+      audience: Article reader comparing AI development with familiar web engineering
+      evidence: The opening and Discipline sections name contracts, tests, traces, and repeatable evaluation.
+      evidence_locator: "docs/src/_articles/ai-needs-its-mvc-moment.md: opening and The Discipline We Already Know"
+      scope: This historical article title only; do not reuse it as product positioning.
+      editor: Vicente Reig Rincón de Arellano
+      reviewed_on: "2026-07-14"
+      re_review: Re-review if the title, deck, opening, or named engineering mechanisms change.
+      approval: rhetorical-form-only
+
+  - id: mvc-programming-aphorism-deck
+    source: docs/src/_articles/ai-needs-its-mvc-moment.md
+    excerpt: "description: \"Prompt engineering is just programming. Treat it that way and AI systems start working like real software.\""
+    status: present
+    edge: ai-aphorism
+    requires_exception: false
+    reviewer_a: EDIT
+    reviewer_b: DELETE
+    final: EDIT
+    why: The article can compare prompt work with established engineering practices, but just and real software erase the specific contracts, tests, traces, and evaluation mechanisms that earn the title.
+
+  - id: mvc-programming-aphorism-body
+    source: docs/src/_articles/ai-needs-its-mvc-moment.md
+    excerpt: Prompt engineering is just programming.
+    match: exact-line
+    status: present
+    edge: ai-aphorism
+    requires_exception: false
+    reviewer_a: EDIT
+    reviewer_b: DELETE
+    final: EDIT
+    why: The body occurrence must name the engineering analogy and its mechanisms rather than repeat the unbounded aphorism after the deck is fixed.
+
+  - id: model-writes-tools-headline
+    source: docs/src/_articles/codeact-research-agent.md
+    excerpt: "title: \"Let the Model Write Your Tools\""
+    status: present
+    edge: playful-headline
+    requires_exception: true
+    reviewer_a: KEEP voice
+    reviewer_b: KEEP voice
+    final: KEEP voice
+    why: The deck immediately narrows the claim to generated Ruby code in a bounded loop with a process-isolation warning.
+    exception:
+      audience: Article reader evaluating CodeAct's generated-code execution model
+      evidence: The deck and isolation section bound generation to Ruby code in a loop and warn about process isolation.
+      evidence_locator: "docs/src/_articles/codeact-research-agent.md: frontmatter description and Isolation is part of the harness"
+      scope: This article title only; do not describe arbitrary tool registration or framework behavior with it.
+      editor: Vicente Reig Rincón de Arellano
+      reviewed_on: "2026-07-14"
+      re_review: Re-review if CodeAct stops generating Ruby code or the adjacent isolation boundary changes.
+      approval: rhetorical-form-only
+
+  - id: types-and-descriptions
+    source: docs/src/_articles/making-structured-extraction-more-reliable-with-field-descriptions.md
+    excerpt: "## Types Give Shape. Descriptions Give Meaning."
+    status: present
+    edge: earned-compression
+    requires_exception: false
+    reviewer_a: KEEP voice
+    reviewer_b: KEEP technical
+    final: KEEP voice
+    why: The surrounding examples demonstrate the separate schema and semantic jobs, earning the contrast.
+
+  - id: readme-three-part-contrast
+    source: README.md
+    excerpt: "No hand-maintained prompt templates. No JSON parsing. No prayer-based error handling."
+    status: present
+    edge: protected-line-correctness
+    requires_exception: false
+    reviewer_a: KEEP voice
+    reviewer_b: EDIT
+    final: EDIT
+    why: The rhythm is worth preserving, but the first two absolutes need user-path scope and the last needs a concrete validation boundary.
+
+  - id: production-ready-reference
+    source: docs/src/llms.txt.erb
+    excerpt: "- **Production-ready** - Built-in observability, testing, and error handling"
+    status: present
+    edge: unbounded-qualifier
+    requires_exception: false
+    reviewer_a: EDIT
+    reviewer_b: DELETE
+    final: DELETE
+    why: The label converts three available concerns into an unsupported readiness guarantee and names no application-owned boundary.
+
+  - id: zero-config-langfuse
+    source: docs/src/production/observability.md
+    excerpt: "DSPy.rb includes **zero-config Langfuse integration** via OpenTelemetry. Simply set your Langfuse environment variables and DSPy will automatically export spans to Langfuse alongside the normal logging."
+    status: present
+    edge: caveat-overload
+    requires_exception: false
+    reviewer_a: EDIT
+    reviewer_b: DELETE
+    final: EDIT
+    why: The behavior is useful, but environment variables, optional gems, network connectivity, and later verification caveats contradict zero-config; name environment-driven auto-configuration instead.
+
+  - id: automatic-optimization
+    source: docs/src/llms-full.txt.erb
+    excerpt: "- **Automatic optimization** - Use data to improve prompts, not guesswork"
+    status: present
+    edge: unbounded-qualifier
+    requires_exception: false
+    reviewer_a: EDIT
+    reviewer_b: DELETE
+    final: EDIT
+    why: Optimization requires an optimizer, examples, a metric, and execution budget; the line should name that mechanism and decision.
+
+  - id: self-improving-tagline
+    source: docs/src/_data/site_metadata.yml
+    excerpt: "tagline: The Ruby Framework for Self-Improving Language Model Programs"
+    status: present
+    edge: stale-brand-claim
+    requires_exception: false
+    reviewer_a: EDIT
+    reviewer_b: DELETE
+    final: DELETE
+    why: The current product covers typed programs, agents, evaluation, and explicit optimizers; self-improving implies autonomous behavior the code does not generally provide.
+
+  - id: stanford-port-description
+    source: docs/src/_data/site_metadata.yml
+    excerpt: "description: Build self-improving AI systems with DSPy.rb - a Ruby implementation of Stanford's DSPy framework for programming with language models."
+    status: present
+    edge: stale-brand-claim
+    requires_exception: false
+    reviewer_a: EDIT
+    reviewer_b: DELETE
+    final: EDIT
+    why: Preserve the project-description and DSPy-lineage job, but replace the unsupported self-improving and Stanford-port wording with the approved Ruby-native implementation of DSPy's programming model positioning.
+    approved_replacement: DSPy.rb is a Ruby-native implementation of DSPy's programming model for typed LLM programs and agents.
