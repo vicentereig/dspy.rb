@@ -1,0 +1,282 @@
+# Editorial inventory of the existing public documentation corpus. Rules are
+# path-based so a new tracked Markdown/ERB source cannot silently enter scope.
+version: 1
+journey: [Start, Build, Understand, Evaluate / Optimize, Operate, Extend]
+# Logical site routes are root-relative and intentionally exclude the
+# deployment base path (`/dspy.rb`). Repository routes use `repository:`.
+
+# `public` is reader-facing material. `history` remains public but is outside
+# the task-oriented journey. `excluded` is tracked prose not in this corpus.
+rules:
+  - id: root-readme
+    kind: public
+    path: README.md
+    audience: Ruby developer evaluating DSPy.rb
+    outcome: Decide whether DSPy.rb fits the application and begin the supported path.
+    canonical_owner: README.md
+    lifecycle: keep
+    target_section: Start
+    route: repository:README.md
+    url_disposition: keep-repository-url
+  - id: docs-home
+    kind: public
+    path: docs/src/index.md
+    audience: Ruby developer arriving at the documentation site
+    outcome: Choose the next task-oriented documentation path.
+    canonical_owner: docs/src/index.md
+    lifecycle: keep
+    target_section: Start
+    route: /
+    url_disposition: keep-site-url
+
+  # Getting Started has one executable canonical owner. These are future
+  # dispositions only; this inventory does not move or rewrite files.
+  - id: getting-started-index
+    kind: public
+    path: docs/src/getting-started/index.md
+    audience: Ruby developer new to DSPy.rb
+    outcome: Select installation or the executable Quick Start.
+    canonical_owner: docs/src/getting-started/index.md
+    lifecycle: keep
+    target_section: Start
+    route: /getting-started/
+    url_disposition: keep-site-url
+  - id: getting-started-installation
+    kind: public
+    path: docs/src/getting-started/installation.md
+    audience: Ruby developer preparing a local environment
+    outcome: Install DSPy.rb and configure one supported provider.
+    canonical_owner: docs/src/getting-started/installation.md
+    lifecycle: keep
+    target_section: Start
+    route: /getting-started/installation/
+    url_disposition: keep-site-url
+  - id: getting-started-quick-start
+    kind: public
+    path: docs/src/getting-started/quick-start.md
+    audience: Ruby developer new to DSPy.rb
+    outcome: Run one complete, minimal DSPy.rb program.
+    canonical_owner: docs/src/getting-started/quick-start.md
+    lifecycle: keep
+    target_section: Start
+    route: /getting-started/quick-start/
+    url_disposition: keep-site-url
+  - id: getting-started-first-program
+    kind: public
+    path: docs/src/getting-started/first-program.md
+    audience: Ruby developer who has installed DSPy.rb
+    outcome: Build a first typed program after the Quick Start.
+    canonical_owner: docs/src/getting-started/quick-start.md
+    lifecycle: merge
+    target_section: Build
+    route: /getting-started/first-program/
+    url_disposition: redirect-to:/getting-started/quick-start/#first-program
+  - id: getting-started-core-concepts
+    kind: public
+    path: docs/src/getting-started/core-concepts.md
+    audience: Ruby developer who needs vocabulary after the Quick Start
+    outcome: Identify the core abstractions before reading their guides.
+    canonical_owner: docs/src/core-concepts/index.md
+    lifecycle: merge
+    target_section: Understand
+    route: /getting-started/core-concepts/
+    url_disposition: redirect-to:/core-concepts/
+
+  # Toolsets have one primary reference and a retained advanced extension.
+  - id: toolsets-primary
+    kind: public
+    path: docs/src/core-concepts/toolsets.md
+    audience: Ruby developer adding callable capabilities to a module or agent
+    outcome: Define, attach, and invoke a supported Toolset.
+    canonical_owner: docs/src/core-concepts/toolsets.md
+    lifecycle: keep
+    target_section: Build
+    route: /core-concepts/toolsets/
+    url_disposition: keep-site-url
+  - id: toolsets-guide-duplicate
+    kind: public
+    path: docs/src/core-concepts/toolsets-guide.md
+    audience: Ruby developer looking for the primary Toolsets guide
+    outcome: Reach the canonical Toolsets task reference.
+    canonical_owner: docs/src/core-concepts/toolsets.md
+    lifecycle: merge
+    target_section: Build
+    route: /core-concepts/toolsets-guide/
+    url_disposition: redirect-to:/core-concepts/toolsets/#using-toolsets
+  - id: custom-toolsets-extension
+    kind: public
+    path: docs/src/advanced/custom-toolsets.md
+    audience: Experienced Ruby developer extending Toolsets
+    outcome: Implement a custom Toolset beyond the primary guide.
+    canonical_owner: docs/src/advanced/custom-toolsets.md
+    lifecycle: keep
+    target_section: Extend
+    route: /advanced/custom-toolsets/
+    url_disposition: keep-site-url
+
+  - id: core-concepts
+    kind: public
+    glob: docs/src/core-concepts/*.md
+    except: [docs/src/core-concepts/toolsets.md, docs/src/core-concepts/toolsets-guide.md]
+    overrides:
+      docs/src/core-concepts/codeact.md: {audience: Agent builder following an obsolete CodeAct link, outcome: Reach the maintained CodeAct package guide from the moved notice., canonical_owner: lib/dspy/code_act/README.md, lifecycle: move, target_section: Extend, route: /core-concepts/codeact/, url_disposition: redirect-to:repository:lib/dspy/code_act/README.md}
+      docs/src/core-concepts/events.md: {audience: Application developer consuming DSPy.rb events, outcome: Subscribe to typed runtime events for application integrations., canonical_owner: docs/src/core-concepts/events.md, lifecycle: keep, target_section: Operate, route: /core-concepts/events/, url_disposition: keep-site-url}
+      docs/src/core-concepts/examples.md: {audience: Ruby developer seeking short composition patterns, outcome: Select a focused core API example before opening a runnable project., canonical_owner: docs/src/core-concepts/examples.md, lifecycle: keep, target_section: Build, route: /core-concepts/examples/, url_disposition: keep-site-url}
+      docs/src/core-concepts/index.md: {audience: Ruby developer learning framework vocabulary, outcome: Follow the prerequisite order from signatures through modules and tools., canonical_owner: docs/src/core-concepts/index.md, lifecycle: keep, target_section: Understand, route: /core-concepts/, url_disposition: keep-site-url}
+      docs/src/core-concepts/module-runtime-context.md: {audience: Module author controlling runtime model selection, outcome: Scope language-model context safely across nested module calls., canonical_owner: docs/src/core-concepts/module-runtime-context.md, lifecycle: move, target_section: Operate, route: /core-concepts/module-runtime-context/, url_disposition: redirect-to:/advanced/module-runtime-context/}
+      docs/src/core-concepts/modules.md: {audience: Ruby developer composing predictors into behavior, outcome: Encapsulate predictor calls in a reusable typed module., canonical_owner: docs/src/core-concepts/modules.md, lifecycle: keep, target_section: Understand, route: /core-concepts/modules/, url_disposition: keep-site-url}
+      docs/src/core-concepts/multimodal.md: {audience: Application developer passing images to models, outcome: Add typed image inputs to a multimodal signature., canonical_owner: docs/src/core-concepts/multimodal.md, lifecycle: keep, target_section: Build, route: /core-concepts/multimodal/, url_disposition: keep-site-url}
+      docs/src/core-concepts/predictors.md: {audience: Ruby developer executing a typed signature, outcome: Instantiate and call a predictor while handling its prediction object., canonical_owner: docs/src/core-concepts/predictors.md, lifecycle: keep, target_section: Understand, route: /core-concepts/predictors/, url_disposition: keep-site-url}
+      docs/src/core-concepts/signatures.md: {audience: Ruby developer defining an LLM contract, outcome: Express typed inputs outputs and instructions in a signature., canonical_owner: docs/src/core-concepts/signatures.md, lifecycle: keep, target_section: Understand, route: /core-concepts/signatures/, url_disposition: keep-site-url}
+  - id: advanced-guides
+    kind: public
+    glob: docs/src/advanced/*.md
+    except: [docs/src/advanced/custom-toolsets.md]
+    overrides:
+      docs/src/advanced/complex-types.md: {audience: Signature author modeling nested domain data, outcome: Encode arrays unions enums and nested objects in signature types., canonical_owner: docs/src/advanced/complex-types.md, lifecycle: keep, target_section: Extend, route: /advanced/complex-types/, url_disposition: keep-site-url}
+      docs/src/advanced/custom-metrics.md: {audience: Quality owner extending evaluation criteria, outcome: Implement a reusable metric for the evaluation framework., canonical_owner: docs/src/advanced/custom-metrics.md, lifecycle: keep, target_section: Evaluate / Optimize, route: /advanced/custom-metrics/, url_disposition: keep-site-url}
+      docs/src/advanced/dspy-vs-langchain.md: {audience: Technical evaluator comparing Ruby LLM frameworks, outcome: Decide between DSPy.rb and LangChain Ruby by programming model., canonical_owner: docs/src/advanced/dspy-vs-langchain.md, lifecycle: keep, target_section: Start, route: /advanced/dspy-vs-langchain/, url_disposition: keep-site-url}
+      docs/src/advanced/index.md: {audience: Experienced DSPy.rb developer choosing an extension topic, outcome: Select an advanced task after mastering core concepts., canonical_owner: docs/src/advanced/index.md, lifecycle: keep, target_section: Extend, route: /advanced/, url_disposition: keep-site-url}
+      docs/src/advanced/observability-interception.md: {audience: Maintainer integrating observability hooks, outcome: Prefer supported event interception over monkey patches., canonical_owner: docs/src/advanced/observability-interception.md, lifecycle: keep, target_section: Operate, route: /advanced/observability-interception/, url_disposition: keep-site-url}
+      docs/src/advanced/pipelines.md: {audience: Module author composing multiple inference stages, outcome: Build a typed multi-stage pipeline with explicit boundaries., canonical_owner: docs/src/advanced/pipelines.md, lifecycle: keep, target_section: Build, route: /advanced/pipelines/, url_disposition: keep-site-url}
+      docs/src/advanced/python-comparison.md: {audience: Python DSPy user evaluating the Ruby port, outcome: Map Python DSPy concepts and differences to DSPy.rb., canonical_owner: docs/src/advanced/python-comparison.md, lifecycle: keep, target_section: Start, route: /advanced/python-comparison/, url_disposition: keep-site-url}
+      docs/src/advanced/rag.md: {audience: Application developer grounding predictions in retrieved data, outcome: Compose retrieval and typed generation into a RAG pipeline., canonical_owner: docs/src/advanced/rag.md, lifecycle: keep, target_section: Build, route: /advanced/rag/, url_disposition: keep-site-url}
+      docs/src/advanced/rails-integration.md: {audience: Rails developer integrating DSPy.rb, outcome: Configure and invoke DSPy.rb within a Rails application lifecycle., canonical_owner: docs/src/advanced/rails-integration.md, lifecycle: keep, target_section: Operate, route: /advanced/rails-integration/, url_disposition: keep-site-url}
+      docs/src/advanced/stateful-agents.md: {audience: Agent builder preserving conversation state, outcome: Implement stateful agent turns with explicit persistence boundaries., canonical_owner: docs/src/advanced/stateful-agents.md, lifecycle: keep, target_section: Build, route: /advanced/stateful-agents/, url_disposition: keep-site-url}
+  - id: optimization-guides
+    kind: public
+    glob: docs/src/optimization/*.md
+    overrides:
+      docs/src/optimization/benchmarking-raw-prompts.md: {audience: Quality owner comparing programming approaches, outcome: Benchmark a DSPy.rb program against a raw-prompt baseline., canonical_owner: docs/src/optimization/benchmarking-raw-prompts.md, lifecycle: keep, target_section: Evaluate / Optimize, route: /optimization/benchmarking-raw-prompts/, url_disposition: keep-site-url}
+      docs/src/optimization/evaluation.md: {audience: Quality owner measuring program behavior, outcome: Build and run an evaluation set with standard metrics., canonical_owner: docs/src/optimization/evaluation.md, lifecycle: keep, target_section: Evaluate / Optimize, route: /optimization/evaluation/, url_disposition: keep-site-url}
+      docs/src/optimization/gepa.md: {audience: Quality owner optimizing with reflective evolution, outcome: Configure and run GEPA after establishing an evaluation baseline., canonical_owner: docs/src/optimization/gepa.md, lifecycle: keep, target_section: Evaluate / Optimize, route: /optimization/gepa/, url_disposition: keep-site-url}
+      docs/src/optimization/index.md: {audience: Quality owner choosing an improvement workflow, outcome: Move from evaluation baseline to an appropriate optimizer., canonical_owner: docs/src/optimization/index.md, lifecycle: keep, target_section: Evaluate / Optimize, route: /optimization/, url_disposition: keep-site-url}
+      docs/src/optimization/miprov2.md: {audience: Quality owner optimizing instructions and demonstrations, outcome: Configure MIPROv2 for an evaluated typed program., canonical_owner: docs/src/optimization/miprov2.md, lifecycle: keep, target_section: Evaluate / Optimize, route: /optimization/miprov2/, url_disposition: keep-site-url}
+      docs/src/optimization/prompt-optimization.md: {audience: Program author improving prompt behavior systematically, outcome: Choose an optimization strategy based on measured failure modes., canonical_owner: docs/src/optimization/prompt-optimization.md, lifecycle: keep, target_section: Evaluate / Optimize, route: /optimization/prompt-optimization/, url_disposition: keep-site-url}
+  - id: production-guides
+    kind: public
+    glob: docs/src/production/*.md
+    overrides:
+      docs/src/production/index.md: {audience: Application owner preparing a DSPy.rb deployment, outcome: Select the production concern required before release., canonical_owner: docs/src/production/index.md, lifecycle: keep, target_section: Operate, route: /production/, url_disposition: keep-site-url}
+      docs/src/production/observability.md: {audience: Operator diagnosing LLM application behavior, outcome: Instrument DSPy.rb calls and inspect structured traces., canonical_owner: docs/src/production/observability.md, lifecycle: keep, target_section: Operate, route: /production/observability/, url_disposition: keep-site-url}
+      docs/src/production/registry.md: {audience: Operator managing program versions, outcome: Register and retrieve versioned program artifacts., canonical_owner: docs/src/production/registry.md, lifecycle: keep, target_section: Operate, route: /production/registry/, url_disposition: keep-site-url}
+      docs/src/production/storage.md: {audience: Application owner persisting DSPy.rb artifacts, outcome: Configure durable storage for program data and optimizer state., canonical_owner: docs/src/production/storage.md, lifecycle: keep, target_section: Operate, route: /production/storage/, url_disposition: keep-site-url}
+      docs/src/production/troubleshooting.md: {audience: Operator resolving DSPy.rb failures, outcome: Diagnose common configuration execution and provider failures., canonical_owner: docs/src/production/troubleshooting.md, lifecycle: keep, target_section: Operate, route: /production/troubleshooting/, url_disposition: keep-site-url}
+
+  - id: blog-index
+    kind: history
+    path: docs/src/blog/index.md
+    audience: Reader browsing published DSPy.rb writing
+    outcome: Find a dated article by topic.
+    canonical_owner: docs/src/blog/index.md
+    lifecycle: keep
+    target_section: Blog / History
+    route: /blog/
+    url_disposition: keep-site-url
+  - id: articles
+    kind: history
+    glob: docs/src/_articles/*.md
+    audience: Reader seeking dated analysis, announcements, or tutorials
+    outcome: Understand the article in its original publication context.
+    canonical_owner: '{source}'
+    lifecycle: archive
+    target_section: Blog / History
+    route: /blog/articles/{slug}/
+    url_disposition: keep-generated-site-url
+
+  # Public tool-facing reference endpoints are part of the corpus.
+  - id: llms-index
+    kind: public
+    path: docs/src/llms.txt.erb
+    audience: Tool or reader seeking the concise documentation index
+    outcome: Discover the canonical public documentation routes.
+    owner_type: derived
+    derived_owner: documentation-build
+    derivation_status: planned
+    lifecycle: keep
+    target_section: Start
+    route: /llms.txt
+    url_disposition: keep-site-url
+    current_provenance: Manually maintained static text in docs/src/llms.txt.erb; it does not currently consume this manifest or page front matter.
+    target_provenance: Documentation build derives the concise aggregate from declared inputs.
+    planned_inputs: [docs/editorial/public-doc-corpus.yml, docs/src page front matter]
+    sync_contract: Derivation and drift enforcement are assigned to dspy.rb-2ey.10.
+  - id: llms-full
+    kind: public
+    path: docs/src/llms-full.txt.erb
+    audience: Tool or reader needing the complete generated reference
+    outcome: Load the complete public documentation reference.
+    owner_type: derived
+    derived_owner: documentation-build
+    derivation_status: planned
+    lifecycle: keep
+    target_section: Cross-cutting reference
+    route: /llms-full.txt
+    url_disposition: keep-site-url
+    current_provenance: Manually maintained static text in docs/src/llms-full.txt.erb; it does not currently consume this manifest, rendered guides, or the article collection.
+    target_provenance: Documentation build derives the complete aggregate from declared inputs.
+    planned_inputs: [docs/editorial/public-doc-corpus.yml, docs/src rendered guides, docs/src/_articles collection]
+    sync_contract: Derivation, generated-reference drift, and fragment checks are assigned to dspy.rb-2ey.10.
+
+  - id: examples-index
+    kind: public
+    path: examples/README.md
+    audience: Ruby developer looking for runnable patterns
+    outcome: Choose an example that matches the next implementation task.
+    canonical_owner: examples/README.md
+    lifecycle: keep
+    target_section: Build
+    route: repository:examples/README.md
+    url_disposition: keep-repository-url
+  - id: example-readmes
+    kind: public
+    glob: examples/**/README.md
+    except: [examples/README.md]
+    overrides:
+      examples/ade_optimizer_gepa/README.md: {audience: Quality owner learning GEPA from a runnable demo, outcome: Run the ADE GEPA workflow and inspect its optimization result., canonical_owner: examples/ade_optimizer_gepa/README.md, lifecycle: keep, target_section: Evaluate / Optimize, route: repository:examples/ade_optimizer_gepa/README.md, url_disposition: keep-repository-url}
+      examples/ade_optimizer_miprov2/README.md: {audience: Quality owner learning MIPROv2 from a runnable demo, outcome: Run the ADE MIPROv2 workflow and inspect its optimization result., canonical_owner: examples/ade_optimizer_miprov2/README.md, lifecycle: keep, target_section: Evaluate / Optimize, route: repository:examples/ade_optimizer_miprov2/README.md, url_disposition: keep-repository-url}
+      examples/coffee-shop-agent/README.md: {audience: Agent builder learning tool-driven workflows, outcome: Run and adapt the coffee-shop agent interaction., canonical_owner: examples/coffee-shop-agent/README.md, lifecycle: keep, target_section: Build, route: repository:examples/coffee-shop-agent/README.md, url_disposition: keep-repository-url}
+      examples/deep_research_cli/README.md: {audience: Developer evaluating a research-agent CLI, outcome: Configure and run the deep-research command-line example., canonical_owner: examples/deep_research_cli/README.md, lifecycle: keep, target_section: Build, route: repository:examples/deep_research_cli/README.md, url_disposition: keep-repository-url}
+      examples/github-assistant/README.md: {audience: Agent builder integrating repository tools, outcome: Run a GitHub assistant with bounded callable tools., canonical_owner: examples/github-assistant/README.md, lifecycle: keep, target_section: Build, route: repository:examples/github-assistant/README.md, url_disposition: keep-repository-url}
+      examples/html_to_markdown/README.md: {audience: Module author experimenting with structured transformation, outcome: Run the HTML-to-Markdown AST transformation experiment., canonical_owner: examples/html_to_markdown/README.md, lifecycle: keep, target_section: Build, route: repository:examples/html_to_markdown/README.md, url_disposition: keep-repository-url}
+      examples/sentiment-evaluation/README.md: {audience: Quality owner learning evaluation end to end, outcome: Evaluate a typed sentiment classifier against labeled examples., canonical_owner: examples/sentiment-evaluation/README.md, lifecycle: keep, target_section: Evaluate / Optimize, route: repository:examples/sentiment-evaluation/README.md, url_disposition: keep-repository-url}
+  - id: package-readmes
+    kind: public
+    glob: lib/**/README.md
+    overrides:
+      lib/dspy/anthropic/README.md: {audience: Ruby developer using Anthropic models, outcome: Configure the Anthropic adapter and account for its provider caveats., canonical_owner: lib/dspy/anthropic/README.md, lifecycle: keep, target_section: Extend, route: repository:lib/dspy/anthropic/README.md, url_disposition: keep-repository-url}
+      lib/dspy/code_act/README.md: {audience: Agent builder adopting dynamic code execution, outcome: Configure CodeAct and apply its execution-safety constraints., canonical_owner: lib/dspy/code_act/README.md, lifecycle: keep, target_section: Extend, route: repository:lib/dspy/code_act/README.md, url_disposition: keep-repository-url}
+      lib/dspy/deep_research/README.md: {audience: Developer adopting the DeepResearch package, outcome: Run DeepResearch and understand its package-specific workflow caveats., canonical_owner: lib/dspy/deep_research/README.md, lifecycle: keep, target_section: Extend, route: repository:lib/dspy/deep_research/README.md, url_disposition: keep-repository-url}
+      lib/dspy/deep_search/README.md: {audience: Developer adopting the DeepSearch package, outcome: Run DeepSearch and configure its search-specific dependencies., canonical_owner: lib/dspy/deep_search/README.md, lifecycle: keep, target_section: Extend, route: repository:lib/dspy/deep_search/README.md, url_disposition: keep-repository-url}
+      lib/dspy/gemini/README.md: {audience: Ruby developer using Gemini models, outcome: Configure the Gemini adapter and account for its provider caveats., canonical_owner: lib/dspy/gemini/README.md, lifecycle: keep, target_section: Extend, route: repository:lib/dspy/gemini/README.md, url_disposition: keep-repository-url}
+      lib/dspy/openai/README.md: {audience: Ruby developer using OpenAI models, outcome: Configure the OpenAI adapter and account for its provider caveats., canonical_owner: lib/dspy/openai/README.md, lifecycle: keep, target_section: Extend, route: repository:lib/dspy/openai/README.md, url_disposition: keep-repository-url}
+      lib/dspy/ruby_llm/README.md: {audience: Ruby developer using the RubyLLM integration, outcome: Configure the RubyLLM adapter and understand its integration boundary., canonical_owner: lib/dspy/ruby_llm/README.md, lifecycle: keep, target_section: Extend, route: repository:lib/dspy/ruby_llm/README.md, url_disposition: keep-repository-url}
+      lib/sorbet/toon/README.md: {audience: Ruby developer evaluating compact TOON serialization, outcome: Use Sorbet TOON while accounting for its alpha-status limitations., canonical_owner: lib/sorbet/toon/README.md, lifecycle: keep, target_section: Extend, route: repository:lib/sorbet/toon/README.md, url_disposition: keep-repository-url}
+  - id: changelog-history
+    kind: history
+    path: CHANGELOG.md
+    audience: Maintainer or upgrader checking release history
+    outcome: Identify changes in a released version.
+    canonical_owner: CHANGELOG.md
+    lifecycle: keep
+    target_section: Blog / History
+    route: repository:CHANGELOG.md
+    url_disposition: keep-repository-url
+
+  # Explicitly separated internal material and repository operations prose.
+  - id: excluded-repository-instructions
+    kind: excluded
+    glob: '{AGENTS.md,CLAUDE.md,CONTRIBUTING.md,.beads/README.md}'
+    reason: Repository workflow or contributor instructions are outside the product-doc journey.
+  - id: excluded-architecture-and-plans
+    kind: excluded
+    glob: '{adr/**,docs/brainstorms/**,docs/dev/**,docs/editorial/**,docs/plans/**,todos/**,lib/**/plan.md}'
+    reason: ADRs, plans, editorial working notes, and todos are internal decision records.
+  - id: excluded-docs-operations
+    kind: excluded
+    glob: '{docs/README.md,docs/SEO_KEYWORD_STRATEGY.md,docs/datasets_parquet_migration_plan.md,docs/medium_article.md}'
+    reason: Documentation-site operations, strategy, and drafts are not public product documentation.
+  - id: excluded-issue-note
+    kind: excluded
+    path: ISSUE_IMAGE_SERIALIZATION.md
+    reason: A repository issue note is not part of the public reader journey.
