@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - **`claude-mythos-preview` sent an incompatible default `temperature`** (#256 follow-up, PR #257 review) - Its capability entry was registered with `fixed_sampling: false`, so `DSPy::LM.new("anthropic/claude-mythos-preview", ...)` still sent the implicit `temperature: 0.0` default, even though Anthropic documents this model as rejecting non-default `temperature`/`top_p`/`top_k` like Sonnet 5 and Opus 4.7/4.8. Corrected to `fixed_sampling: true`.
+- **Anthropic streaming (`raw_chat` with a block) always returned an empty response** (#259) - `AnthropicAdapter#chat` passed a block directly to `Anthropic::Resources::Messages#stream`, which never accepts or yields to one; Ruby silently discards the unused block, so the caller's streaming callback never fired and the accumulated content stayed `""` on every streaming call. Fixed by consuming the returned `MessageStream` via `stream.text.each`, which yields each streamed text fragment as a plain `String`, exactly once and in order.
 
 ## [1.0.1] - 2026-06-12
 

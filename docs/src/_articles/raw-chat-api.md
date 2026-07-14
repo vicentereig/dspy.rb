@@ -26,12 +26,10 @@ response = lm.raw_chat([
   { role: "user", content: "When should I use Fiber-local state?" }
 ])
 
-puts response.content
-pp response.usage&.to_h
-pp response.metadata.to_h
+puts response
 ```
 
-The return value is `DSPy::LM::Response`. It contains the accumulated text, optional normalized usage, and provider-specific metadata.
+The return value is a plain `String`: the accumulated text content. `raw_chat` does not return the adapter's internal `DSPy::LM::Response` object or expose its `usage`/`metadata` — those are only observable through DSPy's instrumentation events (see [Observability](/production/observability/)), not through the return value.
 
 Messages accept `system`, `user`, and `assistant` roles. DSPy.rb normalizes the hashes into `DSPy::LM::Message` objects and validates the role and content before calling the adapter.
 
@@ -55,12 +53,12 @@ The block has a different meaning in array form: it receives streaming callbacks
 ```ruby
 response = lm.raw_chat([
   { role: "user", content: "Explain Ruby fibers." }
-]) do |chunk|
-  handle_provider_chunk(chunk)
+]) do |text_fragment|
+  handle_text_fragment(text_fragment)
 end
 ```
 
-Callback values are currently provider-specific. Gemini yields Gemini chunks; other adapters may expose a different object or text fragment. The final `response.content` contains the accumulated text.
+For the Anthropic adapter, the block receives each streamed text fragment as a plain `String`, exactly once and in order; DSPy accumulates those fragments internally and `raw_chat` still returns the complete `String` once streaming finishes. Other adapters may not implement streaming the same way — check the adapter before relying on callback shape across providers.
 
 Raw streaming does not create partial typed DSPy predictions. `Predict` and other signature-based modules validate structured output after the complete response arrives.
 
