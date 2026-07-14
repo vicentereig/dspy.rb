@@ -3,17 +3,6 @@ layout: docs
 title: "Program Optimization in Ruby | MIPROv2 & GEPA"
 name: Program Optimization
 description: "Evaluate DSPy.rb programs, revise instructions and examples immutably, and compile candidates with MIPROv2 or GEPA."
-breadcrumb:
-- name: Optimization
-  url: "/optimization/"
-- name: Program Optimization
-  url: "/optimization/prompt-optimization/"
-prev:
-  name: Evaluation Framework
-  url: "/optimization/evaluation/"
-next:
-  name: MIPROv2 Optimizer
-  url: "/optimization/miprov2/"
 date: 2025-07-10 00:00:00 +0000
 ---
 # Program Optimization

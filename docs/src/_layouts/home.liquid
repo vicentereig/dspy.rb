@@ -3,7 +3,8 @@
 {% render "head", title_suffix: "DSPy.rb - Build Reliable LLM Applications in Ruby" %}
 <body class="h-full font-sans overflow-x-hidden">
   <div class="bg-white">
-    {% render "header" %}
+    {% assign docs_nav = site.data.documentation_navigation %}
+    {% render "header", docs_nav: docs_nav %}
 
     <!-- Hero Section -->
     <div class="relative isolate pt-14">

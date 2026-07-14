@@ -3,17 +3,6 @@ layout: docs
 title: "Ruby RAG Tutorial with DSPy.rb"
 name: Retrieval Augmented Generation (RAG)
 description: "Build retrieval-augmented generation in Ruby with external search, typed signatures, and evaluation."
-breadcrumb:
-- name: Advanced
-  url: "/advanced/"
-- name: RAG
-  url: "/advanced/rag/"
-prev:
-  name: Multi-stage Pipelines
-  url: "/advanced/pipelines/"
-next:
-  name: Custom Metrics
-  url: "/advanced/custom-metrics/"
 date: 2025-07-10 00:00:00 +0000
 ---
 # Retrieval Augmented Generation (RAG)

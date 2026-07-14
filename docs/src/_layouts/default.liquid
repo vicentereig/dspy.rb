@@ -2,7 +2,8 @@
 <html lang="en">
 {% render "head" %}
 <body>
-  {% render "site_header" %}
+  {% assign docs_nav = site.data.documentation_navigation %}
+  {% render "site_header", docs_nav: docs_nav %}
 
   <main class="page-content">
     {{ content }}
@@ -10,7 +11,5 @@
 
   {% render "footer" %}
 
-  <!-- Scripts -->
-  <script src="{{ '/_bridgetown/static/js/index.js' | relative_url }}"></script>
 </body>
 </html>

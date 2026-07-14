@@ -3,17 +3,6 @@ layout: docs
 title: "MIPROv2 Program Optimization in Ruby"
 name: MIPROv2 Optimizer
 description: "Use the ADE example to configure MIPROv2, define a metric, set a search budget, and inspect the optimized program."
-breadcrumb:
-- name: Optimization
-  url: "/optimization/"
-- name: MIPROv2 Optimizer
-  url: "/optimization/miprov2/"
-prev:
-  name: GEPA Optimizer
-  url: "/optimization/gepa/"
-next:
-  name: Evaluation
-  url: "/optimization/evaluation/"
 date: 2025-07-10 00:00:00 +0000
 ---
 # MIPROv2 Optimizer

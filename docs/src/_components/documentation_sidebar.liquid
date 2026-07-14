@@ -1,0 +1,19 @@
+<nav class="flex flex-1 flex-col pt-6" data-doc-sidebar="{{ menu_prefix }}">
+  <ul role="list" class="-mx-2 space-y-1">
+    {% for section in docs_nav.sections %}
+      <li>
+        <button type="button" class="flex w-full items-center gap-x-3 rounded-md p-2 text-left text-sm font-semibold leading-6 text-gray-700 hover:bg-gray-50" aria-expanded="true" aria-controls="{{ menu_prefix }}-{{ section.id }}-menu" data-dropdown-toggle="{{ menu_prefix }}-{{ section.id }}-menu">
+          <svg class="h-5 w-5 shrink-0 rotate-90 text-gray-400 transition duration-200" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" /></svg>
+          {{ section.label }}
+        </button>
+        <ul class="mt-1 px-2" id="{{ menu_prefix }}-{{ section.id }}-menu">
+          {% for item in docs_nav.items %}
+            {% if item.section == section.id and item.status == "published" %}
+              <li><a href="{{ item.url | relative_url }}" data-doc-path="{{ item.url }}" {% if current_url == item.url %}aria-current="page"{% endif %} class="block rounded-md py-2 pl-9 pr-2 text-sm leading-6 {% if current_url == item.url %}bg-gray-50 font-semibold text-dspy-link{% else %}text-gray-700 hover:bg-gray-50{% endif %}">{{ item.label }}</a></li>
+            {% endif %}
+          {% endfor %}
+        </ul>
+      </li>
+    {% endfor %}
+  </ul>
+</nav>

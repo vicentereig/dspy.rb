@@ -15,13 +15,9 @@
     </div>
     <div class="mt-6 flow-root">
       <div class="-my-6 divide-y divide-gray-500/10">
-        <div class="space-y-2 py-6">
-          <a href="{{ '/getting-started/' | relative_url }}" class="-mx-3 block rounded-lg px-3 py-2 text-base font-medium leading-7 text-gray-900 hover:bg-gray-50 {% if page.url contains '/getting-started/' %}text-dspy-link{% endif %}">Getting Started</a>
-          <a href="{{ '/core-concepts/' | relative_url }}" class="-mx-3 block rounded-lg px-3 py-2 text-base font-medium leading-7 text-gray-900 hover:bg-gray-50 {% if page.url contains '/core-concepts/' %}text-dspy-link{% endif %}">Core Concepts</a>
-          <a href="{{ '/optimization/' | relative_url }}" class="-mx-3 block rounded-lg px-3 py-2 text-base font-medium leading-7 text-gray-900 hover:bg-gray-50 {% if page.url contains '/optimization/' %}text-dspy-link{% endif %}">Optimization</a>
-          <a href="{{ '/advanced/' | relative_url }}" class="-mx-3 block rounded-lg px-3 py-2 text-base font-medium leading-7 text-gray-900 hover:bg-gray-50 {% if page.url contains '/advanced/' %}text-dspy-link{% endif %}">Advanced Topics</a>
-          <a href="{{ '/production/' | relative_url }}" class="-mx-3 block rounded-lg px-3 py-2 text-base font-medium leading-7 text-gray-900 hover:bg-gray-50 {% if page.url contains '/production/' %}text-dspy-link{% endif %}">Production</a>
-          <a href="{{ '/blog/' | relative_url }}" class="-mx-3 block rounded-lg px-3 py-2 text-base font-medium leading-7 text-gray-900 hover:bg-gray-50 {% if page.url contains '/blog/' %}text-dspy-link{% endif %}">Blog</a>
+        <div class="space-y-2 py-6" data-global-mobile-nav>
+          {% for section in docs_nav.sections %}<a href="{{ section.url | relative_url }}" data-doc-section="{{ section.id }}" class="-mx-3 block rounded-lg px-3 py-2 text-base font-medium leading-7 text-gray-900 hover:bg-gray-50">{{ section.label }}</a>{% endfor %}
+          <a href="{{ '/blog/' | relative_url }}" class="-mx-3 block rounded-lg px-3 py-2 text-base font-medium leading-7 text-gray-900 hover:bg-gray-50">Blog</a>
         </div>
         <div class="py-6">
           <a href="https://github.com/vicentereig/dspy.rb" rel="noopener noreferrer" class="-mx-3 block rounded-lg px-3 py-2.5 text-base font-medium leading-7 text-gray-900 hover:bg-gray-50">

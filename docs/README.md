@@ -72,9 +72,9 @@ The site is configured for GitHub Pages deployment:
 ## 📝 Writing Documentation
 
 1. Create markdown files in the appropriate directory
-2. Add frontmatter with layout, title, and navigation info
+2. Add frontmatter with `layout`, `title`, and `description`
 3. Use the `docs` layout for documentation pages
-4. Follow the established navigation structure
+4. Add the page once to `src/_data/documentation_navigation.yml`
 
 Example frontmatter:
 ```yaml
@@ -82,19 +82,20 @@ Example frontmatter:
 layout: docs
 title: Your Page Title
 description: Brief description for SEO
-breadcrumb:
-  - title: Parent Section
-    url: /parent-section/
-  - title: This Page
-    url: /parent-section/this-page/
-prev:
-  title: Previous Page
-  url: /previous-page/
-next:
-  title: Next Page
-  url: /next-page/
 ---
 ```
+
+The navigation manifest is the only source for sidebar labels, breadcrumbs,
+and previous/next order. Each entry has `section`, `label`, normalized `url`,
+repository-relative `source`, and `status`. Use `published` for rendered pages,
+`unpublished` or `draft` for existing pages excluded from navigation, and
+`planned` for a page without a source file yet. Never add `breadcrumb`, `nav`,
+`prev`, `next`, `nav_order`, `order`, or `parent` to page frontmatter.
+
+Run `rbenv exec ruby scripts/validate_documentation_navigation.rb` from `docs/`
+after a navigation change. Pass `--output output` after a production build to
+check the desktop sidebar, mobile sidebar, breadcrumbs, and first/middle/last
+boundaries.
 
 ## 🐛 Troubleshooting
 

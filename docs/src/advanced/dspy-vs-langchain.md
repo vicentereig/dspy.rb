@@ -3,11 +3,6 @@ layout: docs
 title: "DSPy.rb and LangChain Ruby: Programming Model Comparison"
 name: DSPy.rb vs LangChain
 description: "Compare DSPy.rb's typed, optimizable programs with LangChain Ruby's integration-oriented component model."
-breadcrumb:
-- name: Advanced
-  url: "/advanced/"
-- name: Framework Comparison
-  url: "/advanced/dspy-vs-langchain/"
 date: 2025-09-18 00:00:00 +0000
 ---
 

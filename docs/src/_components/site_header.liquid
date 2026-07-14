@@ -2,12 +2,9 @@
 <header class="site-header">
   <nav class="site-nav">
     <a href="{{ '/' | relative_url }}" class="site-title">{{ site.title }}</a>
-    <div class="nav-links">
-      <a href="{{ '/getting-started/' | relative_url }}" {% if page.url contains '/getting-started/' %}class="active"{% endif %}>Getting Started</a>
-      <a href="{{ '/core-concepts/' | relative_url }}" {% if page.url contains '/core-concepts/' %}class="active"{% endif %}>Core Concepts</a>
-      <a href="{{ '/optimization/' | relative_url }}" {% if page.url contains '/optimization/' %}class="active"{% endif %}>Optimization</a>
-      <a href="{{ '/advanced/' | relative_url }}" {% if page.url contains '/advanced/' %}class="active"{% endif %}>Advanced</a>
-      <a href="{{ '/blog/' | relative_url }}" {% if page.url contains '/blog/' %}class="active"{% endif %}>Blog</a>
+    <div class="nav-links" data-global-top-nav>
+      {% for section in docs_nav.sections %}<a href="{{ section.url | relative_url }}" data-doc-section="{{ section.id }}">{{ section.label }}</a>{% endfor %}
+      <a href="{{ '/blog/' | relative_url }}">Blog</a>
       <a href="https://github.com/vicentereig/dspy.rb" target="_blank" rel="noopener noreferrer">GitHub</a>
     </div>
   </nav>

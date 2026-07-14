@@ -2,17 +2,6 @@
 layout: docs
 name: Rich Types
 description: Working with enums, structs, and collections in DSPy.rb
-breadcrumb:
-- name: Advanced
-  url: "/advanced/"
-- name: Rich Types
-  url: "/advanced/complex-types/"
-prev:
-  name: Advanced
-  url: "/advanced/"
-next:
-  name: Multi-stage Pipelines
-  url: "/advanced/pipelines/"
 date: 2025-07-10 00:00:00 +0000
 last_modified_at: 2025-07-21 00:00:00 +0000
 ---

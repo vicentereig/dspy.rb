@@ -1,0 +1,66 @@
+version: 1
+base_path: /dspy.rb
+label_policy: Navigation labels are canonical UI copy and may be shorter than page titles.
+first: /getting-started/
+last: /production/troubleshooting/
+
+sections:
+  - id: getting-started
+    label: Getting Started
+    url: /getting-started/
+  - id: core-concepts
+    label: Core Concepts
+    url: /core-concepts/
+  - id: optimization
+    label: Optimization
+    url: /optimization/
+  - id: advanced
+    label: Advanced Topics
+    url: /advanced/
+  - id: production
+    label: Production
+    url: /production/
+
+items:
+  - { section: getting-started, label: Overview, url: /getting-started/, source: docs/src/getting-started/index.md, status: published }
+  - { section: getting-started, label: Installation, url: /getting-started/installation/, source: docs/src/getting-started/installation.md, status: published }
+  - { section: getting-started, label: Quick Start, url: /getting-started/quick-start/, source: docs/src/getting-started/quick-start.md, status: published }
+  - { section: getting-started, label: First Program, url: /getting-started/first-program/, source: docs/src/getting-started/first-program.md, status: published }
+  - { section: getting-started, label: Core Concepts, url: /getting-started/core-concepts/, source: docs/src/getting-started/core-concepts.md, status: published }
+
+  - { section: core-concepts, label: Overview, url: /core-concepts/, source: docs/src/core-concepts/index.md, status: published }
+  - { section: core-concepts, label: Signatures, url: /core-concepts/signatures/, source: docs/src/core-concepts/signatures.md, status: published }
+  - { section: core-concepts, label: Modules, url: /core-concepts/modules/, source: docs/src/core-concepts/modules.md, status: published }
+  - { section: core-concepts, label: Module Runtime Context, url: /advanced/module-runtime-context/, source: docs/src/core-concepts/module-runtime-context.md, status: published }
+  - { section: core-concepts, label: Event System, url: /core-concepts/events/, source: docs/src/core-concepts/events.md, status: published }
+  - { section: core-concepts, label: Toolsets, url: /core-concepts/toolsets/, source: docs/src/core-concepts/toolsets.md, status: published }
+  - { section: core-concepts, label: Toolsets Guide, url: /core-concepts/toolsets-guide/, source: docs/src/core-concepts/toolsets-guide.md, status: published }
+  - { section: core-concepts, label: Predictors, url: /core-concepts/predictors/, source: docs/src/core-concepts/predictors.md, status: published }
+  - { section: core-concepts, label: CodeAct, url: /core-concepts/codeact/, source: docs/src/core-concepts/codeact.md, status: unpublished }
+  - { section: core-concepts, label: Multimodal, url: /core-concepts/multimodal/, source: docs/src/core-concepts/multimodal.md, status: published }
+  - { section: core-concepts, label: Examples, url: /core-concepts/examples/, source: docs/src/core-concepts/examples.md, status: published }
+
+  - { section: optimization, label: Overview, url: /optimization/, source: docs/src/optimization/index.md, status: published }
+  - { section: optimization, label: Prompt Optimization, url: /optimization/prompt-optimization/, source: docs/src/optimization/prompt-optimization.md, status: published }
+  - { section: optimization, label: GEPA Optimizer, url: /optimization/gepa/, source: docs/src/optimization/gepa.md, status: published }
+  - { section: optimization, label: MIPROv2, url: /optimization/miprov2/, source: docs/src/optimization/miprov2.md, status: published }
+  - { section: optimization, label: Evaluation, url: /optimization/evaluation/, source: docs/src/optimization/evaluation.md, status: published }
+  - { section: optimization, label: Benchmarking Raw Prompts, url: /optimization/benchmarking-raw-prompts/, source: docs/src/optimization/benchmarking-raw-prompts.md, status: published }
+
+  - { section: advanced, label: Overview, url: /advanced/, source: docs/src/advanced/index.md, status: published }
+  - { section: advanced, label: Stateful Agents, url: /advanced/stateful-agents/, source: docs/src/advanced/stateful-agents.md, status: published }
+  - { section: advanced, label: Event System vs Monkey-Patching, url: /advanced/observability-interception/, source: docs/src/advanced/observability-interception.md, status: published }
+  - { section: advanced, label: Custom Toolsets, url: /advanced/custom-toolsets/, source: docs/src/advanced/custom-toolsets.md, status: published }
+  - { section: advanced, label: Pipelines, url: /advanced/pipelines/, source: docs/src/advanced/pipelines.md, status: published }
+  - { section: advanced, label: RAG, url: /advanced/rag/, source: docs/src/advanced/rag.md, status: published }
+  - { section: advanced, label: Rich Types, url: /advanced/complex-types/, source: docs/src/advanced/complex-types.md, status: published }
+  - { section: advanced, label: Rails Integration, url: /advanced/rails-integration/, source: docs/src/advanced/rails-integration.md, status: published }
+  - { section: advanced, label: Custom Metrics, url: /advanced/custom-metrics/, source: docs/src/advanced/custom-metrics.md, status: published }
+  - { section: advanced, label: Framework Comparison, url: /advanced/dspy-vs-langchain/, source: docs/src/advanced/dspy-vs-langchain.md, status: published }
+  - { section: advanced, label: Python Comparison, url: /advanced/python-comparison/, source: docs/src/advanced/python-comparison.md, status: published }
+
+  - { section: production, label: Overview, url: /production/, source: docs/src/production/index.md, status: published }
+  - { section: production, label: Storage, url: /production/storage/, source: docs/src/production/storage.md, status: published }
+  - { section: production, label: Registry, url: /production/registry/, source: docs/src/production/registry.md, status: published }
+  - { section: production, label: Observability, url: /production/observability/, source: docs/src/production/observability.md, status: published }
+  - { section: production, label: Troubleshooting, url: /production/troubleshooting/, source: docs/src/production/troubleshooting.md, status: published }

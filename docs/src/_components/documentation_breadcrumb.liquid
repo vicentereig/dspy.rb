@@ -1,0 +1,12 @@
+{% assign current_item = nil %}
+{% assign current_section = nil %}
+{% for item in docs_nav.items %}{% if item.status == "published" and current_url == item.url %}{% assign current_item = item %}{% endif %}{% endfor %}
+{% if current_item %}{% for section in docs_nav.sections %}{% if section.id == current_item.section %}{% assign current_section = section %}{% endif %}{% endfor %}
+<nav class="mb-8" aria-label="Breadcrumb" data-doc-breadcrumb>
+  <ol role="list" class="flex items-center space-x-2 text-sm">
+    <li><a href="{{ '/' | relative_url }}" aria-label="Home" class="text-gray-400 hover:text-gray-500"><span aria-hidden="true">⌂</span></a></li>
+    {% unless current_item.url == current_section.url %}<li class="flex items-center"><span class="text-gray-300">/</span><a href="{{ current_section.url | relative_url }}" class="ml-2 text-gray-500 hover:text-gray-700">{{ current_section.label }}</a></li>{% endunless %}
+    <li class="flex items-center" aria-current="page"><span class="text-gray-300">/</span><span class="ml-2 text-gray-500" data-doc-path="{{ current_item.url }}">{{ current_item.label }}</span></li>
+  </ol>
+</nav>
+{% endif %}

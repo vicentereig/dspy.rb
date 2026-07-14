@@ -2,7 +2,6 @@
 layout: docs
 title: Benchmarking Raw Prompts
 description: Compare monolithic prompts against modular DSPy implementations
-order: 6
 date: 2025-07-23 00:00:00 +0000
 last_modified_at: 2025-08-09 00:00:00 +0000
 ---

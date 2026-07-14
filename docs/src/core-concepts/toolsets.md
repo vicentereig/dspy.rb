@@ -2,18 +2,6 @@
 layout: docs
 name: Toolsets
 description: Group related typed Ruby operations for ReAct agents
-breadcrumb:
-- name: Core Concepts
-  url: "/core-concepts/"
-- name: Toolsets
-  url: "/core-concepts/toolsets/"
-nav:
-  prev:
-    name: Memory
-    url: "/advanced/stateful-agents/"
-  next:
-    name: Predictors
-    url: "/core-concepts/predictors/"
 date: 2025-07-11 00:00:00 +0000
 ---
 # Toolsets

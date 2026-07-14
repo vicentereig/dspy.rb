@@ -3,18 +3,6 @@ layout: docs
 title: "DSPy Predictors: Predict, ChainOfThought, and ReAct"
 name: Predictors
 description: "Choose Predict for one typed call, ChainOfThought for an added reasoning field, or ReAct for bounded tool use."
-breadcrumb:
-- name: Core Concepts
-  url: "/core-concepts/"
-- name: Predictors
-  url: "/core-concepts/predictors/"
-nav:
-  prev:
-    name: Toolsets
-    url: "/core-concepts/toolsets/"
-  next:
-    name: Examples
-    url: "/core-concepts/examples/"
 date: 2025-07-10 00:00:00 +0000
 last_modified_at: 2025-08-09 00:00:00 +0000
 ---

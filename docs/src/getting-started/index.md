@@ -3,13 +3,6 @@ layout: docs
 title: "DSPy.rb Tutorial: Getting Started"
 name: Getting Started
 description: "Install DSPy.rb and build a typed LLM program with Ruby."
-breadcrumb:
-- name: Getting Started
-  url: "/getting-started/"
-nav:
-  next:
-    name: Installation
-    url: "/getting-started/installation/"
 date: 2025-06-28 00:00:00 +0000
 last_modified_at: 2025-07-11 00:00:00 +0000
 ---

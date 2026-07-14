@@ -2,18 +2,6 @@
 layout: docs
 name: Registry & Versions
 description: Version management for signature configurations and deployment tracking
-breadcrumb:
-- name: Production
-  url: "/production/"
-- name: Registry
-  url: "/production/registry/"
-nav:
-  prev:
-    name: Storage
-    url: "/production/storage/"
-  next:
-    name: Observability
-    url: "/production/observability/"
 date: 2025-07-10 00:00:00 +0000
 last_modified_at: 2025-08-09 00:00:00 +0000
 ---

@@ -3,18 +3,6 @@ layout: docs
 title: "DSPy Signatures: Type-Safe LLM Interfaces in Ruby"
 name: Signatures
 description: "Declare typed inputs and outputs for DSPy.rb modules with Sorbet."
-breadcrumb:
-- name: Core Concepts
-  url: "/core-concepts/"
-- name: Signatures
-  url: "/core-concepts/signatures/"
-nav:
-  prev:
-    name: Core Concepts
-    url: "/core-concepts/"
-  next:
-    name: Modules
-    url: "/core-concepts/modules/"
 date: 2025-07-10 00:00:00 +0000
 last_modified_at: 2025-07-21 00:00:00 +0000
 ---

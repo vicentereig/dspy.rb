@@ -3,18 +3,6 @@ layout: docs
 title: "DSPy Modules: Composable LLM Components in Ruby"
 name: Modules
 description: "Build reusable LLM modules and compose them with ordinary Ruby control flow."
-breadcrumb:
-- name: Core Concepts
-  url: "/core-concepts/"
-- name: Modules
-  url: "/core-concepts/modules/"
-nav:
-  prev:
-    name: Signatures
-    url: "/core-concepts/signatures/"
-  next:
-    name: Module Runtime Context
-    url: "/core-concepts/module-runtime-context/"
 date: 2025-07-10 00:00:00 +0000
 last_modified_at: 2025-10-07 00:00:00 +0000
 ---

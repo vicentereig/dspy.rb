@@ -2,18 +2,6 @@
 layout: docs
 name: Quick Start
 description: Build your first DSPy.rb application in 5 minutes
-breadcrumb:
-- name: Getting Started
-  url: "/getting-started/"
-- name: Quick Start
-  url: "/getting-started/quick-start/"
-nav:
-  prev:
-    name: Installation
-    url: "/getting-started/installation/"
-  next:
-    name: Core Concepts
-    url: "/getting-started/core-concepts/"
 date: 2025-07-10 00:00:00 +0000
 last_modified_at: 2025-08-08 00:00:00 +0000
 ---

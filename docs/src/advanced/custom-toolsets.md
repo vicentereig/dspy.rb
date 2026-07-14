@@ -2,18 +2,6 @@
 layout: docs
 title: Custom Toolsets
 description: Group typed application operations for use by DSPy.rb agents
-breadcrumb:
-- name: Advanced
-  url: "/advanced/"
-- name: Custom Toolsets
-  url: "/advanced/custom-toolsets/"
-nav:
-  prev:
-    name: Stateful Agents
-    url: "/advanced/stateful-agents/"
-  next:
-    name: RAG
-    url: "/advanced/rag/"
 date: 2025-07-11 00:00:00 +0000
 ---
 # Custom Toolsets

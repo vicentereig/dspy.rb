@@ -3,17 +3,6 @@ layout: docs
 title: "GEPA Optimizer for Ruby — Reflective Prompt Evolution"
 name: GEPA Optimizer
 description: "Configure GEPA in Ruby with scalar scores, textual feedback, a reflection model, and a bounded evaluation budget."
-breadcrumb:
-- name: Optimization
-  url: "/optimization/"
-- name: GEPA Optimizer
-  url: "/optimization/gepa/"
-prev:
-  name: Prompt Optimization
-  url: "/optimization/prompt-optimization/"
-next:
-  name: MIPROv2 Optimizer
-  url: "/optimization/miprov2/"
 date: 2025-07-10 00:00:00 +0000
 ---
 # GEPA Optimizer

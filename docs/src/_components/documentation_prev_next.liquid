@@ -1,0 +1,14 @@
+{% assign previous_item = nil %}{% assign next_item = nil %}{% assign found_current = false %}
+{% for item in docs_nav.items %}
+  {% if item.status == "published" %}
+    {% if found_current %}{% assign next_item = item %}{% break %}
+    {% elsif current_url == item.url %}{% assign found_current = true %}
+    {% else %}{% assign previous_item = item %}{% endif %}
+  {% endif %}
+{% endfor %}
+{% if found_current or next_item %}
+<nav class="mt-12 flex items-center justify-between border-t border-gray-200 pt-6" aria-label="Documentation pages" data-doc-prev-next>
+  <div class="flex-1">{% if previous_item %}<a href="{{ previous_item.url | relative_url }}" rel="prev" data-doc-prev="{{ previous_item.url }}" class="text-sm font-medium text-gray-500 hover:text-gray-700">← {{ previous_item.label }}</a>{% endif %}</div>
+  <div class="flex-1 text-right">{% if next_item %}<a href="{{ next_item.url | relative_url }}" rel="next" data-doc-next="{{ next_item.url }}" class="text-sm font-medium text-gray-500 hover:text-gray-700">{{ next_item.label }} →</a>{% endif %}</div>
+</nav>
+{% endif %}

@@ -2,17 +2,6 @@
 layout: docs
 name: Multi-stage Pipelines
 description: Build complex workflows by composing DSPy modules
-breadcrumb:
-- name: Advanced
-  url: "/advanced/"
-- name: Multi-stage Pipelines
-  url: "/advanced/pipelines/"
-prev:
-  name: Rich Types
-  url: "/advanced/complex-types/"
-next:
-  name: Retrieval Augmented Generation
-  url: "/advanced/rag/"
 date: 2025-07-10 00:00:00 +0000
 ---
 # Multi-stage Pipelines

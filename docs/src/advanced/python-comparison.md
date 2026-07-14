@@ -2,11 +2,6 @@
 layout: docs
 name: Python DSPy Comparison
 description: Compare the programming models and current scope of DSPy and DSPy.rb
-breadcrumb:
-- name: Advanced
-  url: "/advanced/"
-- name: Python Comparison
-  url: "/advanced/python-comparison/"
 date: 2025-07-11 00:00:00 +0000
 ---
 # DSPy and DSPy.rb

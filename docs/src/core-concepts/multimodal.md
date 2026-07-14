@@ -4,8 +4,6 @@ title: Multimodal Support
 description: Process images and PDF documents with DSPy.rb's multimodal capabilities.
   Support for OpenAI, Anthropic, and Gemini vision models plus Anthropic PDF document
   inputs.
-nav_order: 7
-parent: Core Concepts
 date: 2025-08-13 00:00:00 +0000
 last_modified_at: 2026-04-01 00:00:00 +0000
 ---

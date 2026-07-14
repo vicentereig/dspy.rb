@@ -2,17 +2,6 @@
 layout: docs
 name: Evaluation Framework
 description: Evaluate DSPy.rb programs against typed examples and explicit metrics
-breadcrumb:
-- name: Optimization
-  url: "/optimization/"
-- name: Evaluation Framework
-  url: "/optimization/evaluation/"
-prev:
-  name: Optimization
-  url: "/optimization/"
-next:
-  name: Program Optimization
-  url: "/optimization/prompt-optimization/"
 date: 2025-07-10 00:00:00 +0000
 ---
 # Evaluation Framework

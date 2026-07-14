@@ -2,17 +2,6 @@
 layout: docs
 name: Custom Metrics
 description: Define domain-specific evaluation metrics
-breadcrumb:
-- name: Advanced
-  url: "/advanced/"
-- name: Custom Metrics
-  url: "/advanced/custom-metrics/"
-prev:
-  name: Retrieval Augmented Generation
-  url: "/advanced/rag/"
-next:
-  name: Production
-  url: "/production/"
 date: 2025-07-10 00:00:00 +0000
 ---
 # Custom Metrics

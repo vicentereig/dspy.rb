@@ -2,18 +2,6 @@
 layout: docs
 title: Stateful Agents
 description: Production patterns for building agents that maintain context and state
-breadcrumb:
-- name: Advanced
-  url: "/advanced/"
-- name: Stateful Agents
-  url: "/advanced/stateful-agents/"
-nav:
-  prev:
-    name: LangChain Comparison
-    url: "/advanced/dspy-vs-langchain/"
-  next:
-    name: Custom Toolsets
-    url: "/advanced/custom-toolsets/"
 date: 2025-07-11 00:00:00 +0000
 ---
 # Stateful Agents

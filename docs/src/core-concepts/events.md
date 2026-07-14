@@ -2,19 +2,6 @@
 layout: docs
 name: Event System
 description: Emit, observe, and react to runtime telemetry in DSPy.rb
-nav_order: 3
-breadcrumb:
-- name: Core Concepts
-  url: "/core-concepts/"
-- name: Event System
-  url: "/core-concepts/events/"
-nav:
-  prev:
-    name: Module Runtime Context
-    url: "/core-concepts/module-runtime-context/"
-  next:
-    name: Memory
-    url: "/advanced/stateful-agents/"
 date: 2025-10-26 00:00:00 +0000
 last_modified_at: 2025-10-26 00:00:00 +0000
 ---

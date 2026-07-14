@@ -2,17 +2,6 @@
 layout: docs
 name: Event System vs Monkey-Patching
 description: Compare the new event system with old interception approaches
-breadcrumb:
-- name: Advanced
-  url: "/advanced/"
-- name: Event System vs Monkey-Patching
-  url: "/advanced/observability-interception/"
-prev:
-  name: Stateful Agents
-  url: "/advanced/stateful-agents/"
-next:
-  name: Python Comparison
-  url: "/advanced/python-comparison/"
 date: 2025-09-03 00:00:00 +0000
 ---
 # Event System vs Monkey-Patching

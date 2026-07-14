@@ -3,7 +3,8 @@
 {% render "head", title_suffix: "DSPy.rb - Build Reliable LLM Applications in Ruby" %}
 <body class="h-full font-sans">
   <div class="bg-white">
-    {% render "header" %}
+    {% assign docs_nav = site.data.documentation_navigation %}
+    {% render "header", docs_nav: docs_nav %}
 
     <!-- Main Content -->
     <div class="px-6 pt-20 lg:px-8">
