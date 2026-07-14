@@ -477,14 +477,16 @@ Images consume tokens based on their size:
 - **OpenAI**: Varies by model and detail level
 - **Anthropic**: Approximately `(width × height) / 750` tokens
 
-Monitor your token usage when working with multiple or large images:
+Monitor your token usage when working with multiple or large images. `raw_chat` returns only the accumulated text (a `String`), not a response object with usage data — subscribe to the `llm.*` instrumentation event instead (see [Observability](/production/observability/)):
 
 ```ruby
-response = lm.raw_chat do |messages|
-  messages.user_with_image('Describe this', image)
+DSPy.events.subscribe('llm.*') do |event_name, attributes|
+  puts "Tokens used: #{attributes['gen_ai.usage.total_tokens']}"
 end
 
-puts "Tokens used: #{response.usage.total_tokens}"
+lm.raw_chat do |messages|
+  messages.user_with_image('Describe this', image)
+end
 ```
 
 ## Limitations

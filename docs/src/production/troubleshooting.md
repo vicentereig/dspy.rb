@@ -241,7 +241,7 @@ puts module.config.inspect
 ```ruby
 lm = DSPy::LM.new("openai/gpt-4")
 response = lm.raw_chat([{ role: "user", content: "Reply with OK" }])
-puts response.content
+puts response
 ```
 
 4. **Use JSON logging for production**:

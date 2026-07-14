@@ -226,13 +226,10 @@ RSpec.describe DSPy::Anthropic::LM::Adapters::AnthropicAdapter do
         block_called = false
         test_block = proc { |chunk| block_called = true }
 
+        fake_stream = double('Anthropic::Streaming::MessageStream', text: ['Hello'])
         expect(mock_messages).to receive(:stream).with(
           hash_including(output_config: { format: output_format }, stream: true)
-        ).and_yield(
-          double('Chunk',
-                 delta: double('Delta', text: 'Hello'),
-                 respond_to?: ->(method) { method == :delta })
-        )
+        ).and_return(fake_stream)
 
         result = adapter.chat(messages: messages, output_format: output_format, &test_block)
 
@@ -473,16 +470,92 @@ RSpec.describe DSPy::Anthropic::LM::Adapters::AnthropicAdapter do
       block_called = false
       test_block = proc { |chunk| block_called = true }
 
-      allow(mock_messages).to receive(:stream).and_yield(
-        double('Chunk', 
-               delta: double('Delta', text: 'Hello'),
-               respond_to?: ->(method) { method == :delta })
+      allow(mock_messages).to receive(:stream).and_return(
+        double('Anthropic::Streaming::MessageStream', text: ['Hello'])
       )
 
       result = adapter.chat(messages: messages, &test_block)
       
       expect(result.metadata).to be_a(DSPy::LM::AnthropicResponseMetadata)
       expect(result.metadata.provider).to eq('anthropic')
+    end
+
+    context 'streaming via stream.text.each (#259)' do
+      # Real Anthropic::Streaming::MessageStream#stream does not accept or
+      # yield to a block at all -- it returns an object the caller consumes
+      # via #each/#text. `and_yield`-based doubles (used above pre-fix) would
+      # pass against a mocked interface the real SDK doesn't have; these
+      # doubles only expose `text` returning an Enumerable of Strings, matching
+      # the real SDK surface, so a regression back to the block-based call
+      # would fail here even though it "compiles."
+      def fake_stream(fragments)
+        double('Anthropic::Streaming::MessageStream', text: fragments)
+      end
+
+      it 'yields each text fragment to the caller block as a plain String, in order' do
+        received = []
+        allow(mock_messages).to receive(:stream).and_return(fake_stream(['Hel', 'lo', ' world']))
+
+        adapter.chat(messages: messages) { |fragment| received << fragment }
+
+        expect(received).to eq(['Hel', 'lo', ' world'])
+        expect(received).to all(be_a(String))
+      end
+
+      it 'accumulates fragments into the final response content exactly once, in order' do
+        allow(mock_messages).to receive(:stream).and_return(fake_stream(['Hel', 'lo', ' world']))
+
+        result = adapter.chat(messages: messages) { |_fragment| }
+
+        expect(result.content).to eq('Hello world')
+      end
+
+      it 'reassembles JSON split across fragment boundaries into valid JSON' do
+        fragments = ['{"ans', 'wer": "4', '2", "done"', ': true}']
+        allow(mock_messages).to receive(:stream).and_return(fake_stream(fragments))
+
+        result = adapter.chat(messages: messages) { |_fragment| }
+
+        expect { JSON.parse(result.content) }.not_to raise_error
+        expect(JSON.parse(result.content)).to eq('answer' => '42', 'done' => true)
+      end
+
+      it 'handles an empty text stream without error, calling the block zero times' do
+        block_calls = 0
+        allow(mock_messages).to receive(:stream).and_return(fake_stream([]))
+
+        result = adapter.chat(messages: messages) { |_fragment| block_calls += 1 }
+
+        expect(result.content).to eq('')
+        expect(block_calls).to eq(0)
+      end
+
+      it 'propagates an error raised while iterating the stream as DSPy::LM::AdapterError' do
+        broken_stream = double('Anthropic::Streaming::MessageStream')
+        allow(broken_stream).to receive(:text).and_raise(StandardError, 'connection reset')
+        allow(mock_messages).to receive(:stream).and_return(broken_stream)
+
+        expect {
+          adapter.chat(messages: messages) { |_fragment| }
+        }.to raise_error(DSPy::LM::AdapterError, /connection reset/)
+      end
+
+      it 'propagates an error raised inside the caller-supplied block as DSPy::LM::AdapterError' do
+        allow(mock_messages).to receive(:stream).and_return(fake_stream(['Hello']))
+
+        expect {
+          adapter.chat(messages: messages) { |_fragment| raise 'callback exploded' }
+        }.to raise_error(DSPy::LM::AdapterError, /callback exploded/)
+      end
+
+      it 'does not call stream.text.each at all when no block is given (unchanged non-streaming behavior)' do
+        expect(mock_messages).to receive(:create).with(hash_including(temperature: 0.0)).and_return(mock_response)
+        expect(mock_messages).not_to receive(:stream)
+
+        result = adapter.chat(messages: messages)
+
+        expect(result.content).to eq('Hello back!')
+      end
     end
 
     it 'handles API errors gracefully' do

@@ -86,13 +86,17 @@ module DSPy
 
             begin
               if block_given?
+                # Anthropic::Resources::Messages#stream does not accept or
+                # yield to a block itself -- it returns a MessageStream that
+                # the caller consumes via #each/#text. Passing a `do...end`
+                # block directly to #stream (the pre-#259 approach) is
+                # silently discarded by Ruby, so the block body never runs
+                # and `content` never accumulates anything.
                 content = ""
-                @client.messages.stream(**request_params) do |chunk|
-                  if chunk.respond_to?(:delta) && chunk.delta.respond_to?(:text)
-                    chunk_text = chunk.delta.text
-                    content += chunk_text
-                    block.call(chunk)
-                  end
+                stream = @client.messages.stream(**request_params)
+                stream.text.each do |text_fragment|
+                  content += text_fragment
+                  block.call(text_fragment)
                 end
 
                 # Create typed metadata for streaming response
