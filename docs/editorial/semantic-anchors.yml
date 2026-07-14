@@ -1,0 +1,353 @@
+version: 1
+
+# Anchors protect a semantic job through restructuring. `literal-preferred`
+# asks an editor to preserve a strong line when it remains correct;
+# `semantic-required` protects only the stated contract. Source status can move
+# from present to moved, deleted, or stale without preserving obsolete copy.
+anchors:
+  - id: readme-product-promise
+    acceptance_anchor: README product promise
+    lifecycle: active
+    source: {path: README.md, locator: "# DSPy.rb", status: present, observed_excerpt: "**Program typed LLM systems in Ruby.**"}
+    semantic_job: State the product category and Ruby audience in one testable line.
+    preservation: literal-preferred
+    factual_owner: {path: README.md, locator: "# DSPy.rb"}
+    canonical_destination: {path: README.md, locator: "# DSPy.rb"}
+    successor_contract: Name typed LLM programs and Ruby without implying autonomous improvement or upstream compatibility.
+    evidence: [{path: docs/editorial/dspy-port-positioning.md, locator: "## Verdict"}]
+    duplicates:
+      - {path: docs/src/index.md, locator: "Reliable agents in Ruby", disposition: align-to-owner}
+      - {path: docs/src/llms.txt.erb, locator: "Build LLM apps like you build software", disposition: derive-or-link}
+
+  - id: readme-three-beat-contrast
+    acceptance_anchor: README three-beat contrast
+    lifecycle: active
+    source: {path: README.md, locator: "# DSPy.rb", status: present, observed_excerpt: "No hand-maintained prompt templates. No JSON parsing. No prayer-based error handling."}
+    semantic_job: Contrast the normal typed user path with hand-maintained prompt and parsing plumbing while retaining a validation boundary.
+    preservation: semantic-required
+    factual_owner: {path: README.md, locator: "# DSPy.rb"}
+    canonical_destination: {path: README.md, locator: "# DSPy.rb"}
+    successor_contract: Preserve the three-beat energy only after scoping the first two claims to the normal user path and naming validation rather than prayer.
+    evidence: [{path: docs/editorial/house-voice-samples.yml, locator: "id: readme-three-part-contrast"}]
+    duplicates:
+      - {path: docs/src/llms.txt.erb, locator: "Type-safe signatures", disposition: align-to-owner}
+
+  - id: readme-mental-model
+    acceptance_anchor: README mental model
+    lifecycle: active
+    source: {path: README.md, locator: "# DSPy.rb", status: present}
+    semantic_job: Explain signature, module, Ruby composition, bounded agent choice, provider request, and result validation in prerequisite order.
+    preservation: semantic-required
+    factual_owner: {path: README.md, locator: "# DSPy.rb"}
+    canonical_destination: {path: README.md, locator: "# DSPy.rb"}
+    successor_contract: A reader can distinguish task contract, execution strategy, deterministic Ruby composition, model-directed action choice, and runtime validation.
+    evidence:
+      - {path: docs/src/getting-started/quick-start.md, locator: "## Key Concepts"}
+      - {path: docs/src/core-concepts/predictors.md, locator: "## Predictor Comparison"}
+    duplicates:
+      - {path: docs/src/advanced/python-comparison.md, locator: "# DSPy and DSPy.rb", disposition: link-and-specialize}
+      - {path: docs/src/getting-started/quick-start.md, locator: "## Key Concepts", disposition: expand-owner-model}
+
+  - id: predictor-taxonomy
+    acceptance_anchor: predictor taxonomy
+    lifecycle: active
+    source: {path: docs/src/core-concepts/predictors.md, locator: "## Predictor Comparison", status: present}
+    semantic_job: Choose Predict for one typed call, ChainOfThought for an added reasoning field, and ReAct for bounded model-directed tool choice.
+    preservation: semantic-required
+    factual_owner: {path: docs/src/core-concepts/predictors.md, locator: "## Predictor Comparison"}
+    canonical_destination: {path: docs/src/core-concepts/predictors.md, locator: "## Predictor Comparison"}
+    successor_contract: Keep model-directed step count and best-fit decision together; do not imply ChainOfThought improves quality without evaluation.
+    evidence:
+      - {path: lib/dspy/predict.rb, locator: "class Predict < DSPy::Module"}
+      - {path: lib/dspy/re_act.rb, locator: "class ReAct < Predict"}
+    duplicates:
+      - {path: README.md, locator: "### ReAct Agents", disposition: summarize-and-link}
+      - {path: docs/src/getting-started/quick-start.md, locator: "### Modules and Agents", disposition: summarize-and-link}
+
+  - id: validation-not-correctness
+    acceptance_anchor: validation-not-correctness warning
+    lifecycle: active
+    source: {path: docs/src/_articles/json-parsing-reliability.md, locator: "Each stage catches a different failure. None guarantees that the answer is correct.", status: present}
+    semantic_job: Separate parse/type conformance from factual or task correctness.
+    preservation: semantic-required
+    factual_owner: {path: docs/src/optimization/evaluation.md, locator: "# Evaluation Framework"}
+    canonical_destination: {path: docs/src/optimization/evaluation.md, locator: "# Evaluation Framework"}
+    successor_contract: State that typed output validation constrains shape while a named metric and examples provide correctness evidence.
+    evidence: [{path: docs/src/_articles/type-safe-prediction-objects.md, locator: "## What the Boundary Does Not Do"}]
+    duplicates:
+      - {path: docs/src/getting-started/first-program.md, locator: "Typed output validation constrains", disposition: preserve-through-merge}
+      - {path: docs/src/_articles/run-llms-locally-with-ollama-and-type-safe-ruby.md, locator: "Validation rejects incompatible structure", disposition: retain-historical}
+
+  - id: ruby-versus-agent-ownership
+    acceptance_anchor: Ruby-versus-agent ownership rule
+    lifecycle: active
+    source: {path: docs/src/advanced/python-comparison.md, locator: "## DSPy.rb Scope", status: present}
+    semantic_job: Keep fixed sequencing and branches in Ruby; use an agent only for a useful bounded model choice.
+    preservation: semantic-required
+    factual_owner: {path: docs/src/getting-started/quick-start.md, locator: "### Modules and Agents"}
+    canonical_destination: {path: docs/src/getting-started/quick-start.md, locator: "### Modules and Agents"}
+    successor_contract: Give a decision rule based on who chooses the next action, not on whether a task sounds agentic.
+    evidence: [{path: docs/src/_articles/react-agent-tutorial.md, locator: "## ReAct or a workflow?"}]
+    duplicates:
+      - {path: docs/src/_articles/react-agent-tutorial.md, locator: "## ReAct or a workflow?", disposition: retain-historical-detail}
+
+  - id: feature-parity-non-goal
+    acceptance_anchor: feature-parity non-goal
+    lifecycle: active
+    source: {path: docs/src/advanced/python-comparison.md, locator: "## Porting a Program", status: present, observed_excerpt: "Feature parity is not the target. The useful test is whether the Ruby program exposes the same task boundary and meets the same evaluated behavior."}
+    semantic_job: Prevent port language from promising API or feature parity with Python DSPy.
+    preservation: literal-preferred
+    factual_owner: {path: docs/src/advanced/python-comparison.md, locator: "## Porting a Program"}
+    canonical_destination: {path: docs/src/advanced/python-comparison.md, locator: "## Porting a Program"}
+    successor_contract: Judge a port by preserved task boundary and evaluated behavior, not identical APIs or module lists.
+    evidence: [{path: docs/editorial/dspy-port-positioning.md, locator: "## Verdict"}]
+    duplicates:
+      - {path: README.md, locator: "DSPy.rb brings [DSPy](https://dspy.ai)'s signature, module, agent, and optimizer model to Ruby", disposition: align-positioning}
+
+  - id: evaluation-limits
+    acceptance_anchor: evaluation limits
+    lifecycle: active
+    source: {path: docs/src/optimization/evaluation.md, locator: "# Evaluation Framework", status: present}
+    semantic_job: Limit an evaluation result to the behavior named by its metric and selected examples.
+    preservation: semantic-required
+    factual_owner: {path: docs/src/optimization/evaluation.md, locator: "# Evaluation Framework"}
+    canonical_destination: {path: docs/src/optimization/evaluation.md, locator: "# Evaluation Framework"}
+    successor_contract: Name examples and metric as evidence scope; never turn a score into a general correctness or deployment guarantee.
+    evidence: [{path: docs/src/_articles/evaluating-llm-applications.md, locator: "## The Evaluation Contract"}]
+    duplicates:
+      - {path: docs/src/optimization/prompt-optimization.md, locator: "# Program Optimization", disposition: specialize-for-optimization}
+
+  - id: anti-overfitting
+    acceptance_anchor: anti-overfitting guidance
+    lifecycle: active
+    source: {path: docs/src/optimization/prompt-optimization.md, locator: "## Measure a Baseline", status: present}
+    semantic_job: Reserve a held-out test set because candidate selection adapts to validation data.
+    preservation: semantic-required
+    factual_owner: {path: docs/src/optimization/evaluation.md, locator: "## Evaluate an Optimized Program"}
+    canonical_destination: {path: docs/src/optimization/evaluation.md, locator: "## Evaluate an Optimized Program"}
+    successor_contract: Require final baseline-versus-candidate comparison on held-out examples not used for candidate selection.
+    evidence:
+      - {path: docs/src/optimization/gepa.md, locator: "held-out test set"}
+      - {path: docs/src/optimization/miprov2.md, locator: "Hold back a test set"}
+    duplicates:
+      - {path: docs/src/optimization/gepa.md, locator: "held-out test set", disposition: retain-optimizer-specific}
+      - {path: docs/src/optimization/miprov2.md, locator: "Hold back a test set", disposition: retain-optimizer-specific}
+
+  - id: agent-side-effect-boundary
+    acceptance_anchor: agent side-effect boundary
+    lifecycle: active
+    source: {path: docs/src/_articles/react-agent-tutorial.md, locator: "## Put tools behind real boundaries", status: present}
+    semantic_job: Assign action choice to the model and tool authority, permissions, iteration limits, and side effects to the application.
+    preservation: semantic-required
+    factual_owner: {path: docs/src/getting-started/quick-start.md, locator: "### Give an Agent a Typed Tool"}
+    canonical_destination: {path: docs/src/getting-started/quick-start.md, locator: "### Give an Agent a Typed Tool"}
+    successor_contract: A tool example must state that the application owns implementation, side effects, permissions, errors, and loop bounds.
+    evidence:
+      - {path: lib/dspy/re_act.rb, locator: "class ReAct < Predict"}
+      - {path: lib/dspy/tools/base.rb, locator: "class Base"}
+    duplicates:
+      - {path: docs/src/_articles/codeact-research-agent.md, locator: "## Isolation is part of the harness", disposition: retain-stronger-codeact-boundary}
+
+  - id: troubleshooting-decision-rule
+    acceptance_anchor: troubleshooting decision rule
+    lifecycle: active
+    source: {path: docs/src/production/troubleshooting.md, locator: "## Performance Issues", status: present}
+    semantic_job: Verify the observed layer before changing execution strategy; choose fixes by measured quality and explicit application boundaries.
+    preservation: semantic-required
+    factual_owner: {path: docs/src/production/troubleshooting.md, locator: "## Performance Issues"}
+    canonical_destination: {path: docs/src/production/troubleshooting.md, locator: "## Performance Issues"}
+    successor_contract: Troubleshooting entries identify symptom, likely owning layer, verification, then bounded correction; they do not jump from symptom to generic retry or concurrency advice.
+    evidence: [{path: docs/src/_articles/dspy-async-sidekiq-integration.md, locator: "## Failure and retry boundaries"}]
+    duplicates: []
+
+  - id: optimizer-evidence-boundary
+    acceptance_anchor: additional corpus anchor
+    lifecycle: active
+    source: {path: docs/src/optimization/prompt-optimization.md, locator: "## Operational Limits", status: present}
+    semantic_job: Bound optimization by dataset, metric, budget, supported parameters, and changed-environment re-evaluation.
+    preservation: semantic-required
+    factual_owner: {path: docs/src/optimization/prompt-optimization.md, locator: "## Operational Limits"}
+    canonical_destination: {path: docs/src/optimization/prompt-optimization.md, locator: "## Operational Limits"}
+    successor_contract: Optimization improves the supplied objective within a budget; it does not choose the product objective or make tools safe.
+    evidence:
+      - {path: docs/src/optimization/gepa.md, locator: "Hard budget on how many evaluation calls GEPA can spend."}
+      - {path: docs/src/optimization/miprov2.md, locator: "You provide a typed program, examples, a metric, and a budget."}
+    duplicates: []
+
+  - id: application-state-ownership
+    acceptance_anchor: additional corpus anchor
+    lifecycle: active
+    source: {path: docs/src/production/troubleshooting.md, locator: "## Application State Issues", status: present}
+    semantic_job: Keep memory, retention, compaction, and durable state in application-owned storage.
+    preservation: semantic-required
+    factual_owner: {path: docs/src/production/troubleshooting.md, locator: "## Application State Issues"}
+    canonical_destination: {path: docs/src/production/troubleshooting.md, locator: "## Application State Issues"}
+    successor_contract: DSPy.rb receives relevant state as typed input; it does not become the application's memory store.
+    evidence: [{path: docs/src/advanced/stateful-agents.md, locator: "### 2. Persistent Agent with Custom Storage"}]
+    duplicates: []
+
+  - id: trace-not-correctness
+    acceptance_anchor: additional corpus anchor
+    lifecycle: active
+    source: {path: docs/src/_articles/observability-in-action-langfuse.md, locator: "## What the Trace Shows", status: present}
+    semantic_job: Separate execution evidence from evaluation evidence.
+    preservation: semantic-required
+    factual_owner: {path: docs/src/production/observability.md, locator: "# Observability"}
+    canonical_destination: {path: docs/src/production/observability.md, locator: "# Observability"}
+    successor_contract: Traces answer what ran; scores and reviewed examples address whether behavior met a criterion.
+    evidence: [{path: docs/src/optimization/evaluation.md, locator: "## Metric Design"}]
+    duplicates: []
+
+  - id: codeact-isolation
+    acceptance_anchor: additional corpus anchor
+    lifecycle: active
+    source: {path: docs/src/_articles/codeact-research-agent.md, locator: "## Isolation is part of the harness", status: present}
+    semantic_job: Prevent in-process eval from being presented as a production sandbox.
+    preservation: semantic-required
+    factual_owner: {path: lib/dspy/code_act/README.md, locator: "## Safety Checklist"}
+    canonical_destination: {path: lib/dspy/code_act/README.md, locator: "## Safety Checklist"}
+    successor_contract: Name current in-process evaluation and require process or container isolation before untrusted or multi-tenant use.
+    evidence: [{path: lib/dspy/code_act/README.md, locator: "## Safety Checklist"}]
+    duplicates:
+      - {path: docs/src/_articles/codeact-dynamic-code-generation.md, locator: "CodeAct documentation moved", disposition: redirect-and-retire-copy}
+
+  - id: provider-capability-boundary
+    acceptance_anchor: additional corpus anchor
+    lifecycle: active
+    source: {path: docs/src/production/troubleshooting.md, locator: "## JSON Parsing Issues", status: present, observed_excerpt: "Provider capabilities vary by model and SDK version. A provider prefix alone does not establish native schema support."}
+    semantic_job: Make structured-output support a model-and-SDK capability, not a provider-prefix promise.
+    preservation: literal-preferred
+    factual_owner: {path: docs/src/production/troubleshooting.md, locator: "## JSON Parsing Issues"}
+    canonical_destination: {path: docs/src/production/troubleshooting.md, locator: "## JSON Parsing Issues"}
+    successor_contract: Tell readers to verify the selected model and SDK version before enabling native schema parameters.
+    evidence:
+      - {path: lib/dspy/lm/json_strategy.rb, locator: "DSPy::OpenAI::LM::SchemaConverter.supports_structured_outputs?(adapter.model)"}
+      - {path: lib/dspy/openai/lm/schema_converter.rb, locator: "class SchemaConverter"}
+    duplicates: []
+
+# Every house-voice calibration input receives an explicit migration decision.
+# These are semantic dispositions, not instructions to edit the corpus here.
+voice_dispositions:
+  - {sample_id: structured-output-boundary, lifecycle: active, disposition: retain, reason: Mechanism and correctness boundary are adjacent.}
+  - {sample_id: toon-activation, lifecycle: active, disposition: retain, reason: Trigger and T::Struct/T::Enum mixin behavior are scoped; installation remains manual.}
+  - {sample_id: existing-rubyllm-configuration, lifecycle: active, disposition: rewrite, reason: Add the api_key base_url timeout and max_retries override boundary.}
+  - {sample_id: mvc-headline, lifecycle: active, disposition: retain, reason: Durable title-only rhetorical exception is recorded in the calibration file.}
+  - {sample_id: mvc-programming-aphorism-deck, lifecycle: active, disposition: rewrite, reason: Replace the universal maxim with the article's contracts tests traces and evaluation mechanisms.}
+  - {sample_id: mvc-programming-aphorism-body, lifecycle: active, disposition: rewrite, reason: Resolve the independent body occurrence as well as the deck.}
+  - {sample_id: model-writes-tools-headline, lifecycle: active, disposition: retain, reason: Durable title-only exception is bounded by generated Ruby and isolation evidence.}
+  - {sample_id: types-and-descriptions, lifecycle: active, disposition: retain, reason: Adjacent examples earn the schema-versus-semantics compression.}
+  - {sample_id: readme-three-part-contrast, lifecycle: active, disposition: rewrite, reason: Preserve the rhythm while scoping absolutes and naming validation.}
+  - {sample_id: production-ready-reference, lifecycle: active, disposition: delete, reason: Three features do not establish application production readiness.}
+  - {sample_id: zero-config-langfuse, lifecycle: active, disposition: rewrite, reason: Name environment-driven auto-configuration and its dependency and network preconditions.}
+  - {sample_id: automatic-optimization, lifecycle: active, disposition: rewrite, reason: Name optimizer examples metric and execution budget.}
+  - {sample_id: self-improving-tagline, lifecycle: active, disposition: delete, reason: General self-improvement is not a current product behavior.}
+  - {sample_id: stanford-port-description, lifecycle: active, disposition: rewrite, reason: Preserve DSPy lineage with the approved independent Ruby-native positioning.}
+
+# Candidates found during the corpus anchor pass that are not calibration rows.
+# `present` checks the exact text. A resolved candidate must name the resolving
+# change and leave the observed wording absent.
+aphorism_candidates:
+  - id: mvc-plain-boring-engineering
+    source: docs/src/_articles/ai-needs-its-mvc-moment.md
+    locator: "Because that's what type systems do. Just plain and boring engineering."
+    status: present
+    lifecycle: active
+    disposition: rewrite
+    reason: Replace the flourish with the concrete rejection boundary; runtime conversion does not establish correctness.
+  - id: mvc-real-software-closing
+    source: docs/src/_articles/ai-needs-its-mvc-moment.md
+    locator: "See what changes when you treat LLM code like real software."
+    status: present
+    lifecycle: active
+    disposition: delete
+    reason: The preceding action list already names the useful decision; real software adds an untestable status claim.
+
+# Repeated generated-reference copy is adjudicated per physical occurrence so
+# fixing one template cannot leave its twin behind.
+copy_occurrences:
+  - id: llms-index-build-like-software
+    source: docs/src/llms.txt.erb
+    locator: "> Build LLM apps like you build software. Type-safe, modular, testable."
+    status: present
+    lifecycle: active
+    disposition: rewrite
+    reason: Replace the generic software simile with the scoped typed-program product promise and its validation boundary.
+  - id: llms-full-build-like-software
+    source: docs/src/llms-full.txt.erb
+    locator: "> Build LLM apps like you build software. Type-safe, modular, testable."
+    status: present
+    lifecycle: active
+    disposition: rewrite
+    reason: Keep the full reference aligned with the concise reference and canonical README promise.
+  - id: llms-index-production-ready
+    source: docs/src/llms.txt.erb
+    locator: "- **Production-ready** - Built-in observability, testing, and error handling"
+    voice_sample: production-ready-reference
+    status: present
+    lifecycle: active
+    disposition: delete
+    reason: Available features do not establish application production readiness.
+  - id: llms-full-production-ready
+    source: docs/src/llms-full.txt.erb
+    locator: "- **Production-ready** - Built-in observability, testing, and error handling"
+    voice_sample: production-ready-reference
+    status: present
+    lifecycle: active
+    disposition: delete
+    reason: Delete the twin guarantee from the complete reference as well.
+  - id: llms-index-automatic-optimization
+    source: docs/src/llms.txt.erb
+    locator: "- **Automatic optimization** - Use data to improve prompts, not guesswork"
+    voice_sample: automatic-optimization
+    status: present
+    lifecycle: active
+    disposition: rewrite
+    reason: Name the optimizer, examples, metric, and execution budget.
+  - id: llms-full-automatic-optimization
+    source: docs/src/llms-full.txt.erb
+    locator: "- **Automatic optimization** - Use data to improve prompts, not guesswork"
+    voice_sample: automatic-optimization
+    status: present
+    lifecycle: active
+    disposition: rewrite
+    reason: Rewrite the twin occurrence with the same mechanism and boundary.
+
+# Data files are outside the Markdown/ERB corpus by design. This bounded list
+# records data that publishes reader-facing copy and ties each claim to its
+# editorial adjudication without classifying every YAML file as documentation.
+public_copy_sources:
+  - path: docs/src/_data/site_metadata.yml
+    format: yaml
+    scope: Site title, tagline, description, author, canonical host, and social-card metadata; only tagline and description contain product claims.
+    claims:
+      - locator: "tagline: The Ruby Framework for Self-Improving Language Model Programs"
+        voice_sample: self-improving-tagline
+        status: present
+        lifecycle: active
+        disposition: delete
+        reason: General self-improvement is not a current framework behavior.
+      - locator: "description: Build self-improving AI systems with DSPy.rb - a Ruby implementation of Stanford's DSPy framework for programming with language models."
+        voice_sample: stanford-port-description
+        status: present
+        lifecycle: active
+        disposition: rewrite
+        reason: Preserve project description and DSPy lineage with the approved Ruby-native programming-model wording.
+
+# Each public/history source selected by the corpus manifest must match exactly
+# one consideration rule. Anchor ids document where a group produced a ledger
+# entry; an empty list records a completed scan, not an omission.
+corpus_consideration:
+  - {id: root-readme, path: README.md, result: anchors-recorded, anchors: [readme-product-promise, readme-three-beat-contrast, readme-mental-model]}
+  - {id: changelog, path: CHANGELOG.md, result: history-reviewed, anchors: []}
+  - {id: docs-home, path: docs/src/index.md, result: duplicate-reviewed, anchors: [readme-product-promise]}
+  - {id: getting-started, glob: docs/src/getting-started/*.md, result: anchors-recorded, anchors: [ruby-versus-agent-ownership, agent-side-effect-boundary, validation-not-correctness]}
+  - {id: core-concepts, glob: docs/src/core-concepts/*.md, result: anchors-recorded, anchors: [predictor-taxonomy]}
+  - {id: advanced, glob: docs/src/advanced/*.md, result: anchors-recorded, anchors: [feature-parity-non-goal, application-state-ownership]}
+  - {id: optimization, glob: docs/src/optimization/*.md, result: anchors-recorded, anchors: [evaluation-limits, anti-overfitting, optimizer-evidence-boundary]}
+  - {id: production, glob: docs/src/production/*.md, result: anchors-recorded, anchors: [troubleshooting-decision-rule, application-state-ownership, provider-capability-boundary, trace-not-correctness]}
+  - {id: blog-index, path: docs/src/blog/index.md, result: history-reviewed, anchors: []}
+  - {id: articles, glob: docs/src/_articles/*.md, result: history-calibrated, anchors: [validation-not-correctness, ruby-versus-agent-ownership, agent-side-effect-boundary, trace-not-correctness, codeact-isolation]}
+  - {id: llms-references, glob: docs/src/llms*.erb, result: generated-reference-reviewed, anchors: [readme-product-promise, readme-three-beat-contrast]}
+  - {id: examples-index, path: examples/README.md, result: runnable-surface-reviewed, anchors: []}
+  - {id: example-readmes, glob: examples/**/README.md, except: [examples/README.md], result: runnable-surface-reviewed, anchors: []}
+  - {id: package-readmes, glob: lib/**/README.md, result: package-surface-reviewed, anchors: [codeact-isolation]}
