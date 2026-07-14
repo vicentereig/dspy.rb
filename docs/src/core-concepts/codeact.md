@@ -10,6 +10,8 @@ last_modified_at: 2025-10-07 00:00:00 +0000
 
 CodeAct is now packaged as the [`dspy-code_act`](https://github.com/vicentereig/dspy.rb/tree/main/lib/dspy/code_act) gem. The module no longer ships with the core `dspy` gem and has its own documentation bundle.
 
+The [package and capability matrix](/dspy.rb/getting-started/packages/) records its loading and support status. CodeAct still requires an application-owned execution boundary.
+
 - Install with `gem 'dspy-code_act', '~> 1.0'` alongside `dspy`.
 - Review usage, safety guidelines, and advanced examples in `lib/dspy/code_act/README.md`.
 - GitHub Actions run the CodeAct specs separately from the DSPy core suite.

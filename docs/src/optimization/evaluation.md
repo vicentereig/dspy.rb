@@ -6,6 +6,8 @@ date: 2025-07-10 00:00:00 +0000
 ---
 # Evaluation Framework
 
+The [package and capability matrix](/dspy.rb/getting-started/packages/) records how the `dspy-evals` and `dspy-datasets` packages relate to the evaluation runtime shipped by core.
+
 `DSPy::Evals` runs a program against `DSPy::Example` objects and applies a metric to each prediction. Evaluation measures the behavior named by that metric; typed output validation alone does not establish correctness.
 
 ## Define Examples

@@ -13,6 +13,8 @@ Build a typed prediction, compose modules with Ruby, then add a tool-using agent
 
 Add DSPy.rb and the OpenAI adapter to your Gemfile:
 
+The [package and capability matrix](/dspy.rb/getting-started/packages/) owns package status, require behavior, and model/SDK boundaries.
+
 ```ruby
 gem 'dspy'
 gem 'dspy-openai'

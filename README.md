@@ -44,10 +44,9 @@ No hand-maintained prompt templates. No JSON parsing. No prayer-based error hand
 # Gemfile
 gem 'dspy'
 gem 'dspy-openai'     # For OpenAI, OpenRouter, or Ollama
-# gem 'dspy-anthropic' # For Claude
-# gem 'dspy-gemini'    # For Gemini
-# gem 'dspy-ruby_llm'  # For 12+ providers via RubyLLM
 ```
+
+Choose other provider and optional gems from the [package and capability matrix](https://oss.vicente.services/dspy.rb/getting-started/packages/). The matrix separates install availability from provider, model, and SDK limitations.
 
 ```bash
 bundle install
@@ -84,7 +83,7 @@ DSPy.configure do |c|
   c.lm = DSPy::LM.new('ollama/llama3.2')
 end
 
-# OpenRouter (200+ models)
+# OpenRouter
 DSPy.configure do |c|
   c.lm = DSPy::LM.new('openrouter/deepseek/deepseek-chat-v3.1:free',
                       api_key: ENV['OPENROUTER_API_KEY'])
@@ -201,19 +200,7 @@ bundle exec ruby examples/basic_search_agent.rb
 
 ## Optional Gems
 
-Optional features with heavier dependencies ship as separate gems:
-
-| Gem | What it does |
-| --- | --- |
-| `dspy-datasets` | Dataset helpers, Parquet/Polars tooling |
-| `dspy-evals` | Evaluation harness with metrics and callbacks |
-| `dspy-miprov2` | Bayesian optimization for prompt tuning |
-| `dspy-gepa` | Genetic-Pareto prompt evolution |
-| `dspy-o11y-langfuse` | Auto-configure Langfuse tracing |
-| `dspy-code_act` | Think-Code-Observe agents |
-| `dspy-deep_search` | Production DeepSearch with Exa |
-
-See [the full list](https://oss.vicente.services/dspy.rb/getting-started/installation/) in the docs.
+Provider adapters, optimizers, observability exporters, datasets, and code-executing agents can add their own dependencies. Use the [authoritative package matrix](https://oss.vicente.services/dspy.rb/getting-started/packages/) for exact gem names, require behavior, support labels, and capability boundaries.
 
 ## Contributing
 

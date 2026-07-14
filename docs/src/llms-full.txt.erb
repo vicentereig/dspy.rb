@@ -38,33 +38,15 @@ DSPy.rb is a Ruby framework for building language model applications with progra
 
 ### Key Features
 
-- **Provider Support**: OpenAI, Anthropic, Google Gemini, Ollama (via OpenAI compatibility)
 - **Type Safety**: Sorbet integration throughout
-- **Automatic JSON Extraction**: Provider-optimized strategies
 - **Composable Modules**: Chain, compose, and reuse
-- **Multimodal Support**: Text and image inputs with vision models via raw chat (signature wiring planned)
 - **Agent Systems**: ReAct (core), CodeAct (`dspy-code_act`), and custom agents
 - **Memory & State**: Persistent memory for stateful applications
 - **Observability**: Automatic APM integration, token tracking, performance monitoring
 
-### Provider Compatibility
+### Provider boundary
 
-| Feature | OpenAI | Anthropic | Gemini | Ollama |
-|---------|--------|-----------|--------|--------|
-| Text Generation | ✅ | ✅ | ✅ | ✅ |
-| Structured Output | ✅ | ✅ | ✅ | ✅ |
-| Vision (Raw Chat) | ✅ | ✅ | ✅ | ❌ |
-| Vision (Signatures)  | ✅ | ✅ | ✅ | ❌ |
-| Image URLs | ✅ | ❌ | ❌ | ❌ |
-| Image Base64 | ✅ | ✅ | ✅ | ❌ |
-| Tool Calling |  ✅ | ✅ | ✅ | Varies |
-
-### Current Limitations
-
-- **Streaming**: Supported via block streaming on OpenAI, Anthropic, and Gemini adapters; modules return concatenated content only (no token-by-token callbacks).
-- **Image URLs**: Only OpenAI supports direct URL references.
-- **Local Models**: Limited multimodal support through Ollama.
-- **Batch Processing**: Single request processing only.
+<%== site.data.package_capabilities["provider_policy"]["availability"] %> <%== site.data.package_capabilities["provider_policy"]["capability"] %> <%== site.data.package_capabilities["provider_policy"]["verification"] %>
 
 ## Installation & Setup
 
@@ -87,23 +69,15 @@ Then run:
 bundle install
 ```
 
-### Provider Adapter Gems
+### Packages and capability boundaries
 
-Add the adapter gems that match the providers you call so DSPy only pulls the SDKs you actually use:
+The canonical [package and capability matrix](https://oss.vicente.services/dspy.rb/getting-started/packages/) is generated from `docs/src/_data/package_capabilities.yml`:
 
-```ruby
-# Gemfile
-gem 'dspy'
-gem 'dspy-openai'    # OpenAI, OpenRouter, Ollama
-gem 'dspy-anthropic' # Claude
-gem 'dspy-gemini'    # Gemini
-```
+<% site.data.package_capabilities["packages"].select { _1["visibility"] == "public" }.each do |package| %>
+- `<%== package["gem"] %>` — <%== package["capabilities"] %> Require `<%== package["require_path"] %>`. Boundary: <%== package["limitations"] %>
+<% end %>
 
-Each adapter gem already depends on the official SDK (`openai`, `anthropic`, `gemini-ai`), so you don’t need to add those manually. DSPy auto-loads adapters when the gem is present—no extra `require` needed. See the adapter READMEs for details:
-
-- [OpenAI / OpenRouter / Ollama adapters](https://github.com/vicentereig/dspy.rb/blob/main/lib/dspy/openai/README.md)
-- [Anthropic adapters](https://github.com/vicentereig/dspy.rb/blob/main/lib/dspy/anthropic/README.md)
-- [Gemini adapters](https://github.com/vicentereig/dspy.rb/blob/main/lib/dspy/gemini/README.md)
+`DSPY_WITH_*` flags select local gemspecs only for monorepo development. Application users install the named packages. Package availability does not imply uniform model or provider capability.
 
 ### Basic Configuration
 
@@ -1685,9 +1659,9 @@ puts "Optimization completed #{result.history.length} trials"
 
 Add the optional gems:
 ```ruby
-gem 'dspy'
-gem 'dspy-o11y'
-gem 'dspy-o11y-langfuse'
+<% site.data.package_capabilities["packages"].select { _1["visibility"] == "public" && (["dspy"] + %w[dspy-o11y dspy-o11y-langfuse]).include?(_1["gem"]) }.each do |package| %>
+gem '<%== package["gem"] %>'
+<% end %>
 ```
 
 Langfuse integration also requires these environment variables:

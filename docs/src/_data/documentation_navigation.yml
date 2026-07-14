@@ -24,6 +24,7 @@ sections:
 items:
   - { section: getting-started, label: Overview, url: /getting-started/, source: docs/src/getting-started/index.md, status: published }
   - { section: getting-started, label: Installation, url: /getting-started/installation/, source: docs/src/getting-started/installation.md, status: published }
+  - { section: getting-started, label: Packages, url: /getting-started/packages/, source: docs/src/getting-started/packages.md, status: published }
   - { section: getting-started, label: Quick Start, url: /getting-started/quick-start/, source: docs/src/getting-started/quick-start.md, status: published }
   - { section: getting-started, label: First Program, url: /getting-started/first-program/, source: docs/src/getting-started/first-program.md, status: published }
   - { section: getting-started, label: Core Concepts, url: /getting-started/core-concepts/, source: docs/src/getting-started/core-concepts.md, status: published }

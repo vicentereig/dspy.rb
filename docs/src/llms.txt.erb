@@ -17,6 +17,16 @@ DSPy.rb is a Ruby framework for building language model applications with progra
 - **Automatic optimization** - Use data to improve prompts, not guesswork
 - **Production-ready** - Built-in observability, testing, and error handling
 
+## Packages and capability boundaries
+
+The canonical [package and capability matrix](https://oss.vicente.services/dspy.rb/getting-started/packages/) separates install availability from support status and model-specific behavior. It is generated from `docs/src/_data/package_capabilities.yml`.
+
+<% site.data.package_capabilities["packages"].select { _1["visibility"] == "public" }.each do |package| %>
+- `<%== package["gem"] %>` — <%== package["role"] %>; <%== package["support_status"] %>; require `<%== package["require_path"] %>`
+<% end %>
+
+`DSPY_WITH_*` flags select local gemspecs only when developing this monorepo. Application users install the named gem. Provider capabilities still vary by adapter, model, endpoint, and SDK version. `dspy-code_act` executes generated Ruby and does not provide a sandbox.
+
 ## Core Concepts
 
 ### 1. Signatures
@@ -228,23 +238,13 @@ puts result.sentiment  # => "positive"
 puts result.score      # => 0.92
 ```
 
-## Provider Adapter Gems
+## Provider packages
 
-Add the adapter gems that match the providers you call so DSPy can load the right SDKs without bloating your bundle:
+Choose from the canonical [package and capability matrix](https://oss.vicente.services/dspy.rb/getting-started/packages/). The provider rows below are derived from that matrix:
 
-```ruby
-# Gemfile
-gem 'dspy'
-gem 'dspy-openai'    # OpenAI, OpenRouter, Ollama
-gem 'dspy-anthropic' # Claude
-gem 'dspy-gemini'    # Gemini
-```
-
-Each adapter gem already pulls in the official SDK (`openai`, `anthropic`, `gemini-ai`), so you don’t need to add those manually. DSPy auto-loads the adapters when the gem is present—no extra `require` needed. Adapter documentation lives alongside the code:
-
-- [OpenAI / OpenRouter / Ollama adapters](https://github.com/vicentereig/dspy.rb/blob/main/lib/dspy/openai/README.md)
-- [Anthropic adapters](https://github.com/vicentereig/dspy.rb/blob/main/lib/dspy/anthropic/README.md)
-- [Gemini adapters](https://github.com/vicentereig/dspy.rb/blob/main/lib/dspy/gemini/README.md)
+<% site.data.package_capabilities["packages"].select { _1["visibility"] == "public" && _1["role"] == "provider-adapter" }.each do |package| %>
+- `<%== package["gem"] %>` — prefixes: <%== package.fetch("provider_prefixes").join(", ") %>. Boundary: <%== package["limitations"] %>
+<% end %>
 
 ## Evaluation & Metrics
 
@@ -359,14 +359,16 @@ end
 ```
 
 ### Observability
-- Langfuse integration available when `dspy-o11y` + `dspy-o11y-langfuse` gems are installed and env vars are set
+<% site.data.package_capabilities["packages"].select { _1["visibility"] == "public" && _1["gem"].start_with?("dspy-o11y") }.each do |package| %>
+- `<%== package["gem"] %>` — <%== package["capabilities"] %>
+<% end %>
 - Structured logging with span tracking
 - Token usage tracking
 - Performance monitoring
 - Score reporting with `DSPy.score()` API for Langfuse integration
 - Built-in evaluators: exact_match, contains, regex_match, similarity, json_valid
 
-> Install `dspy-o11y` plus `dspy-o11y-langfuse` (and set `DSPY_WITH_O11Y=1 DSPY_WITH_O11Y_LANGFUSE=1` inside this repo) to enable the optional observability stack.
+> Installation and monorepo-development flags are defined by the [package and capability matrix](https://oss.vicente.services/dspy.rb/getting-started/packages/).
 
 ### Testing
 - RSpec integration

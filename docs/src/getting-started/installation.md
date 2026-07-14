@@ -27,35 +27,23 @@ For bleeding-edge features, you can install from GitHub:
 gem 'dspy', github: 'vicentereig/dspy.rb'
 ```
 
-## Required Dependencies
+## Dependencies and optional packages
 
-DSPy.rb requires Ruby 3.3+ and automatically installs these core dependencies:
+DSPy.rb requires Ruby 3.3 or newer. Bundler resolves the core runtime and schema dependencies declared by the gemspec. Provider SDKs, optimizers, exporters, and other optional features may require separate gems.
 
-- **Core**: dry-configurable (~> 1.0), dry-logger (~> 1.0), async (~> 2.29), concurrent-ruby (~> 1.3)
-- **Sorbet integration**: sorbet-runtime (~> 0.5), sorbet-schema (~> 0.3), sorbet-baml (~> 0.5), sorbet-toon (~> 0.1)
-- **Schema**: dspy-schema (~> 1.0.0)
-
-LLM provider SDKs are **not** included in the core gem. Add the adapter gems you need (see below).
+Use the [package and capability matrix](/dspy.rb/getting-started/packages/) for the complete inventory, exact require behavior, and dependency boundaries.
 
 ## Provider Adapter Gems
 
-Provider SDKs ship in separate adapter gems. Add the adapters that match the `DSPy::LM` providers you call:
+Provider SDKs ship in separate adapter gems. For example, add the OpenAI adapter for `openai/*`, `openrouter/*`, or `ollama/*` model identifiers:
 
 ```ruby
 # Gemfile
 gem 'dspy'           # core framework
 gem 'dspy-openai'    # OpenAI, OpenRouter, or Ollama adapters
-gem 'dspy-anthropic' # Claude adapters
-gem 'dspy-gemini'    # Gemini adapters
-gem 'dspy-ruby_llm'  # RubyLLM unified adapter (12+ providers)
 ```
 
-Each adapter gem already depends on the official SDK (`openai`, `anthropic`, `gemini-ai`, `ruby_llm`), so you don't need to add those manually. DSPy auto-loads the adapters when the gem is present—no extra `require` needed. Read the adapter guides for the specifics:
-
-- [OpenAI / OpenRouter / Ollama adapters](https://github.com/vicentereig/dspy.rb/blob/main/lib/dspy/openai/README.md)
-- [Anthropic adapters](https://github.com/vicentereig/dspy.rb/blob/main/lib/dspy/anthropic/README.md)
-- [Gemini adapters](https://github.com/vicentereig/dspy.rb/blob/main/lib/dspy/gemini/README.md)
-- [RubyLLM unified adapter](https://github.com/vicentereig/dspy.rb/blob/main/lib/dspy/ruby_llm/README.md) (OpenAI, Anthropic, Gemini, Bedrock, VertexAI, DeepSeek, Mistral, Ollama, and more)
+The adapter gem declares its SDK dependency, and `DSPy::LM` loads the adapter from the model prefix. Choose Anthropic, Gemini, RubyLLM, and other packages from the [canonical matrix](/dspy.rb/getting-started/packages/). Provider and model capabilities still vary after a package is installed.
 
 ## Observability
 
@@ -220,7 +208,7 @@ end
 
 ### RubyLLM Setup (Unified Multi-Provider)
 
-[RubyLLM](https://rubyllm.com) provides unified access to 12+ providers through a single lightweight adapter.
+[RubyLLM](https://rubyllm.com) supplies model-registry lookup and provider clients through one adapter. Available providers and capabilities vary with RubyLLM's current registry, the selected model and provider, and the installed SDK version.
 
 1. Add to your Gemfile:
    ```ruby
@@ -262,7 +250,7 @@ end
    end
    ```
 
-**Supported providers**: OpenAI, Anthropic, Gemini, AWS Bedrock, VertexAI, Ollama, OpenRouter, DeepSeek, Mistral, Perplexity, GPUStack.
+Consult RubyLLM's current registry and provider documentation for availability, authentication, and model capability. An explicit `provider:` override changes routing; it does not establish that the selected model supports schemas, media, tools, or streaming.
 
 ### Structured Outputs Support
 

@@ -1,5 +1,7 @@
 # Sorbet::Toon (alpha)
 
+See the [DSPy.rb package and capability matrix](https://oss.vicente.services/dspy.rb/getting-started/packages/) for canonical package status and overlap boundaries.
+
 Sorbet::Toon brings the official [TOON data format](https://github.com/toon-format/toon) to Ruby. It lets DSPy.rb—and any Sorbet-powered code—render compact prompt contracts and parse LLM responses using the same `DSPy::Signature` metadata that already powers JSON/BAML. Think of it as “typed Markdown tables for LLMs”: humans stay oriented, tokens stay low, and structs survive the round-trip.
 
 > **Status:** Codec + normalization + reconstruction + TOON mixins are merged. DSPy adapter + docs/tools are landing now; expect sharp edges until v0.1.0.

@@ -51,6 +51,16 @@ rules:
     target_section: Start
     route: /getting-started/installation/
     url_disposition: keep-site-url
+  - id: getting-started-packages
+    kind: public
+    path: docs/src/getting-started/packages.md
+    audience: Ruby developer choosing provider and optional gems
+    outcome: Install the exact package required without treating package availability as a model capability promise.
+    canonical_owner: docs/src/getting-started/packages.md
+    lifecycle: keep
+    target_section: Start
+    route: /getting-started/packages/
+    url_disposition: keep-site-url
   - id: getting-started-quick-start
     kind: public
     path: docs/src/getting-started/quick-start.md

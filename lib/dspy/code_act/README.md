@@ -1,5 +1,7 @@
 # CodeAct: Dynamic Code Generation for DSPy.rb
 
+See the [DSPy.rb package and capability matrix](https://oss.vicente.services/dspy.rb/getting-started/packages/) for canonical package status and the execution-safety boundary.
+
 CodeAct is a DSPy.rb module that enables agents to write and execute Ruby code dynamically. Unlike ReAct agents that rely on predefined tools, CodeAct generates tailored Ruby code on the fly to solve complex tasks.
 
 ## When to Use CodeAct

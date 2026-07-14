@@ -1,6 +1,8 @@
 # DSPy RubyLLM Adapter
 
-Unified access to 12+ LLM providers through a single adapter using [RubyLLM](https://rubyllm.com).
+This adapter delegates model discovery and provider access to [RubyLLM](https://rubyllm.com). Coverage and capabilities depend on RubyLLM's current registry, the selected model and provider, and the installed SDK version.
+
+See the [DSPy.rb package and capability matrix](https://oss.vicente.services/dspy.rb/getting-started/packages/) for canonical package status and overlap boundaries.
 
 ## Installation
 
@@ -159,7 +161,7 @@ RubyLLM itself has minimal dependencies (Faraday, Zeitwerk, Marcel).
 2. **Lightweight** - RubyLLM has only 3 dependencies
 3. **Provider coverage** - Access Bedrock, VertexAI, DeepSeek without separate adapters
 4. **Built-in retries** - Automatic retry with exponential backoff
-5. **Model registry** - 500+ models with capability detection and auto provider resolution
+5. **Model registry** - RubyLLM registry lookup with capability detection and provider resolution
 
 ## Error Handling
 

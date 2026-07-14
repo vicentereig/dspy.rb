@@ -7,6 +7,8 @@ date: 2025-07-10 00:00:00 +0000
 ---
 # MIPROv2 Optimizer
 
+See the [package and capability matrix](/dspy.rb/getting-started/packages/) for the `dspy-miprov2` install, require, dependency, and support boundary.
+
 MIPROv2 searches over instructions and few-shot demonstrations for one or more predictors. You provide a typed program, examples, a metric, and a budget. It evaluates candidates on minibatches and returns the best program it found for the validation data.[^miprov2-paper]
 
 ## Why teams reach for MIPROv2

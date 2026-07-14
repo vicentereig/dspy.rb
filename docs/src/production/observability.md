@@ -30,6 +30,8 @@ gem 'dspy-o11y'           # core spans + helpers
 gem 'dspy-o11y-langfuse'  # Langfuse/OpenTelemetry adapter (optional)
 ```
 
+Check the [package and capability matrix](/dspy.rb/getting-started/packages/) for current overlap, loading, and support-status details before selecting observability gems.
+
 When hacking inside this monorepo, run `DSPY_WITH_O11Y=1 DSPY_WITH_O11Y_LANGFUSE=1 bundle install` to pull in the sibling gems.
 
 ## Architecture

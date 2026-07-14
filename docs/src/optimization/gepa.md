@@ -7,6 +7,8 @@ date: 2025-07-10 00:00:00 +0000
 ---
 # GEPA Optimizer
 
+See the [package and capability matrix](/dspy.rb/getting-started/packages/) for the distinction between the public `dspy-gepa` integration and its lower-level `gepa` dependency.
+
 GEPA stands for **Genetic-Pareto Reflective Prompt Evolution**. In practice, it is a feedback loop: run your DSPy module on a small batch, collect both scores and short text notes about what happened, and let a reflection model rewrite the instruction. If the rewrite helps on the validation set without regressing elsewhere, GEPA keeps it as a new candidate on the Pareto frontier.
 
 The walkthrough uses `examples/ade_optimizer_gepa/` as a concrete implementation. Replace its signature, dataset, and metric while retaining the budget and held-out evaluation structure.

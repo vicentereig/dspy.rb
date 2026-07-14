@@ -1,0 +1,417 @@
+version: 1
+canonical_url: /getting-started/packages/
+
+# These labels describe this repository's documentation and test posture. They
+# are not promises about every provider API, model, or third-party SDK release.
+support_statuses:
+  supported: A public entry point with a current gemspec, repository tests, and a maintained guide or canonical package entry.
+  preview: A public pre-1.0 entry point covered by repository tests; its API may change before 1.0.
+  supporting: A maintained package installed mainly as a dependency of another public DSPy.rb package.
+
+package_roles:
+  core: The framework installed by every DSPy.rb application.
+  provider-adapter: A provider SDK boundary selected by a DSPy::LM model prefix.
+  optional-feature: A feature with dependencies kept outside the core gem.
+  supporting-library: A reusable lower-level package used by core or an optional feature.
+
+maintainer_decisions:
+  public-package-support-v1:
+    decided_by: Vicente Reig Rincón de Arellano
+    role: DSPy.rb maintainer
+    recorded_on: '2026-07-14'
+    status: supported
+    decision: Use supported for public package entry points with a tracked gemspec, shipped require path, package-associated tests, and a canonical guide.
+  ruby-llm-preview-v1:
+    decided_by: Vicente Reig Rincón de Arellano
+    role: DSPy.rb maintainer
+    recorded_on: '2026-07-14'
+    status: preview
+    decision: Keep dspy-ruby_llm in preview while its public version is 0.x and its capability surface remains delegated to RubyLLM registry and SDK behavior.
+  sorbet-toon-preview-v1:
+    decided_by: Vicente Reig Rincón de Arellano
+    role: DSPy.rb maintainer
+    recorded_on: '2026-07-14'
+    status: preview
+    decision: Keep sorbet-toon in preview while its public version is 0.x and its standalone API is still documented as having sharp edges.
+  supporting-library-support-v1:
+    decided_by: Vicente Reig Rincón de Arellano
+    role: DSPy.rb maintainer
+    recorded_on: '2026-07-14'
+    status: supporting
+    decision: Use supporting for public lower-level gems whose primary DSPy.rb installation path is through another package.
+
+selection_surfaces:
+  - { path: docs/src/getting-started/quick-start.md, packages: [dspy, dspy-openai], disposition: link-canonical-matrix }
+  - { path: docs/src/production/observability.md, packages: [dspy-o11y, dspy-o11y-langfuse], disposition: link-canonical-matrix }
+  - { path: docs/src/optimization/evaluation.md, packages: [dspy-evals, dspy-datasets], disposition: link-canonical-matrix }
+  - { path: docs/src/optimization/miprov2.md, packages: [dspy-miprov2], disposition: link-canonical-matrix }
+  - { path: docs/src/optimization/gepa.md, packages: [dspy-gepa, gepa], disposition: link-canonical-matrix }
+  - { path: docs/src/core-concepts/codeact.md, packages: [dspy-code_act], disposition: link-canonical-matrix }
+  - { path: lib/dspy/openai/README.md, packages: [dspy-openai], disposition: link-canonical-matrix }
+  - { path: lib/dspy/anthropic/README.md, packages: [dspy-anthropic], disposition: link-canonical-matrix }
+  - { path: lib/dspy/gemini/README.md, packages: [dspy-gemini], disposition: link-canonical-matrix }
+  - { path: lib/dspy/ruby_llm/README.md, packages: [dspy-ruby_llm], disposition: link-canonical-matrix }
+  - { path: lib/dspy/code_act/README.md, packages: [dspy-code_act], disposition: link-canonical-matrix }
+  - { path: lib/dspy/deep_search/README.md, packages: [dspy-deep_search], disposition: link-canonical-matrix }
+  - { path: lib/dspy/deep_research/README.md, packages: [dspy-deep_research], disposition: link-canonical-matrix }
+  - { path: lib/sorbet/toon/README.md, packages: [sorbet-toon], disposition: link-canonical-matrix }
+
+file_overlap_policy: Gem file overlap is an observed packaging fact, not feature isolation. Every pairwise overlap returned by the tracked gemspecs must be declared exactly here and disclosed in the reader guide.
+declared_file_overlaps:
+  - packages: [dspy, dspy-evals]
+    paths: [lib/dspy/evals.rb, lib/dspy/evals/version.rb]
+    disclosure: The core gem currently ships the evaluation runtime files also packaged by dspy-evals; installing dspy-evals does not isolate a different implementation.
+  - packages: [dspy, dspy-ruby_llm]
+    paths: [lib/dspy/ruby_llm.rb, lib/dspy/ruby_llm/lm/adapters/ruby_llm_adapter.rb, lib/dspy/ruby_llm/version.rb]
+    disclosure: The core gem currently contains RubyLLM adapter files, while dspy-ruby_llm supplies the required RubyLLM dependency and the same entry point.
+  - packages: [dspy, dspy-schema]
+    paths: [lib/dspy/schema.rb, lib/dspy/schema/sorbet_json_schema.rb, lib/dspy/schema/sorbet_toon_adapter.rb, lib/dspy/schema/version.rb]
+    disclosure: The core gem currently ships the schema files also packaged by dspy-schema; direct dspy-schema installation avoids the rest of core, but adding it beside dspy does not create a separate implementation.
+  - packages: [dspy-deep_research, dspy-deep_search]
+    paths: [lib/dspy/deep_search/clients/exa_client.rb, lib/dspy/deep_search/gap_queue.rb, lib/dspy/deep_search/module.rb, lib/dspy/deep_search/signatures.rb, lib/dspy/deep_search/token_budget.rb, lib/dspy/deep_search/version.rb]
+    disclosure: dspy-deep_research currently packages DeepSearch implementation files and also depends on the exactly matched dspy-deep_search gem.
+  - packages: [dspy-o11y, dspy-o11y-langfuse]
+    paths: [lib/dspy/o11y/langfuse.rb, lib/dspy/o11y/langfuse/scores_exporter.rb, lib/dspy/o11y/langfuse/version.rb]
+    disclosure: dspy-o11y currently packages the Langfuse files also shipped by dspy-o11y-langfuse; the latter declares exporter dependencies and is the direct Langfuse installation entry.
+
+monorepo_flags:
+  policy: DSPY_WITH_* flags only select local gemspecs while developing or testing this monorepo. Application users install the named gems in their Gemfile and do not set these flags.
+  flags:
+    DSPY_WITH_OPENAI: [dspy-openai]
+    DSPY_WITH_GEMINI: [dspy-gemini]
+    DSPY_WITH_ANTHROPIC: [dspy-anthropic]
+    DSPY_WITH_SCHEMA: [dspy-schema]
+    DSPY_WITH_CODE_ACT: [dspy-code_act]
+    DSPY_WITH_DATASETS: [dspy-datasets]
+    DSPY_WITH_EVALS: [dspy-evals]
+    DSPY_WITH_MIPROV2: [dspy-miprov2]
+    DSPY_WITH_O11Y: [dspy-o11y]
+    DSPY_WITH_O11Y_LANGFUSE: [dspy-o11y-langfuse]
+    DSPY_WITH_GEPA: [dspy-gepa, gepa]
+    DSPY_WITH_RUBY_LLM: [dspy-ruby_llm]
+
+provider_policy:
+  availability: A provider prefix is available only when its adapter gem and SDK dependencies are installed.
+  capability: Structured output, streaming, images, documents, tools, and request options vary by adapter, model, provider endpoint, and SDK version.
+  verification: Check the detailed adapter guide and the selected model's current provider documentation, then exercise the exact request in tests.
+
+legacy_names:
+  - name: dspy-deepsearch
+    replacement: dspy-deep_search
+    disposition: retired-name
+    evidence_commit: 8702acb
+  - name: dspy-deepresearch
+    replacement: dspy-deep_research
+    disposition: retired-name
+    evidence_commit: 8702acb
+
+packages:
+  - gem: dspy
+    gemspec: dspy.gemspec
+    visibility: public
+    role: core
+    support_status: supported
+    install: "gem 'dspy'"
+    require_path: dspy
+    load_behavior: Require explicitly. It best-effort loads installed optional integrations, but their own require paths remain the reliable boundary.
+    monorepo_flag:
+    guide: /getting-started/quick-start/
+    capabilities: Typed signatures, modules, Predict, ChainOfThought, ReAct, tools, events, persistence interfaces, and evaluation runtime.
+    limitations: Provider SDKs and separately packaged optimizers, agents, datasets, and exporters are not installed by core alone.
+    status_basis: { decision: public-package-support-v1, evidence: ['dspy:gemspec', 'dspy:verification'] }
+    evidence:
+      - { id: 'dspy:gemspec', path: dspy.gemspec, locator: 'spec.name = "dspy"', supports: [distribution, status] }
+      - { id: 'dspy:loading', path: lib/dspy.rb, locator: "require_relative 'dspy/lm'", supports: [loading] }
+      - { id: 'dspy:verification', path: spec/unit/dspy/lm/adapter_factory_spec.rb, locator: 'RSpec.describe DSPy::LM::AdapterFactory', supports: [verification, status] }
+
+  - gem: dspy-openai
+    gemspec: dspy-openai.gemspec
+    visibility: public
+    role: provider-adapter
+    support_status: supported
+    install: "gem 'dspy-openai'"
+    require_path: dspy/openai
+    load_behavior: DSPy::LM auto-requires this path for openai, openrouter, and ollama model prefixes; explicit require is also supported.
+    monorepo_flag: DSPY_WITH_OPENAI
+    guide: repository:lib/dspy/openai/README.md
+    provider_prefixes: [openai, openrouter, ollama]
+    capabilities: OpenAI SDK adapter plus OpenAI-compatible OpenRouter and Ollama adapters.
+    limitations: Structured output, vision, streaming behavior, parameters, and fallback behavior depend on the selected model and compatible endpoint.
+    status_basis: { decision: public-package-support-v1, evidence: ['dspy-openai:gemspec', 'dspy-openai:verification'] }
+    evidence:
+      - { id: 'dspy-openai:gemspec', path: dspy-openai.gemspec, locator: 'spec.name = "dspy-openai"', supports: [distribution, status] }
+      - { id: 'dspy-openai:loading', path: lib/dspy/openai.rb, locator: "require 'dspy/openai/lm/adapters/openai_adapter'", supports: [loading] }
+      - { id: 'dspy-openai:verification', path: spec/integration/dspy/lm/adapters/openai_adapter_spec.rb, locator: 'RSpec.describe DSPy::OpenAI::LM::Adapters::OpenAIAdapter', supports: [verification, status] }
+
+  - gem: dspy-anthropic
+    gemspec: dspy-anthropic.gemspec
+    visibility: public
+    role: provider-adapter
+    support_status: supported
+    install: "gem 'dspy-anthropic'"
+    require_path: dspy/anthropic
+    load_behavior: DSPy::LM auto-requires this path for the anthropic model prefix; explicit require is also supported.
+    monorepo_flag: DSPY_WITH_ANTHROPIC
+    guide: repository:lib/dspy/anthropic/README.md
+    provider_prefixes: [anthropic]
+    capabilities: Anthropic SDK adapter with tool-based structured extraction and supported media handling.
+    limitations: Model and API-version support determine structured-output, tool, image, document, and streaming behavior.
+    status_basis: { decision: public-package-support-v1, evidence: ['dspy-anthropic:gemspec', 'dspy-anthropic:verification'] }
+    evidence:
+      - { id: 'dspy-anthropic:gemspec', path: dspy-anthropic.gemspec, locator: 'spec.name = "dspy-anthropic"', supports: [distribution, status] }
+      - { id: 'dspy-anthropic:loading', path: lib/dspy/anthropic.rb, locator: "require 'dspy/anthropic/lm/adapters/anthropic_adapter'", supports: [loading] }
+      - { id: 'dspy-anthropic:verification', path: spec/integration/dspy/lm/adapters/anthropic_adapter_spec.rb, locator: 'RSpec.describe DSPy::Anthropic::LM::Adapters::AnthropicAdapter', supports: [verification, status] }
+
+  - gem: dspy-gemini
+    gemspec: dspy-gemini.gemspec
+    visibility: public
+    role: provider-adapter
+    support_status: supported
+    install: "gem 'dspy-gemini'"
+    require_path: dspy/gemini
+    load_behavior: DSPy::LM auto-requires this path for the gemini model prefix; explicit require is also supported.
+    monorepo_flag: DSPY_WITH_GEMINI
+    guide: repository:lib/dspy/gemini/README.md
+    provider_prefixes: [gemini]
+    capabilities: Gemini SDK adapter with schema conversion, streaming, and supported image inputs.
+    limitations: Schema, media, safety, and streaming behavior depend on the selected Gemini model and SDK/API version.
+    status_basis: { decision: public-package-support-v1, evidence: ['dspy-gemini:gemspec', 'dspy-gemini:verification'] }
+    evidence:
+      - { id: 'dspy-gemini:gemspec', path: dspy-gemini.gemspec, locator: 'spec.name = "dspy-gemini"', supports: [distribution, status] }
+      - { id: 'dspy-gemini:loading', path: lib/dspy/gemini.rb, locator: "require 'dspy/gemini/lm/adapters/gemini_adapter'", supports: [loading] }
+      - { id: 'dspy-gemini:verification', path: spec/integration/dspy/lm/adapters/gemini_adapter_spec.rb, locator: 'RSpec.describe DSPy::Gemini::LM::Adapters::GeminiAdapter', supports: [verification, status] }
+
+  - gem: dspy-ruby_llm
+    gemspec: dspy-ruby_llm.gemspec
+    visibility: public
+    role: provider-adapter
+    support_status: preview
+    install: "gem 'dspy-ruby_llm'"
+    require_path: dspy/ruby_llm
+    load_behavior: DSPy::LM auto-requires this path for the ruby_llm prefix; explicit require is also supported.
+    monorepo_flag: DSPY_WITH_RUBY_LLM
+    guide: repository:lib/dspy/ruby_llm/README.md
+    provider_prefixes: [ruby_llm]
+    capabilities: Delegates provider selection, model lookup, request transport, and capability discovery to RubyLLM.
+    limitations: Provider coverage is not a uniform capability promise. Registry data, explicit provider overrides, authentication, attachments, schemas, and streaming vary by underlying provider, model, RubyLLM version, and provider SDK; document input is currently restricted to Anthropic.
+    status_basis: { decision: ruby-llm-preview-v1, evidence: ['dspy-ruby_llm:gemspec', 'dspy-ruby_llm:verification'] }
+    evidence:
+      - { id: 'dspy-ruby_llm:gemspec', path: dspy-ruby_llm.gemspec, locator: 'spec.name = "dspy-ruby_llm"', supports: [distribution, status] }
+      - { id: 'dspy-ruby_llm:loading', path: lib/dspy/ruby_llm.rb, locator: "require 'dspy/ruby_llm/lm/adapters/ruby_llm_adapter'", supports: [loading] }
+      - { id: 'dspy-ruby_llm:verification', path: spec/unit/dspy/lm/adapters/ruby_llm/ruby_llm_adapter_spec.rb, locator: 'RSpec.describe DSPy::RubyLLM::LM::Adapters::RubyLLMAdapter', supports: [verification, status] }
+
+  - gem: dspy-code_act
+    gemspec: dspy-code_act.gemspec
+    visibility: public
+    role: optional-feature
+    support_status: supported
+    install: "gem 'dspy-code_act'"
+    require_path: dspy/code_act
+    load_behavior: Core best-effort loads it when installed; require explicitly before referencing DSPy::CodeAct.
+    monorepo_flag: DSPY_WITH_CODE_ACT
+    guide: repository:lib/dspy/code_act/README.md
+    capabilities: Think-Code-Observe agents that synthesize and execute Ruby.
+    limitations: Generated code executes with the process's authority. The gem does not provide a security sandbox, permission boundary, resource isolation, or safe handling of untrusted input.
+    status_basis: { decision: public-package-support-v1, evidence: ['dspy-code_act:gemspec', 'dspy-code_act:verification'] }
+    evidence:
+      - { id: 'dspy-code_act:gemspec', path: dspy-code_act.gemspec, locator: 'spec.name = "dspy-code_act"', supports: [distribution, status] }
+      - { id: 'dspy-code_act:loading', path: lib/dspy/code_act.rb, locator: "require_relative 'code_act/version'", supports: [loading] }
+      - { id: 'dspy-code_act:verification', path: spec/integration/dspy/code_act_spec.rb, locator: "RSpec.describe 'DSPy::CodeAct'", supports: [verification, status] }
+
+  - gem: dspy-datasets
+    gemspec: dspy-datasets.gemspec
+    visibility: public
+    role: optional-feature
+    support_status: supported
+    install: "gem 'dspy-datasets'"
+    require_path: dspy/datasets
+    load_behavior: Core best-effort loads it when installed; require explicitly before using DSPy::Datasets.
+    monorepo_flag: DSPY_WITH_DATASETS
+    guide: /optimization/evaluation/
+    capabilities: Curated dataset manifests, loaders, caching, ADE, and HotpotQA helpers.
+    limitations: Dataset licenses, availability, remote schemas, cache policy, and download cost remain external concerns; Parquet support adds native dependencies.
+    status_basis: { decision: public-package-support-v1, evidence: ['dspy-datasets:gemspec', 'dspy-datasets:verification'] }
+    evidence:
+      - { id: 'dspy-datasets:gemspec', path: dspy-datasets.gemspec, locator: 'spec.name = "dspy-datasets"', supports: [distribution, status] }
+      - { id: 'dspy-datasets:loading', path: lib/dspy/datasets.rb, locator: "require_relative 'datasets/manifest'", supports: [loading] }
+      - { id: 'dspy-datasets:verification', path: spec/unit/dspy/datasets_spec.rb, locator: 'RSpec.describe DSPy::Datasets', supports: [verification, status] }
+
+  - gem: dspy-evals
+    gemspec: dspy-evals.gemspec
+    visibility: public
+    role: optional-feature
+    support_status: supported
+    install: "gem 'dspy-evals'"
+    require_path: dspy/evals
+    load_behavior: Core already requires the overlapping evaluation runtime files; requiring dspy/evals explicitly addresses the same constants rather than an isolated implementation.
+    monorepo_flag: DSPY_WITH_EVALS
+    guide: /optimization/evaluation/
+    capabilities: Evaluation concurrency, callbacks, aggregation, and tabular export helpers.
+    limitations: Evaluation computes declared metrics; it does not establish factual correctness or generalization beyond the sampled data. The core gem currently ships the same dspy/evals files, so this package is not an isolated implementation.
+    status_basis: { decision: public-package-support-v1, evidence: ['dspy-evals:gemspec', 'dspy-evals:verification'] }
+    evidence:
+      - { id: 'dspy-evals:gemspec', path: dspy-evals.gemspec, locator: 'spec.name = "dspy-evals"', supports: [distribution, status] }
+      - { id: 'dspy-evals:loading', path: lib/dspy/evals.rb, locator: 'class Evals', supports: [loading] }
+      - { id: 'dspy-evals:verification', path: spec/unit/dspy/evals_parallel_dup_spec.rb, locator: "RSpec.describe 'Evals parallel program cloning'", supports: [verification, status] }
+
+  - gem: dspy-miprov2
+    gemspec: dspy-miprov2.gemspec
+    visibility: public
+    role: optional-feature
+    support_status: supported
+    install: "gem 'dspy-miprov2'"
+    require_path: dspy/miprov2
+    load_behavior: Core best-effort loads it when installed; require explicitly before referencing MIPROv2 constants.
+    monorepo_flag: DSPY_WITH_MIPROV2
+    guide: /optimization/miprov2/
+    capabilities: MIPROv2 teleprompter and numerical Bayesian-optimization support.
+    limitations: Requires Numo numerical dependencies, an explicit metric and datasets, and held-out evaluation; optimization does not guarantee generalization.
+    status_basis: { decision: public-package-support-v1, evidence: ['dspy-miprov2:gemspec', 'dspy-miprov2:verification'] }
+    evidence:
+      - { id: 'dspy-miprov2:gemspec', path: dspy-miprov2.gemspec, locator: 'spec.name = "dspy-miprov2"', supports: [distribution, status] }
+      - { id: 'dspy-miprov2:loading', path: lib/dspy/miprov2.rb, locator: "require_relative 'teleprompt/mipro_v2'", supports: [loading] }
+      - { id: 'dspy-miprov2:verification', path: spec/unit/optimizers/gaussian_process_spec.rb, locator: 'RSpec.describe DSPy::Optimizers::GaussianProcess', supports: [verification, status] }
+
+  - gem: dspy-gepa
+    gemspec: dspy-gepa.gemspec
+    visibility: public
+    role: optional-feature
+    support_status: supported
+    install: "gem 'dspy-gepa'"
+    require_path: dspy/gepa
+    load_behavior: Core best-effort loads it when installed; require explicitly before referencing DSPy::Teleprompt::GEPA.
+    monorepo_flag: DSPY_WITH_GEPA
+    guide: /optimization/gepa/
+    capabilities: DSPy integration for GEPA reflective optimization, experiment tracking, and telemetry.
+    limitations: Installs the lower-level gepa package transitively; requires a metric, evaluation budget, and held-out checks.
+    status_basis: { decision: public-package-support-v1, evidence: ['dspy-gepa:gemspec', 'dspy-gepa:verification'] }
+    evidence:
+      - { id: 'dspy-gepa:gemspec', path: dspy-gepa.gemspec, locator: 'spec.name = "dspy-gepa"', supports: [distribution, status] }
+      - { id: 'dspy-gepa:loading', path: lib/dspy/gepa.rb, locator: "require_relative 'gepa/teleprompt'", supports: [loading] }
+      - { id: 'dspy-gepa:verification', path: spec/unit/teleprompt/gepa_spec.rb, locator: 'RSpec.describe DSPy::Teleprompt::GEPA', supports: [verification, status] }
+
+  - gem: gepa
+    gemspec: gepa.gemspec
+    visibility: public
+    role: supporting-library
+    support_status: supporting
+    install: "Installed by gem 'dspy-gepa'; direct use: gem 'gepa'"
+    require_path: gepa
+    load_behavior: Require explicitly only for the lower-level optimizer API; DSPy.rb users should normally load dspy/gepa through dspy-gepa.
+    monorepo_flag: DSPY_WITH_GEPA
+    guide: /optimization/gepa/
+    capabilities: Lower-level GEPA engine, proposers, selection strategies, Pareto utilities, logging, and telemetry.
+    limitations: Direct use bypasses the DSPy teleprompter integration and its canonical guide.
+    status_basis: { decision: supporting-library-support-v1, evidence: ['gepa:gemspec', 'gepa:verification'] }
+    evidence:
+      - { id: 'gepa:gemspec', path: gepa.gemspec, locator: 'spec.name = "gepa"', supports: [distribution, status] }
+      - { id: 'gepa:loading', path: lib/gepa.rb, locator: "require_relative 'gepa/core/engine'", supports: [loading] }
+      - { id: 'gepa:verification', path: spec/unit/gepa/core/engine_spec.rb, locator: 'RSpec.describe GEPA::Core::Engine', supports: [verification, status] }
+
+  - gem: dspy-o11y
+    gemspec: dspy-o11y.gemspec
+    visibility: public
+    role: optional-feature
+    support_status: supported
+    install: "gem 'dspy-o11y'"
+    require_path: dspy/o11y
+    load_behavior: Core uses it when installed and otherwise supplies a no-op observability boundary; require explicitly for observability classes.
+    monorepo_flag: DSPY_WITH_O11Y
+    guide: /production/observability/
+    capabilities: OpenTelemetry span lifecycle, observation types, context hooks, and asynchronous processing.
+    limitations: Export and backend configuration are separate; telemetry queues, shutdown, credentials, sampling, and data policy remain application concerns.
+    status_basis: { decision: public-package-support-v1, evidence: ['dspy-o11y:gemspec', 'dspy-o11y:verification'] }
+    evidence:
+      - { id: 'dspy-o11y:gemspec', path: dspy-o11y.gemspec, locator: 'spec.name = "dspy-o11y"', supports: [distribution, status] }
+      - { id: 'dspy-o11y:loading', path: lib/dspy/o11y.rb, locator: "require_relative 'o11y/observability'", supports: [loading] }
+      - { id: 'dspy-o11y:verification', path: spec/unit/observability/async_span_processor_spec.rb, locator: 'RSpec.describe DSPy::Observability::AsyncSpanProcessor', supports: [verification, status] }
+
+  - gem: dspy-o11y-langfuse
+    gemspec: dspy-o11y-langfuse.gemspec
+    visibility: public
+    role: optional-feature
+    support_status: supported
+    install: "gem 'dspy-o11y-langfuse'"
+    require_path: dspy/o11y/langfuse
+    load_behavior: Core best-effort requires it when installed; its entry point registers Langfuse configuration.
+    monorepo_flag: DSPY_WITH_O11Y_LANGFUSE
+    guide: /production/observability/
+    capabilities: Langfuse OTLP auto-configuration and score export on top of dspy-o11y.
+    limitations: Requires Langfuse credentials and compatible OpenTelemetry dependencies; installation alone does not establish retention, privacy, delivery, or shutdown policy.
+    status_basis: { decision: public-package-support-v1, evidence: ['dspy-o11y-langfuse:gemspec', 'dspy-o11y-langfuse:verification'] }
+    evidence:
+      - { id: 'dspy-o11y-langfuse:gemspec', path: dspy-o11y-langfuse.gemspec, locator: 'spec.name = "dspy-o11y-langfuse"', supports: [distribution, status] }
+      - { id: 'dspy-o11y-langfuse:loading', path: lib/dspy/o11y/langfuse.rb, locator: 'DSPy::Observability::Adapters::Langfuse.register!', supports: [loading] }
+      - { id: 'dspy-o11y-langfuse:verification', path: spec/dspy/o11y/langfuse/scores_exporter_spec.rb, locator: 'RSpec.describe DSPy::Observability::Adapters::Langfuse::ScoresExporter', supports: [verification, status] }
+
+  - gem: dspy-deep_search
+    gemspec: dspy-deep_search.gemspec
+    visibility: public
+    role: optional-feature
+    support_status: supported
+    install: "gem 'dspy-deep_search'"
+    require_path: dspy/deep_search
+    load_behavior: Require explicitly; core does not auto-load this package.
+    monorepo_flag:
+    guide: repository:lib/dspy/deep_search/README.md
+    capabilities: Search-read-reason loop primitives, token budgets, queues, and an Exa client.
+    limitations: Requires Exa and its credentials for the bundled client; retrieval quality, source policy, and external service behavior remain application concerns.
+    status_basis: { decision: public-package-support-v1, evidence: ['dspy-deep_search:gemspec', 'dspy-deep_search:verification'] }
+    evidence:
+      - { id: 'dspy-deep_search:gemspec', path: dspy-deep_search.gemspec, locator: 'spec.name          = "dspy-deep_search"', supports: [distribution, status] }
+      - { id: 'dspy-deep_search:loading', path: lib/dspy/deep_search.rb, locator: 'require_relative "deep_search/module"', supports: [loading] }
+      - { id: 'dspy-deep_search:verification', path: spec/integration/deep_search/deep_search_module_spec.rb, locator: 'RSpec.describe DSPy::DeepSearch::Module', supports: [verification, status] }
+
+  - gem: dspy-deep_research
+    gemspec: dspy-deep_research.gemspec
+    visibility: public
+    role: optional-feature
+    support_status: supported
+    install: "gem 'dspy-deep_research'"
+    require_path: dspy/deep_research
+    load_behavior: Require explicitly; it loads dspy-deep_search through its dependency.
+    monorepo_flag:
+    guide: repository:lib/dspy/deep_research/README.md
+    capabilities: Planning, section queues, and coherence orchestration layered on dspy-deep_search.
+    limitations: Installs an exactly matched dspy-deep_search release; model behavior, search quality, budgets, citations, and output review remain application concerns.
+    status_basis: { decision: public-package-support-v1, evidence: ['dspy-deep_research:gemspec', 'dspy-deep_research:verification'] }
+    evidence:
+      - { id: 'dspy-deep_research:gemspec', path: dspy-deep_research.gemspec, locator: 'spec.name          = "dspy-deep_research"', supports: [distribution, status] }
+      - { id: 'dspy-deep_research:loading', path: lib/dspy/deep_research.rb, locator: 'require_relative "deep_research/module"', supports: [loading] }
+      - { id: 'dspy-deep_research:verification', path: spec/integration/deep_research/module_spec.rb, locator: 'RSpec.describe DSPy::DeepResearch::Module', supports: [verification, status] }
+
+  - gem: dspy-schema
+    gemspec: dspy-schema.gemspec
+    visibility: public
+    role: supporting-library
+    support_status: supporting
+    install: "Installed by gem 'dspy'; direct use: gem 'dspy-schema'"
+    require_path: dspy/schema
+    load_behavior: Installed transitively by core; require explicitly when using the converter outside DSPy.rb.
+    monorepo_flag: DSPY_WITH_SCHEMA
+    guide: /core-concepts/signatures/#schema-formats
+    capabilities: Sorbet-to-JSON-Schema conversion without loading the full DSPy runtime.
+    limitations: Schema conversion describes shape and runtime validation; it does not prove semantic correctness or provider support. Core currently ships the same schema files despite depending on this gem, so adding both does not create separate implementations.
+    status_basis: { decision: supporting-library-support-v1, evidence: ['dspy-schema:gemspec', 'dspy-schema:verification'] }
+    evidence:
+      - { id: 'dspy-schema:gemspec', path: dspy-schema.gemspec, locator: 'spec.name = "dspy-schema"', supports: [distribution, status] }
+      - { id: 'dspy-schema:loading', path: lib/dspy/schema.rb, locator: 'require_relative "schema/sorbet_json_schema"', supports: [loading] }
+      - { id: 'dspy-schema:verification', path: spec/unit/dspy/json_schemas_spec.rb, locator: "RSpec.describe 'AI Agentic Signatures - Comprehensive Type Coverage'", supports: [verification, status] }
+
+  - gem: sorbet-toon
+    gemspec: sorbet-toon.gemspec
+    visibility: public
+    role: supporting-library
+    support_status: preview
+    install: "Installed by gem 'dspy'; direct use: gem 'sorbet-toon'"
+    require_path: sorbet/toon
+    load_behavior: Core depends on and loads the TOON integration; require explicitly for the standalone codec API.
+    monorepo_flag:
+    guide: repository:lib/sorbet/toon/README.md
+    capabilities: TOON encoding, decoding, normalization, reconstruction, and Sorbet extensions.
+    limitations: Pre-1.0 API; token or prompt-size gains depend on the actual data shape and model tokenizer.
+    status_basis: { decision: sorbet-toon-preview-v1, evidence: ['sorbet-toon:gemspec', 'sorbet-toon:verification'] }
+    evidence:
+      - { id: 'sorbet-toon:gemspec', path: sorbet-toon.gemspec, locator: "spec.name = 'sorbet-toon'", supports: [distribution, status] }
+      - { id: 'sorbet-toon:loading', path: lib/sorbet/toon.rb, locator: 'Sorbet::Toon.enable_extensions!', supports: [loading] }
+      - { id: 'sorbet-toon:verification', path: spec/sorbet/toon/codec_spec.rb, locator: "RSpec.describe 'Sorbet::Toon::Codec'", supports: [verification, status] }

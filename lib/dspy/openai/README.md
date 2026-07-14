@@ -1,5 +1,7 @@
 # DSPy OpenAI adapter gem
 
+See the [DSPy.rb package and capability matrix](https://oss.vicente.services/dspy.rb/getting-started/packages/) for canonical package status and model/SDK boundaries.
+
 `dspy-openai` packages the OpenAI-compatible adapters for DSPy.rb so we can keep the core `dspy` gem lean while still talking to GPT models (and any OpenAI-compatible endpoint). Install it whenever your project needs to invoke `openai/*`, `openrouter/*`, or `ollama/*` models through DSPy.
 
 ## When you need it

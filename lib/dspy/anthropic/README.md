@@ -1,5 +1,7 @@
 # DSPy Anthropic adapter gem
 
+See the [DSPy.rb package and capability matrix](https://oss.vicente.services/dspy.rb/getting-started/packages/) for canonical package status and model/SDK boundaries.
+
 `dspy-anthropic` provides the Claude adapter for DSPy.rb so we can rely on Anthropic's API without bloating the core gem. Install it whenever you plan to call `anthropic/*` model ids from DSPy.
 
 ## When you need it

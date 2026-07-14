@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.authors = ["Vicente Reig Rincón de Arellano", "Kieran Klaassen"]
   spec.email = ["hey@vicente.services", "kieranklaassen@gmail.com"]
 
-  spec.summary = "RubyLLM adapter for DSPy.rb - unified access to 12+ LLM providers."
+  spec.summary = "RubyLLM provider adapter for DSPy.rb."
   spec.description = "Provides a unified adapter using RubyLLM to access OpenAI, Anthropic, Gemini, Bedrock, Ollama, and more through a single interface in DSPy.rb projects."
   spec.homepage = "https://github.com/vicentereig/dspy.rb"
   spec.license = "MIT"
