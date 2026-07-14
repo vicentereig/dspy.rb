@@ -1,107 +1,51 @@
 # DSPy.rb Examples
 
-This directory contains practical examples for using DSPy.rb features.
+This directory indexes repository demos. For a first install-to-result path, use the canonical [Quick Start](../docs/src/getting-started/quick-start.md); these examples assume a checkout of this repository and its Bundler environment.
 
-## Setup
+## Before Running an Example
 
-Create a `.env` file in the project root with your API keys:
-```bash
-OPENAI_API_KEY=your-openai-key
-ANTHROPIC_API_KEY=your-anthropic-key
-```
+Run `bundle install` from the repository root. Then read the selected script or its local README for required provider keys, optional packages, data downloads, and side effects.
 
-## Examples by Category
+Many examples explicitly load the repository's `.env` with `dotenv`; others read only the process environment. DSPy.rb itself does not load `.env`. Export the required key in your shell unless the selected example says that it loads `.env`.
 
-### Optimization
+Provider and model output varies. Some scripts call paid APIs, write results, or require external services. Their local README or source is the authority for those prerequisites.
 
-- **`ade_optimizer_miprov2/`** — ADE classifier optimized with MIPROv2. Mirrors the docs walkthrough, uses the `dspy-miprov2` gem, supports `--auto light|medium|heavy`, and writes metrics/trial logs to `results/`.
-- **`hotpotqa_react_miprov2/`** — Multi-hop HotPotQA ReAct agent tuned with MIPROv2. Demonstrates per-predictor instructions, tool usage, and dataset caching for larger pipelines.
-- **`ade_optimizer_gepa/`** — ADE classifier optimized with GEPA. Shows how to wire reflection feedback and interpret Pareto-tracked candidates.
-- **`gepa_snapshot.rb`** — Scripted GEPA run that produces fixture snapshots for specs. Useful when you want deterministic reflection output for testing.
+## Prediction and Composition
 
-### Agents & Workflow Automation
+- [`basic_search_agent.rb`](basic_search_agent.rb) — ReAct course search with typed `Course` results; OpenAI API call.
+- [`workflow_router.rb`](workflow_router.rb) — fixed Ruby routing across typed predictors; Anthropic API calls.
+- [`summarization_comparison.rb`](summarization_comparison.rb) — compare typed summaries with a separate judge model; OpenAI API calls.
 
-- **`basic_search_agent.rb`** — ReAct agent that calls a course-search tool and returns typed `Course` structs, highlighting structured outputs.
-- **`react_loop/`** — Calculator/unit conversion/date tools wired into a ReAct loop with observability enabled.
-- **`coffee-shop-agent/`** — Conversational ordering bot with short-term memory. Run `bundle exec ruby coffee-shop-agent/coffee_shop_agent.rb`.
-- **`github-assistant/`** — GitHub-focused helper that chains CLI actions (requires a GitHub token in your environment). See the folder README for setup.
-- **`deep_research_cli/`** — Terminal chat experience for DeepSearch + DeepResearch with Shopify `CLI::UI` and live token/status metrics. See the example README for setup and tests.
+## Agents and Tools
 
-### Observability, Events, and Benchmarks
+- [`react_loop/`](react_loop/) — calculator, unit conversion, and date tools in a ReAct loop.
+- [`coffee-shop-agent/`](coffee-shop-agent/) — conversational ordering bot with short-term memory; see its README.
+- [`github-assistant/`](github-assistant/) — GitHub-focused assistant with provider and GitHub prerequisites; see its README.
+- [`deep_research_cli/`](deep_research_cli/) — terminal DeepSearch and DeepResearch client; see its README for LLM and search keys.
+- [`codeact_research_agent.rb`](codeact_research_agent.rb) — generated Ruby execution with the optional `dspy-code_act` package; review the execution boundary before running.
 
-- **`event_system_demo.rb`** — End-to-end tour of the DSPy event bus, including type-safe LLM events and custom subscribers for optimization metrics.
-- **`telemetry_benchmark.rb`** — Measures OpenTelemetry span throughput under typical DSPy workloads.
-- **`baml_vs_json_benchmark.rb`** — Compares BAML vs JSON schema prompting across multiple providers, including cost estimates.
-- **`json_modes_benchmark.rb`** — Evaluates OpenAI JSON modes vs enhanced prompting for structured outputs.
+## Evaluation and Optimization
 
-### Data, Evaluation, and Multimodal
+- [`sentiment-evaluation/`](sentiment-evaluation/) — sentiment classifier plus evaluation helpers.
+- [`ade_optimizer_miprov2/`](ade_optimizer_miprov2/) — ADE classifier optimized with MIPROv2; see its README for modes and output files.
+- [`ade_optimizer_gepa/`](ade_optimizer_gepa/) — ADE classifier optimized with GEPA; see its README for provider requirements.
+- [`hotpotqa_react_miprov2/`](hotpotqa_react_miprov2/) — multi-hop ReAct optimization with dataset caching.
+- [`evaluator_loop.rb`](evaluator_loop.rb) — generator/evaluator loop with an explicit token budget.
+- [`gepa_snapshot.rb`](gepa_snapshot.rb) — deterministic fixture snapshot generation for GEPA specs.
 
-- **`sentiment-evaluation/`** — Minimal sentiment classifier with evaluation helpers; great starter for building your own metrics.
-- **`multimodal/`** — Vision-language snippets (`image_analysis.rb`, `bounding_box_detection.rb`) that show how to send images through DSPy LMs.
+## Formats, Media, and Benchmarks
 
----
+- [`multimodal/`](multimodal/) — image analysis and bounding-box examples.
+- [`html_to_markdown/`](html_to_markdown/) — recursive typed HTML-to-Markdown pipeline; see its README.
+- [`baml_vs_json_benchmark.rb`](baml_vs_json_benchmark.rb) — compare schema prompt formats across configured providers.
+- [`json_modes_benchmark.rb`](json_modes_benchmark.rb) — compare OpenAI JSON strategies.
+- [`event_system_demo.rb`](event_system_demo.rb) — event bus subscriptions and emitted attributes.
+- [`telemetry_benchmark.rb`](telemetry_benchmark.rb) — OpenTelemetry span-throughput benchmark.
 
-## Quick Start
-
-1. **Basic prediction:**
-```ruby
-require 'dspy'
-
-class QASignature < DSPy::Signature
-  description "Answer questions concisely"
-  
-  input do
-    const :question, String
-  end
-  
-  output do
-    const :answer, String
-  end
-end
-
-DSPy.configure do |config|
-  config.lm = DSPy::LM.new('openai/gpt-4o-mini')
-end
-
-predictor = DSPy::Predict.new(QASignature)
-result = predictor.call(question: "What is 2+2?")
-puts result.answer
-```
-
-2. **Chain of thought reasoning:**
-```ruby
-cot = DSPy::ChainOfThought.new(QASignature)
-result = cot.call(question: "Explain why 2+2=4")
-puts result.reasoning  # Shows step-by-step thinking
-puts result.answer     # Shows final answer
-```
-
-3. **Creating training examples:**
-```ruby
-examples = [
-  DSPy::Example.new(
-    signature_class: QASignature,
-    input: { question: "What is the capital of France?" },
-    expected: { answer: "Paris" }
-  )
-]
-```
-
-## Running Examples
-
-All examples check for required API keys and will exit with a helpful message if missing.
+Run a selected script from the repository root, for example:
 
 ```bash
-# Run a specific example
-bundle exec ruby examples/sentiment-evaluation/sentiment_classifier.rb
-
-# Run with debug output
-DEBUG=true bundle exec ruby examples/sentiment-evaluation/sentiment_classifier.rb
+bundle exec ruby examples/basic_search_agent.rb
 ```
 
-## Tips
-
-- Start with simple examples before trying optimization
-- Use `DSPy::ChainOfThought` for complex reasoning tasks
-- Check example outputs for expected data structures
-- Examples use realistic datasets and evaluation metrics
+That command is specific to the indexed example. The Quick Start remains the canonical new-application path.

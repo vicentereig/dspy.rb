@@ -120,7 +120,8 @@ samples:
   - id: readme-three-part-contrast
     source: README.md
     excerpt: "No hand-maintained prompt templates. No JSON parsing. No prayer-based error handling."
-    status: present
+    status: resolved
+    resolution_reference: "dspy.rb-2ey.3 scopes the README contrast to typed task, parsing, and explicit failure boundaries."
     edge: protected-line-correctness
     requires_exception: false
     reviewer_a: KEEP voice

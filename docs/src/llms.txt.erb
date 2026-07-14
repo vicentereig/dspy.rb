@@ -206,37 +206,51 @@ optimized = gepa.compile(program, trainset: train_examples, valset: val_examples
 
 ## Quick Start
 
-```ruby
-# Install
-gem 'dspy'
+The canonical executable guide is [Quick Start](https://oss.vicente.services/dspy.rb/getting-started/quick-start/). Add the core `dspy` gem and the `dspy-openai` adapter to a Gemfile, run `bundle install`, export `OPENAI_API_KEY`, save the following as `classify.rb`, and run `bundle exec ruby classify.rb`.
 
-# Configure
-DSPy.configure do |c|
-  c.lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
-  # or use Ollama for local models
-  # c.lm = DSPy::LM.new('ollama/llama3.2')
-end
-
-# Define a task
-class SentimentAnalysis < DSPy::Signature
-  description "Analyze sentiment of text"
-  
-  input do
-    const :text, String
-  end
-  
-  output do
-    const :sentiment, String  # positive, negative, neutral
-    const :score, Float       # 0.0 to 1.0
-  end
-end
-
-# Use it
-analyzer = DSPy::Predict.new(SentimentAnalysis)
-result = analyzer.call(text: "This product is amazing!")
-puts result.sentiment  # => "positive"
-puts result.score      # => 0.92
+```bash
+export OPENAI_API_KEY=sk-your-key-here
 ```
+
+```ruby
+require 'dspy'
+
+class Classify < DSPy::Signature
+  description "Classify the sentiment of a sentence."
+
+  class Sentiment < T::Enum
+    enums do
+      Positive = new('positive')
+      Negative = new('negative')
+      Neutral = new('neutral')
+    end
+  end
+
+  input do
+    const :sentence, String
+  end
+
+  output do
+    const :sentiment, Sentiment
+    const :confidence, Float
+  end
+end
+
+DSPy.configure do |config|
+  config.lm = DSPy::LM.new(
+    'openai/gpt-4o-mini',
+    api_key: ENV.fetch('OPENAI_API_KEY')
+  )
+end
+
+classifier = DSPy::Predict.new(Classify)
+result = classifier.call(sentence: "This book was fun to read!")
+
+puts result.sentiment.serialize
+puts result.confidence
+```
+
+Missing `OPENAI_API_KEY` raises Ruby's `KeyError` before LM initialization. Output values vary, but a successful result contains a `Classify::Sentiment` and a `Float`. Typed output validation constrains shape; it does not establish factual or task correctness.
 
 ## Provider packages
 
@@ -378,7 +392,7 @@ end
 
 ## Documentation Structure
 
-- **Getting Started** - Installation, quick start, first program
+- **Getting Started** - Provider installation and one canonical Quick Start
 - **Core Concepts** - Signatures, modules, predictors, multimodal, examples
 - **Advanced** - Complex types, stateful agents, RAG
 - **Optimization** - Prompt tuning, evaluation, benchmarking

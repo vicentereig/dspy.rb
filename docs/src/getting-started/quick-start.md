@@ -1,33 +1,58 @@
 ---
 layout: docs
 name: Quick Start
-description: Build your first DSPy.rb application in 5 minutes
+description: Install DSPy.rb and run one typed prediction
 date: 2025-07-10 00:00:00 +0000
-last_modified_at: 2025-08-08 00:00:00 +0000
+last_modified_at: 2026-07-15 00:00:00 +0000
 ---
 # Quick Start
 
-Build a typed prediction, compose modules with Ruby, then add a tool-using agent where the model needs to choose an action.
+This is the canonical install-to-first-result path. It uses OpenAI for one small sentiment classifier; model output can vary.
 
 ## Your First DSPy Program {#first-program}
 
-Add DSPy.rb and the OpenAI adapter to your Gemfile:
+### 1. Create the Gemfile
 
-The [package and capability matrix](/dspy.rb/getting-started/packages/) owns package status, require behavior, and model/SDK boundaries.
+Create a directory for the program and save this as `Gemfile`:
 
+<!-- quick-start-gemfile -->
 ```ruby
+source 'https://rubygems.org'
+
 gem 'dspy'
 gem 'dspy-openai'
 ```
 
-Run `bundle install`, set `OPENAI_API_KEY`, and save this program as `classify.rb`:
+`dspy` provides signatures and modules. `dspy-openai` provides the adapter used by the `openai/*` model identifier below. The [package and capability matrix](/dspy.rb/getting-started/packages/) lists other packages and their boundaries.
 
+Install both gems:
+
+<!-- quick-start-install-command -->
+```bash
+bundle install
+```
+
+### 2. Set the API key
+
+Export an OpenAI API key in the same shell:
+
+<!-- quick-start-api-key-command -->
+```bash
+export OPENAI_API_KEY=sk-your-key-here
+```
+
+DSPy.rb does not load `.env` files. If your application uses one, load it with your own environment library before reading the key.
+
+### 3. Save the program
+
+Save this exact program as `classify.rb`:
+
+<!-- quick-start-program -->
 ```ruby
 require 'dspy'
 
-# Define a signature for sentiment classification
 class Classify < DSPy::Signature
-  description "Classify sentiment of a given sentence."
+  description "Classify the sentiment of a sentence."
 
   class Sentiment < T::Enum
     enums do
@@ -47,247 +72,70 @@ class Classify < DSPy::Signature
   end
 end
 
-# Configure DSPy with your LLM
-DSPy.configure do |c|
-  c.lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
-end
-
-# Create the predictor and run inference
-classify = DSPy::Predict.new(Classify)
-result = classify.call(sentence: "This book was super fun to read!")
-
-puts result.sentiment    # => #<Sentiment::Positive>  
-puts result.confidence   # => 0.85
-```
-
-Run it with `bundle exec ruby classify.rb`. Model output varies, but `sentiment` is always a `Classify::Sentiment` value and `confidence` is a `Float` when the prediction succeeds.
-
-### Chain of Thought Reasoning
-
-```ruby
-class AnswerPredictor < DSPy::Signature
-  description "Provides a concise answer to the question"
-
-  input do
-    const :question, String
-  end
-  
-  output do
-    const :answer, String
-  end
-end
-
-# Chain of thought automatically adds a 'reasoning' field to the output
-qa_cot = DSPy::ChainOfThought.new(AnswerPredictor)
-result = qa_cot.call(question: "Two dice are tossed. What is the probability that the sum equals two?")
-
-puts result.reasoning  # => "There is only one way to get a sum of 2..."
-puts result.answer     # => "1/36"
-```
-
-### Compose Modules with Ruby
-
-```ruby
-class Outline < DSPy::Signature
-  description "Outline a thorough overview of a topic."
-
-  input do
-    const :topic, String
-  end
-
-  output do
-    const :title, String
-    const :sections, T::Array[String]
-  end
-end
-
-class DraftSection < DSPy::Signature
-  description "Draft a section of an article"
-
-  input do
-    const :topic, String
-    const :title, String
-    const :section, String
-  end
-
-  output do
-    const :content, String
-  end
-end
-
-class ArticleDrafter < DSPy::Module
-  def initialize
-    @build_outline = DSPy::ChainOfThought.new(Outline)
-    @draft_section = DSPy::ChainOfThought.new(DraftSection)
-  end
-
-  def forward(topic:)
-    outline = @build_outline.call(topic: topic)
-    
-    sections = outline.sections.map do |section|
-      @draft_section.call(
-        topic: topic,
-        title: outline.title,
-        section: section
-      )
-    end
-
-    {
-      title: outline.title,
-      sections: sections.map(&:content)
-    }
-  end
-end
-
-# Use the pipeline
-drafter = ArticleDrafter.new
-article = drafter.forward(topic: "The impact of AI on software development")
-puts article[:title]
-puts article[:sections].first
-```
-
-## Ruby-Idiomatic Examples
-
-### Working with Collections
-
-DSPy.rb works naturally with Ruby's Enumerable patterns:
-
-```ruby
-# Process multiple items with Ruby's collection methods
-class BatchProcessor < DSPy::Module
-  def initialize
-    @classifier = DSPy::Predict.new(Classify)
-  end
-  
-  def process_batch(sentences)
-    sentences.map { |sentence| @classifier.call(sentence: sentence) }
-             .select { |result| result.confidence > 0.8 }
-             .group_by(&:sentiment)
-  end
-end
-
-# Usage
-processor = BatchProcessor.new
-results = processor.process_batch([
-  "I love this product!",
-  "This is terrible.",
-  "It's okay, I guess."
-])
-
-# Count high-confidence positive predictions
-puts results.fetch(Classify::Sentiment::Positive, []).length
-```
-
-### Block-Based Configuration
-
-Configure DSPy components with Ruby blocks:
-
-```ruby
-# Configure with blocks for cleaner syntax
 DSPy.configure do |config|
   config.lm = DSPy::LM.new(
     'openai/gpt-4o-mini',
     api_key: ENV.fetch('OPENAI_API_KEY')
   )
-
-  # Configure logging for observability
-  config.logger = Dry.Logger(:dspy, formatter: :json) do |logger|
-    logger.add_backend(stream: Rails.root.join('log', 'dspy.log'))
-  end
 end
+
+classifier = DSPy::Predict.new(Classify)
+result = classifier.call(sentence: "This book was fun to read!")
+
+puts result.sentiment.serialize
+puts result.confidence
 ```
 
-### Give an Agent a Typed Tool
+### 4. Run it
 
-Create tools that follow Ruby's duck typing principles with proper type signatures:
-
-```ruby
-# Define a signature for the agent's task
-class WeatherReport < DSPy::Signature
-  description "Generate a weather report for a location"
-
-  input do
-    const :location, String
-  end
-
-  output do
-    const :report, String
-  end
-end
-
-# Tools inherit from DSPy::Tools::Base with Sorbet signatures
-class WeatherTool < DSPy::Tools::Base
-  tool_name "weather"
-  tool_description "Get weather for a location"
-
-  sig { params(location: String).returns(String) }
-  def call(location:)
-    # In real app, this would call an API
-    "72°F and sunny in #{location}"
-  end
-end
-
-# Use with ReAct agent (tools is an array of Base instances)
-agent = DSPy::ReAct.new(
-  WeatherReport,
-  tools: [WeatherTool.new]
-)
+<!-- quick-start-run-command -->
+```bash
+bundle exec ruby classify.rb
 ```
 
-Sorbet signatures let DSPy.rb generate the tool schema presented to the model. The application still owns the tool implementation, side effects, permissions, and error handling.
+You will see a sentiment value followed by a confidence value. Do not depend on a particular label, confidence, or wording: those depend on the model and request. When prediction succeeds, `result.sentiment` is a `Classify::Sentiment` and `result.confidence` is a `Float`.
+
+## What the Boundary Guarantees
+
+The signature supplies the task description plus the input and output schemas. `DSPy::Predict` builds the provider request, converts the response to the declared Ruby types, and rejects incompatible output.
+
+Typed output validation constrains the result shape; it does not prove that the answer is correct. Use named examples and a metric to gather evidence about model behavior; see [Examples and Datasets](/dspy.rb/core-concepts/examples/) and [Evaluation](/dspy.rb/optimization/evaluation/).
+
+## Failure and Testing Boundaries
+
+Because the program uses `ENV.fetch('OPENAI_API_KEY')`, running it without that variable raises Ruby's `KeyError` before `DSPy::LM` is created. An installed core gem without `dspy-openai` instead raises `DSPy::LM::MissingAdapterError` when an `openai/*` model is configured. Provider authentication, transport, rate-limit, and response-validation failures remain separate application errors; [Troubleshooting](/dspy.rb/production/troubleshooting/) lists their owning layers.
+
+Represent expected domain uncertainty in the signature, for example with an enum value such as `Unknown`. Handle configuration and provider failures around the call rather than turning them into a model-generated result.
+
+For deterministic tests, assert the signature schema, result classes, enum membership, and failure boundaries. Record provider calls with VCR or evaluate behavior against examples and a named metric. Avoid tests that require one exact label, confidence, or explanation from a live model.
 
 ## Key Concepts
 
-### Signatures
-
-Signatures define the interface for LLM operations:
-
-```ruby
-class YourSignature < DSPy::Signature
-  description "Clear description of what this does"
-  
-  input do
-    const :input_field, String, description: "What this field represents"
-  end
-  
-  output do
-    const :output_field, String, description: "What the output should be"
-  end
-end
-```
-
 ### Modules and Agents
 
-Modules choose how to execute a signature:
+`DSPy::Predict` performs one typed prediction. `DSPy::ChainOfThought` adds a reasoning field, while `DSPy::ReAct` runs a bounded loop in which the model can select tools. Keep known sequencing and branches in Ruby; use an agent only when a bounded model choice is useful.
 
-- `DSPy::Predict` - Basic LLM completion
-- `DSPy::ChainOfThought` - Step-by-step reasoning
-- `DSPy::ReAct` - A bounded loop in which the model selects tools and actions
-- `DSPy::CodeAct` - Dynamic code execution agents (install the `dspy-code_act` gem)
+### Give an Agent a Typed Tool
 
-### Ruby Programs
-
-Custom modules compose other modules with ordinary Ruby control flow:
+Tools expose Ruby methods through Sorbet signatures:
 
 ```ruby
-class YourModule < DSPy::Module
-  def initialize
-    @predictor1 = DSPy::Predict.new(Signature1)
-    @predictor2 = DSPy::ChainOfThought.new(Signature2)
-  end
-  
-  def forward(**inputs)
-    result1 = @predictor1.call(**inputs)
-    result2 = @predictor2.call(input: result1.output)
-    
-    { final_result: result2.output }
+class WeatherTool < DSPy::Tools::Base
+  tool_name 'weather'
+  tool_description 'Get weather for a location'
+
+  sig { params(location: String).returns(String) }
+  def call(location:)
+    "72°F and sunny in #{location}"
   end
 end
 ```
+
+The application owns the tool implementation, side effects, permissions, error handling, and iteration limits. `ReAct` only owns the bounded loop in which the model selects a tool or returns a result.
 
 ## Next Steps
 
-- Learn about [Core Concepts](../core-concepts)
-- Explore [Signatures & Types](../../core-concepts/signatures)
-- Try [Prompt Optimization](../../optimization/prompt-optimization)
-- Set up [Observability](../../production/observability)
+- Learn how [signatures and types](/dspy.rb/core-concepts/signatures/) define the task contract.
+- Choose among [predictors](/dspy.rb/core-concepts/predictors/).
+- Compose fixed steps with [modules](/dspy.rb/core-concepts/modules/).
+- Add callable capabilities with [toolsets](/dspy.rb/core-concepts/toolsets/).

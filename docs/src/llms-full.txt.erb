@@ -57,10 +57,11 @@ DSPy.rb is a Ruby framework for building language model applications with progra
 
 ### Installation
 
-Add to your Gemfile:
+Every application needs the core gem plus an adapter. For the OpenAI Quick Start, add both packages:
 
 ```ruby
 gem 'dspy'
+gem 'dspy-openai'
 ```
 
 Then run:
@@ -79,65 +80,57 @@ The canonical [package and capability matrix](https://oss.vicente.services/dspy.
 
 `DSPY_WITH_*` flags select local gemspecs only for monorepo development. Application users install the named packages. Package availability does not imply uniform model or provider capability.
 
-### Basic Configuration
+### Canonical Quick Start
+
+The canonical executable guide is [Quick Start](https://oss.vicente.services/dspy.rb/getting-started/quick-start/). Export the key in the same shell:
+
+```bash
+export OPENAI_API_KEY=sk-your-key-here
+```
+
+DSPy.rb does not load `.env` files. Save the following as `classify.rb`:
 
 ```ruby
 require 'dspy'
 
-# Configure with OpenAI
-DSPy.configure do |c|
-  c.lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
-end
+class Classify < DSPy::Signature
+  description "Classify the sentiment of a sentence."
 
-# Or configure with Anthropic
-DSPy.configure do |c|
-  c.lm = DSPy::LM.new('anthropic/claude-sonnet-4-20250514', api_key: ENV['ANTHROPIC_API_KEY'])
-end
+  class Sentiment < T::Enum
+    enums do
+      Positive = new('positive')
+      Negative = new('negative')
+      Neutral = new('neutral')
+    end
+  end
 
-# Or configure with Google Gemini
-DSPy.configure do |c|
-  c.lm = DSPy::LM.new('gemini/gemini-2.5-flash', api_key: ENV['GEMINI_API_KEY'])
-end
+  input do
+    const :sentence, String
+  end
 
-# Or use Ollama for local models
-DSPy.configure do |c|
-  c.lm = DSPy::LM.new('ollama/llama3.2')  # No API key needed for local
-end
-```
-
-### Environment Variables
-
-```bash
-# LLM API Keys
-export OPENAI_API_KEY=sk-your-key-here
-export ANTHROPIC_API_KEY=sk-ant-your-key-here
-export GEMINI_API_KEY=your-gemini-key
-
-# Optional: Observability
-export OTEL_SERVICE_NAME=my-dspy-app
-export OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318
-export LANGFUSE_SECRET_KEY=sk_your_key
-export LANGFUSE_PUBLIC_KEY=pk_your_key
-export NEW_RELIC_LICENSE_KEY=your_license_key
-```
-
-### Advanced Configuration
-
-```ruby
-DSPy.configure do |c|
-  # Language Model
-  c.lm = DSPy::LM.new('openai/gpt-4o-mini',
-    api_key: ENV['OPENAI_API_KEY'],
-    temperature: 0.7,
-    max_tokens: 2000
-  )
-
-  # Observability
-  c.logger = Dry.Logger(:dspy, formatter: :json) do |logger|
-    logger.add_backend(level: :info, stream: $stdout)
+  output do
+    const :sentiment, Sentiment
+    const :confidence, Float
   end
 end
+
+DSPy.configure do |config|
+  config.lm = DSPy::LM.new(
+    'openai/gpt-4o-mini',
+    api_key: ENV.fetch('OPENAI_API_KEY')
+  )
+end
+
+classifier = DSPy::Predict.new(Classify)
+result = classifier.call(sentence: "This book was fun to read!")
+
+puts result.sentiment.serialize
+puts result.confidence
 ```
+
+Run it with `bundle exec ruby classify.rb`. Missing `OPENAI_API_KEY` raises Ruby's `KeyError` before LM initialization. Output values vary, but a successful result contains a `Classify::Sentiment` and a `Float`. Typed output validation constrains shape; it does not establish factual or task correctness.
+
+Use [Installation](https://oss.vicente.services/dspy.rb/getting-started/installation/) for other providers and credentials.
 
 ## Core Concepts
 

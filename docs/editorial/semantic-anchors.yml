@@ -75,7 +75,7 @@ anchors:
     successor_contract: State that typed output validation constrains shape while a named metric and examples provide correctness evidence.
     evidence: [{path: docs/src/_articles/type-safe-prediction-objects.md, locator: "## What the Boundary Does Not Do"}]
     duplicates:
-      - {path: docs/src/getting-started/first-program.md, locator: "Typed output validation constrains", disposition: preserve-through-merge}
+      - {path: docs/src/getting-started/quick-start.md, locator: "Typed output validation constrains", disposition: preserve-through-merge}
       - {path: docs/src/_articles/run-llms-locally-with-ollama-and-type-safe-ruby.md, locator: "Validation rejects incompatible structure", disposition: retain-historical}
 
   - id: ruby-versus-agent-ownership

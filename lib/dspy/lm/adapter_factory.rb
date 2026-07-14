@@ -78,11 +78,11 @@ module DSPy
 
         def ensure_adapter_loaded!(provider)
           adapter_data = adapter_data(provider)
-          require adapter_data.require_path
           msg = <<~ERROR
             Adapter not found: #{adapter_data.class_name}.
             Install the #{adapter_data.gem_name} gem and try again.
           ERROR
+          require adapter_data.require_path
         rescue LoadError
           raise MissingAdapterError, msg
         end

@@ -8,13 +8,12 @@ policy:
   unknown_fragment_reason: An unrecognized fragment cannot be proved safe; send the reader to the reviewed default destination.
 redirects:
   - id: first-program-merge
-    state: planned
+    state: active
     corpus_id: getting-started-first-program
     source: docs/src/getting-started/first-program.md
     from: /getting-started/first-program/
     to: /getting-started/quick-start/#first-program
     target_source: docs/src/getting-started/quick-start.md
-    activation_requires: Merge unique typed-result, validation-boundary, error-handling, and testing guidance before suppressing the source.
     fragments:
       mappings:
         your-first-structured-ai-program: first-program
