@@ -51,7 +51,7 @@ end
 
 Each DSPy module call remains ordinary Ruby. `Async` supplies the reactor; the barrier supplies task ownership and a completion boundary. DSPy.rb does not create the four tasks for you.
 
-The [predictor documentation](https://oss.vicente.services/dspy.rb/core-concepts/predictors/#concurrent-predictions) shows the same application-owned concurrency boundary for DSPy modules.
+The [Concurrent Predictions guide](https://oss.vicente.services/dspy.rb/advanced/concurrent-predictions/) shows the same application-owned concurrency boundary for DSPy modules.
 
 The original coffee shop run reported about 25 seconds sequentially and 7.53 seconds concurrently, or roughly 3.3x. The repository no longer contains the runnable example or benchmark artifact needed to reproduce that result, so treat those numbers as a historical observation, not a current benchmark.
 

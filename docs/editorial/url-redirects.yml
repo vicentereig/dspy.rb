@@ -122,18 +122,19 @@ redirects:
         fine-grained-control: fine-grained-control
         available-predictors-by-agent-type: available-predictors-by-agent-type
         propagation-behavior: propagation-behavior
-        lifecycle-callbacks: lifecycle-callbacks
-        available-callback-types: available-callback-types
-        basic-usage-1: basic-usage-1
-        before-callbacks: before-callbacks
-        after-callbacks: after-callbacks
-        around-callbacks: around-callbacks
-        combined-callbacks: combined-callbacks
-        multiple-callbacks-of-same-type: multiple-callbacks-of-same-type
-        inheritance: inheritance
-        common-use-cases: common-use-cases
-        1-observability-and-metrics: 1-observability-and-metrics
-        2-memory-and-state-management: 2-memory-and-state-management
-        3-rate-limiting-and-circuit-breaking: 3-rate-limiting-and-circuit-breaking
-        4-error-recovery-and-retry-logic: 4-error-recovery-and-retry-logic
+        lifecycle-callbacks: /advanced/module-lifecycle-callbacks/
+        add-module-lifecycle-callbacks: /advanced/module-lifecycle-callbacks/
+        available-callback-types: /advanced/module-lifecycle-callbacks/#define-the-callback-lifecycle
+        basic-usage-1: /advanced/module-lifecycle-callbacks/#wrap-a-module-call
+        before-callbacks: /advanced/module-lifecycle-callbacks/#define-the-callback-lifecycle
+        after-callbacks: /advanced/module-lifecycle-callbacks/#define-the-callback-lifecycle
+        around-callbacks: /advanced/module-lifecycle-callbacks/#define-the-callback-lifecycle
+        combined-callbacks: /advanced/module-lifecycle-callbacks/#define-the-callback-lifecycle
+        multiple-callbacks-of-same-type: /advanced/module-lifecycle-callbacks/#define-the-callback-lifecycle
+        inheritance: /advanced/module-lifecycle-callbacks/#define-the-callback-lifecycle
+        common-use-cases: /advanced/module-lifecycle-callbacks/#choose-the-supported-integration
+        1-observability-and-metrics: /advanced/module-lifecycle-callbacks/#choose-the-supported-integration
+        2-memory-and-state-management: /advanced/module-lifecycle-callbacks/#choose-the-supported-integration
+        3-rate-limiting-and-circuit-breaking: /advanced/module-lifecycle-callbacks/#choose-the-supported-integration
+        4-error-recovery-and-retry-logic: /advanced/module-lifecycle-callbacks/#choose-the-supported-integration
         next-steps: next-steps

@@ -21,6 +21,6 @@ Work with structured data, nested objects, and rich type hierarchies in your sig
 Choose the package that owns an adapter or optional subsystem, then keep package-specific setup and caveats in its linked package guide. General provider selection remains in [Installation](/dspy.rb/getting-started/installation/).
 
 ### [Module Runtime Context](./module-runtime-context/)
-Control language-model resolution and lifecycle callbacks when an integration needs call-scoped behavior.
+Control language-model resolution and propagation when an integration needs call-scoped behavior. Add cross-cutting call behavior in [Module Lifecycle Callbacks](./module-lifecycle-callbacks/).
 
 The complete generated surface remains available in [llms-full.txt](/dspy.rb/llms-full.txt) when you need a single reference document.

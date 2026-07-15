@@ -19,49 +19,7 @@ Custom metrics in DSPy.rb:
 
 ## Built-in Score Evaluators
 
-Before creating custom metrics, check if `DSPy::Scores::Evaluators` provides what you need:
-
-```ruby
-# Exact string match
-DSPy::Scores::Evaluators.exact_match(
-  output: prediction.answer,
-  expected: example.expected_answer,
-  name: 'accuracy',
-  ignore_case: true  # optional case-insensitive matching
-)
-
-# Substring containment
-DSPy::Scores::Evaluators.contains(
-  output: prediction.response,
-  expected: 'required keyword'
-)
-
-# Regex pattern matching
-DSPy::Scores::Evaluators.regex_match(
-  output: prediction.email,
-  pattern: /\A[\w.+-]+@[\w.-]+\.[a-z]{2,}\z/i
-)
-
-# Length validation
-DSPy::Scores::Evaluators.length_check(
-  output: prediction.summary,
-  min_length: 50,
-  max_length: 200
-)
-
-# Levenshtein similarity (0.0 to 1.0)
-DSPy::Scores::Evaluators.similarity(
-  output: prediction.answer,
-  expected: example.expected_answer
-)
-
-# JSON validity check
-DSPy::Scores::Evaluators.json_valid(
-  output: prediction.json_response
-)
-```
-
-Each evaluator returns a `DSPy::Scores::ScoreEvent` that can be exported to Langfuse. See the [Observability guide](/dspy.rb/production/observability/#score-reporting) for details on score export.
+Before creating a custom metric, check the exact-match, containment, regex, length, similarity, and JSON-validity evaluators in [Score Reporting](/dspy.rb/production/score-reporting/#use-built-in-evaluators). That guide owns their arguments, `ScoreEvent` result, exporter configuration, and delivery boundaries. Continue here when the application outcome needs domain-specific logic.
 
 ## Basic Custom Metrics
 

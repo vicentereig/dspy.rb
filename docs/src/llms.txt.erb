@@ -66,14 +66,11 @@ Build complex workflows from simple building blocks:
 - **ReAct** - Tool-using agents
 - **CodeAct** - Dynamic code generation agents (install the `dspy-code_act` gem)
 
-#### Lifecycle callbacks
-Rails-style lifecycle hooks ship with every `DSPy::Module`, so you can wrap `forward` without touching instrumentation:
+#### Module task guides
 
-- **`before`** – runs ahead of `forward` for setup (metrics, context loading)
-- **`around`** – wraps `forward`, calls `yield`, and lets you pair setup/teardown logic
-- **`after`** – fires after `forward` returns for cleanup or persistence
+Lifecycle definitions and the runnable callback example belong to [Module Lifecycle Callbacks](https://oss.vicente.services/dspy.rb/advanced/module-lifecycle-callbacks/). Fiber-local model resolution and propagation remain in [Module Runtime Context](https://oss.vicente.services/dspy.rb/advanced/module-runtime-context/).
 
-Callbacks target `forward` by default, so `around :manage_turn` works without passing `target:`. Execution order is deterministic: all `before` hooks → `around` (pre-yield) → `forward` → `around` (post-yield) → all `after` hooks. See the Module Runtime Context guide for full examples.
+Application-owned batching, joins, failure policy, and measured limits belong to [Concurrent Predictions](https://oss.vicente.services/dspy.rb/advanced/concurrent-predictions/).
 
 ### 3. Tools & Toolsets
 Create type-safe tools for agents with comprehensive Sorbet support:
@@ -282,7 +279,7 @@ Choose from the canonical [package and capability matrix](https://oss.vicente.se
 
 ## Evaluation & Metrics
 
-Comprehensive testing and measurement framework:
+Comprehensive testing and measurement framework. Typed DSPy::Scores, built-in score evaluators, evaluation export, and the bounded Langfuse delivery lifecycle belong to [Score Reporting](https://oss.vicente.services/dspy.rb/production/score-reporting/):
 
 ```ruby
 # Basic evaluation with built-in metrics

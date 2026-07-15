@@ -15,7 +15,7 @@ module DSPy
         Categorical = new('CATEGORICAL')
       end
 
-      sig { params(value: String).returns(DataType) }
+      sig { override.params(value: String).returns(DataType) }
       def self.deserialize(value)
         case value
         when 'NUMERIC' then Numeric

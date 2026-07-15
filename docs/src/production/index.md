@@ -15,7 +15,13 @@ Production applications need explicit ownership of artifacts, telemetry, failure
 Subscribe to typed runtime events for application integrations.
 
 ### [Module Runtime Context](/dspy.rb/advanced/module-runtime-context/)
-Scope language-model selection and lifecycle callbacks across module calls.
+Scope language-model selection and propagation across module calls.
+
+### [Module Lifecycle Callbacks](/dspy.rb/advanced/module-lifecycle-callbacks/)
+Add ordered before, around, and after behavior to a module call.
+
+### [Concurrent Predictions](/dspy.rb/advanced/concurrent-predictions/)
+Join independent predictor calls under an explicit failure policy and measured limit.
 
 ### [Interception and Monkey-Patching](/dspy.rb/advanced/observability-interception/)
 Prefer supported event interception and identify the narrow cases where a monkey patch remains necessary.
@@ -31,6 +37,9 @@ Register and promote versioned program artifacts across environments.
 
 ### [Observability](./observability/)
 Export module, LM, tool, and optimizer telemetry through OpenTelemetry.
+
+### [Score Reporting](./score-reporting/)
+Create typed evaluation scores and bound asynchronous Langfuse delivery.
 
 ### [Troubleshooting](./troubleshooting/)
 Diagnose configuration, provider, parsing, dependency, and test failures.

@@ -129,6 +129,16 @@ items:
   - { section: evaluate-optimize, label: GEPA, url: /optimization/gepa/, source: docs/src/optimization/gepa.md, status: published, traversal: none }
   - { section: evaluate-optimize, label: MIPROv2, url: /optimization/miprov2/, source: docs/src/optimization/miprov2.md, status: published, traversal: none }
   - { section: evaluate-optimize, label: Custom Metrics, url: /advanced/custom-metrics/, source: docs/src/advanced/custom-metrics.md, status: published, traversal: none }
+  - section: evaluate-optimize
+    label: Score Reporting
+    url: /production/score-reporting/
+    source: docs/src/production/score-reporting.md
+    status: published
+    traversal: none
+    exits:
+      - { label: Define an evaluation, url: /optimization/evaluation/ }
+      - { label: Define a custom metric, url: /advanced/custom-metrics/ }
+      - { label: Correlate scores with traces, url: /production/observability/ }
 
   - section: operate
     label: Overview
@@ -143,13 +153,33 @@ items:
       - { label: Troubleshoot failures, url: /production/troubleshooting/ }
   - { section: operate, label: Events, url: /core-concepts/events/, source: docs/src/core-concepts/events.md, status: published, traversal: operate }
   - section: operate
+    label: Concurrent Predictions
+    url: /advanced/concurrent-predictions/
+    source: docs/src/advanced/concurrent-predictions.md
+    status: published
+    traversal: none
+    exits:
+      - { label: Inspect concurrent spans, url: /production/observability/ }
+      - { label: Diagnose provider failures, url: /production/troubleshooting/ }
+  - section: operate
     label: Module Runtime Context
     url: /advanced/module-runtime-context/
     source: docs/src/core-concepts/module-runtime-context.md
     status: published
     traversal: operate
     exits:
+      - { label: Add lifecycle callbacks, url: /advanced/module-lifecycle-callbacks/ }
       - { label: Open the complete LLM reference, url: /llms-full.txt }
+  - section: operate
+    label: Module Lifecycle Callbacks
+    url: /advanced/module-lifecycle-callbacks/
+    source: docs/src/advanced/module-lifecycle-callbacks.md
+    status: published
+    traversal: none
+    exits:
+      - { label: Consume runtime events, url: /core-concepts/events/ }
+      - { label: Inspect traces, url: /production/observability/ }
+      - { label: Prefer supported interception, url: /advanced/observability-interception/ }
   - { section: operate, label: Interception and Monkey-Patching, url: /advanced/observability-interception/, source: docs/src/advanced/observability-interception.md, status: published, traversal: operate }
   - { section: operate, label: Rails, url: /advanced/rails-integration/, source: docs/src/advanced/rails-integration.md, status: published, traversal: operate }
   - { section: operate, label: Storage, url: /production/storage/, source: docs/src/production/storage.md, status: published, traversal: operate }

@@ -16,6 +16,9 @@ Optimization does not define quality for you. Build and inspect the metric first
 ### [Evaluation](./evaluation/)
 Build metrics and evaluation frameworks to measure and improve your modules systematically.
 
+### [Score Reporting](/dspy.rb/production/score-reporting/)
+Attach typed metric results to executions and, when configured, export them to Langfuse.
+
 ### [Benchmarking Raw Prompts](./benchmarking-raw-prompts/)
 Compare an existing prompt with a DSPy module under the same models, examples, and measurements.
 

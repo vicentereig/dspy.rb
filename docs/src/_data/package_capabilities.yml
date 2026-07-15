@@ -335,7 +335,7 @@ packages:
     require_path: dspy/o11y/langfuse
     load_behavior: Core best-effort requires it when installed; its entry point registers Langfuse configuration.
     monorepo_flag: DSPY_WITH_O11Y_LANGFUSE
-    guide: /production/observability/
+    guide: /production/score-reporting/
     capabilities: Langfuse OTLP auto-configuration and score export on top of dspy-o11y.
     limitations: Requires Langfuse credentials and compatible OpenTelemetry dependencies; installation alone does not establish retention, privacy, delivery, or shutdown policy.
     status_basis: { decision: public-package-support-v1, evidence: ['dspy-o11y-langfuse:gemspec', 'dspy-o11y-langfuse:verification'] }

@@ -1,0 +1,236 @@
+version: 1
+measurement:
+  review_trigger: 1500
+  unit: markdown-body-token
+  frontmatter: Excluded when the file begins with a YAML frontmatter block delimited by `---` lines.
+  token_pattern: "[[:alnum:]_]+(?:[-_][[:alnum:]_]+)*"
+  fenced_code: Included. Fence delimiters and punctuation do not count; every lexical word, identifier, and numeric literal inside a fence is counted by the same token pattern as prose.
+  policy: The trigger opens a reader-task review. It is never a quota and never requires a split.
+
+initial_inventory:
+  - {source: docs/src/production/observability.md, tokens: 3215}
+  - {source: docs/src/advanced/complex-types.md, tokens: 3166}
+  - {source: docs/src/core-concepts/signatures.md, tokens: 2312}
+  - {source: docs/src/core-concepts/predictors.md, tokens: 1992}
+  - {source: docs/src/core-concepts/multimodal.md, tokens: 1813}
+  - {source: docs/src/optimization/gepa.md, tokens: 1772}
+  - {source: docs/src/advanced/custom-metrics.md, tokens: 1771}
+  - {source: docs/src/advanced/stateful-agents.md, tokens: 1739}
+  - {source: docs/src/advanced/rails-integration.md, tokens: 1731}
+  - {source: docs/src/core-concepts/module-runtime-context.md, tokens: 1646}
+  - {source: docs/src/core-concepts/modules.md, tokens: 1528}
+  - {source: docs/src/index.md, tokens: 2693}
+  - {source: CHANGELOG.md, tokens: 8486}
+
+dispositions:
+  - source: docs/src/production/observability.md
+    measured_tokens: 2776
+    outcome: split
+    audience: Operator tracing runtime execution.
+    reason: Score export is independently sought by quality owners; tracing architecture remains coherent and intentionally over the trigger.
+    canonical_definitions: [trace architecture, observation types, events, Langfuse trace configuration]
+    example_owner: docs/src/production/observability.md
+    anchor_policy: rendered
+    anchors: [observability, score-reporting, langfuse-integration-zero-configuration]
+    inbound_review: [docs/src/advanced/custom-metrics.md]
+    discovery_review: [corpus, navigation, sitemap, llms.txt, llms-full.txt]
+    risk_review: Trace setup and the protected trace-not-correctness boundary remain with Observability; score definitions are not duplicated.
+  - source: docs/src/advanced/complex-types.md
+    measured_tokens: 3166
+    outcome: keep
+    audience: Signature author modeling rich nested values.
+    reason: The types share discriminator and schema definitions; splitting would duplicate setup and fragment one reference task.
+    canonical_definitions: [enums, structs, unions, recursive types]
+    example_owner: docs/src/advanced/complex-types.md
+    anchor_policy: rendered
+    anchors: [rich-types]
+    inbound_review: []
+    discovery_review: [corpus, navigation, sitemap]
+    risk_review: Keep provider caveats beside the types they constrain.
+  - source: docs/src/core-concepts/signatures.md
+    measured_tokens: 2312
+    outcome: keep
+    audience: Developer defining a typed LLM contract.
+    reason: Inputs, outputs, instructions, nullable fields, and defaults form one reference task.
+    canonical_definitions: [signature, input field, output field, nullable and omittable fields]
+    example_owner: docs/src/core-concepts/signatures.md
+    anchor_policy: rendered
+    anchors: [signatures, nullable-and-omittable-fields]
+    inbound_review: []
+    discovery_review: [corpus, navigation, sitemap]
+    risk_review: Preserve the validation-not-correctness semantic anchor.
+  - source: docs/src/core-concepts/predictors.md
+    measured_tokens: 1453
+    outcome: split
+    audience: Developer choosing and invoking a predictor.
+    reason: Concurrent scheduling is application control flow independently sought after predictor selection.
+    canonical_definitions: [Predict, ChainOfThought, ReAct, predictor comparison]
+    example_owner: docs/src/core-concepts/predictors.md
+    anchor_policy: rendered
+    anchors: [predictor-comparison, concurrent-predictions]
+    inbound_review: [docs/src/_articles/concurrent-llm-processing-performance-gains.md]
+    discovery_review: [corpus, navigation, sitemap, llms.txt, llms-full.txt]
+    risk_review: Preserve predictor taxonomy and #predictor-comparison; retain the old fragment as an obvious canonical handoff.
+  - source: docs/src/core-concepts/multimodal.md
+    measured_tokens: 1813
+    outcome: keep
+    audience: Developer adding typed media inputs.
+    reason: Media construction, provider constraints, and typed signature use share one runnable setup.
+    canonical_definitions: [Image, Audio, Document, multimodal signature]
+    example_owner: docs/src/core-concepts/multimodal.md
+    anchor_policy: rendered
+    anchors: [multimodal-support]
+    inbound_review: []
+    discovery_review: [corpus, navigation, sitemap]
+    risk_review: Keep provider and payload limits adjacent to examples.
+  - source: docs/src/optimization/gepa.md
+    measured_tokens: 1772
+    outcome: keep
+    audience: Quality owner running reflective prompt evolution.
+    reason: Budget, feedback map, compilation, telemetry, and result inspection are one optimization run.
+    canonical_definitions: [GEPA workflow, feedback map, reflection budget]
+    example_owner: docs/src/optimization/gepa.md
+    anchor_policy: rendered
+    anchors: [gepa-optimizer]
+    inbound_review: []
+    discovery_review: [corpus, navigation, sitemap]
+    risk_review: Do not separate budgets from the loop they bound.
+  - source: docs/src/advanced/custom-metrics.md
+    measured_tokens: 1684
+    outcome: keep
+    audience: Quality owner implementing domain scoring logic.
+    reason: Metric patterns share evaluation setup and progress from scalar to composite behavior.
+    canonical_definitions: [custom metric, composite metric]
+    example_owner: docs/src/advanced/custom-metrics.md
+    anchor_policy: rendered
+    anchors: [custom-metrics]
+    inbound_review: [docs/src/production/score-reporting.md]
+    discovery_review: [corpus, navigation, sitemap]
+    risk_review: Export configuration moved out; metric semantics remain canonical here.
+  - source: docs/src/advanced/stateful-agents.md
+    measured_tokens: 1739
+    outcome: keep
+    audience: Agent builder preserving conversation state.
+    reason: State representation, turn execution, persistence, and recovery are one lifecycle task.
+    canonical_definitions: [conversation state, persistence boundary]
+    example_owner: docs/src/advanced/stateful-agents.md
+    anchor_policy: rendered
+    anchors: [stateful-agents]
+    inbound_review: []
+    discovery_review: [corpus, navigation, sitemap]
+    risk_review: Splitting would detach recovery from state ownership.
+  - source: docs/src/advanced/rails-integration.md
+    measured_tokens: 1731
+    outcome: keep
+    audience: Rails developer integrating DSPy.rb into application lifecycles.
+    reason: Service, job, cache, validation, and instrumentation choices share Rails ownership and setup.
+    canonical_definitions: [Rails initializer, service boundary, job boundary]
+    example_owner: docs/src/advanced/rails-integration.md
+    anchor_policy: rendered
+    anchors: [rails-integration-guide]
+    inbound_review: [docs/src/advanced/module-lifecycle-callbacks.md]
+    discovery_review: [corpus, navigation, sitemap]
+    risk_review: Callback definitions link to their new owner; Rails-specific use remains here.
+  - source: docs/src/core-concepts/module-runtime-context.md
+    measured_tokens: 827
+    outcome: split
+    audience: Module author selecting and propagating runtime models.
+    reason: Lifecycle callbacks are independently sought module-authoring behavior; LM resolution remains one coherent task.
+    canonical_definitions: [DSPy.with_lm, LM resolution hierarchy, child LM propagation]
+    example_owner: docs/src/core-concepts/module-runtime-context.md
+    anchor_policy: rendered
+    anchors: [module-runtime-context, lifecycle-callbacks]
+    inbound_review: [docs/src/advanced/rails-integration.md, docs/editorial/url-redirects.yml]
+    discovery_review: [corpus, navigation, sitemap, llms.txt, llms-full.txt]
+    risk_review: Preserve the retained advanced route and migrate the already-active old-route fragment directly to the new owner.
+  - source: docs/src/core-concepts/modules.md
+    measured_tokens: 1528
+    outcome: keep
+    audience: Developer composing predictors into reusable behavior.
+    reason: Forward semantics, composition, configuration, and serialization form the module contract.
+    canonical_definitions: [DSPy::Module, forward, module composition]
+    example_owner: docs/src/core-concepts/modules.md
+    anchor_policy: rendered
+    anchors: [modules]
+    inbound_review: []
+    discovery_review: [corpus, navigation, sitemap]
+    risk_review: Keep the module contract ahead of advanced callbacks.
+  - source: docs/src/index.md
+    measured_tokens: 2693
+    outcome: keep
+    audience: Documentation visitor selecting a task path.
+    reason: This is a selector and orientation surface, not a linear guide; sections serve distinct entry audiences without duplicating task definitions.
+    canonical_definitions: [documentation journey selector]
+    example_owner: docs/src/index.md
+    anchor_policy: none
+    anchor_rationale: The custom home layout is a task selector and renders no content heading IDs; route lookup is its stable entry contract.
+    anchors: []
+    inbound_review: []
+    discovery_review: [corpus, navigation, sitemap]
+    risk_review: Preserve task discovery and avoid turning selector cards into competing guides.
+  - source: CHANGELOG.md
+    measured_tokens: 8486
+    outcome: keep
+    audience: Maintainer or upgrader checking release history.
+    reason: Chronology is the lookup structure; splitting at an arbitrary size would break release scanning and stable repository history.
+    canonical_definitions: [release history]
+    example_owner: CHANGELOG.md
+    anchor_policy: source-heading
+    anchors: [changelog]
+    inbound_review: []
+    discovery_review: [corpus, repository history]
+    risk_review: This is the explicit history boundary and is not site navigation prose.
+
+splits:
+  - id: concurrent-predictions
+    route: /advanced/concurrent-predictions/
+    source: docs/src/advanced/concurrent-predictions.md
+    owner: concurrent prediction task
+    outcome: Run and join a bounded concurrent prediction batch.
+    prerequisites: [docs/src/core-concepts/predictors.md, async gem]
+    exits: [/production/observability/, /production/troubleshooting/]
+    example_owner: docs/src/advanced/concurrent-predictions.md
+    canonical_definitions: [application-owned concurrency, Async::Barrier join, batch failure policy]
+    moved_from: docs/src/core-concepts/predictors.md
+    compatibility:
+      source: docs/src/core-concepts/predictors.md
+      anchor: concurrent-predictions
+      aliases: [when-to-use-concurrent-predictions, basic-concurrent-pattern, measure-the-transport, real-world-example, error-handling-in-concurrent-predictions, requirements, constraints-for-concurrent-predictions]
+      canonical_route: /advanced/concurrent-predictions/
+    protected_anchors: [{source: docs/src/core-concepts/predictors.md, anchor: predictor-comparison}]
+  - id: module-lifecycle-callbacks
+    route: /advanced/module-lifecycle-callbacks/
+    source: docs/src/advanced/module-lifecycle-callbacks.md
+    owner: module callback lifecycle task
+    outcome: Add ordered callbacks around a module forward call.
+    prerequisites: [docs/src/core-concepts/modules.md]
+    exits: [/core-concepts/events/, /production/observability/, /advanced/observability-interception/]
+    example_owner: docs/src/advanced/module-lifecycle-callbacks.md
+    canonical_definitions: [before callback, around callback, after callback, callback order]
+    moved_from: docs/src/core-concepts/module-runtime-context.md
+    compatibility:
+      source: docs/src/core-concepts/module-runtime-context.md
+      anchor: lifecycle-callbacks
+      aliases: [available-callback-types, basic-usage-1, before-callbacks, after-callbacks, around-callbacks, combined-callbacks, multiple-callbacks-of-same-type, inheritance, common-use-cases, 1-observability-and-metrics, 2-memory-and-state-management, 3-rate-limiting-and-circuit-breaking, 4-error-recovery-and-retry-logic]
+      canonical_route: /advanced/module-lifecycle-callbacks/
+    protected_anchors: []
+  - id: score-reporting
+    route: /production/score-reporting/
+    source: docs/src/production/score-reporting.md
+    owner: score reporting task
+    outcome: Create typed scores and export them with a bounded delivery lifecycle.
+    prerequisites: [docs/src/optimization/evaluation.md, docs/src/advanced/custom-metrics.md]
+    exits: [/optimization/evaluation/, /advanced/custom-metrics/, /production/observability/]
+    example_owner: docs/src/production/score-reporting.md
+    canonical_definitions: [DSPy::Scores::ScoreEvent, DSPy::Scores::DataType, score evaluators, Langfuse score exporter]
+    moved_from: docs/src/production/observability.md
+    compatibility:
+      source: docs/src/production/observability.md
+      anchor: score-reporting
+      aliases: [basic-usage, score-data-types, built-in-evaluators, automatic-score-export-with-evals, async-langfuse-export, context-propagation, event-driven-architecture]
+      canonical_route: /production/score-reporting/
+    protected_anchors: [{source: docs/src/production/observability.md, anchor: observability}]
+
+decision_fixtures:
+  - {id: over-trigger-keep, measured_tokens: 1501, outcome: keep, independently_sought_task: false}
+  - {id: under-trigger-split, measured_tokens: 1499, outcome: split, independently_sought_task: true}

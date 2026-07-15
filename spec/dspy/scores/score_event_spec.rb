@@ -177,5 +177,11 @@ RSpec.describe DSPy::Scores::DataType do
     it 'has Categorical type' do
       expect(DSPy::Scores::DataType::Categorical.serialize).to eq('CATEGORICAL')
     end
+
+    it 'deserializes exporter event values' do
+      expect(DSPy::Scores::DataType.deserialize('NUMERIC')).to eq(DSPy::Scores::DataType::Numeric)
+      expect(DSPy::Scores::DataType.deserialize('BOOLEAN')).to eq(DSPy::Scores::DataType::Boolean)
+      expect(DSPy::Scores::DataType.deserialize('CATEGORICAL')).to eq(DSPy::Scores::DataType::Categorical)
+    end
   end
 end
