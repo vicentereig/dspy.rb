@@ -120,7 +120,7 @@ The schema converter supports the subset covered by DSPy.rb's Gemini specs, incl
 
 ## Raw Responses and Streaming
 
-`raw_chat` returns a `DSPy::LM::Response` with `content`, optional `usage`, and Gemini metadata:
+`raw_chat` returns the accumulated text as a `String`:
 
 ```ruby
 lm = DSPy::LM.new(
@@ -128,19 +128,32 @@ lm = DSPy::LM.new(
   api_key: ENV.fetch("GEMINI_API_KEY")
 )
 
-response = lm.raw_chat([
+text = lm.raw_chat([
   { role: "user", content: "Explain Fiber-local storage in two sentences." }
 ])
 
-puts response.content
-pp response.usage&.to_h
-pp response.metadata.to_h
+puts text
 ```
+
+The return value does not expose the adapter's internal response object. Subscribe to `lm.tokens` for usage plus provider and model attribution:
+
+```ruby
+subscription_id = DSPy.events.subscribe("lm.tokens") do |_event_name, attributes|
+  puts "Tokens: #{attributes[:total_tokens]}"
+  puts "Provider: #{attributes['gen_ai.system']}"
+  puts "Model: #{attributes['gen_ai.request.model']}"
+end
+
+lm.raw_chat([{ role: "user", content: "Explain Fiber-local storage." }])
+DSPy.events.unsubscribe(subscription_id)
+```
+
+With observability enabled, LM spans also record the completion, requested model, response model when available, and token usage. Gemini-specific finish reasons and safety ratings are not part of the public `raw_chat` return value.
 
 The Gemini transport streams by default outside ordinary VCR recordings. When a block is supplied in array mode, the adapter yields provider chunks and still accumulates the final response:
 
 ```ruby
-response = lm.raw_chat([{ role: "user", content: "Count to five." }]) do |chunk|
+text = lm.raw_chat([{ role: "user", content: "Count to five." }]) do |chunk|
   pp chunk
 end
 ```
@@ -151,7 +164,7 @@ Those callbacks expose provider chunks, not partial typed predictions. DSPy.rb v
 
 - Gemini has no separate system role in this adapter; system messages are sent as user content.
 - Inline image data is supported; image URLs are not.
-- Safety ratings and finish reasons are exposed as metadata when Gemini returns them.
+- The adapter records safety ratings and finish reasons internally when Gemini returns them, but `raw_chat` does not expose that metadata.
 - Generation options accepted by `DSPy::LM.new` are passed to the adapter constructor only if that constructor declares them. The current Gemini constructor exposes `structured_outputs`, not a general generation-parameter API.
 
 Keep the task in the signature, keep model-specific behavior at the adapter boundary, and evaluate the complete program against examples that resemble its actual inputs.
