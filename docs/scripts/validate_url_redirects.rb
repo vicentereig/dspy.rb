@@ -79,8 +79,12 @@ def artifact(output, route)
 end
 
 output = nil
-OptionParser.new { _1.on("--output PATH") { |path| output = Pathname.new(path).expand_path } }.parse!
-manifest = YAML.safe_load_file(ROOT.join("editorial/url-redirects.yml"))
+manifest_path = ROOT.join("editorial/url-redirects.yml")
+OptionParser.new do |options|
+  options.on("--output PATH") { |path| output = Pathname.new(path).expand_path }
+  options.on("--manifest PATH") { |path| manifest_path = Pathname.new(path).expand_path }
+end.parse!
+manifest = YAML.safe_load_file(manifest_path)
 corpus = YAML.safe_load_file(ROOT.join("editorial/public-doc-corpus.yml"))
 errors = []
 redirects = manifest.fetch("redirects", [])

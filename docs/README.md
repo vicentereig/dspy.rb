@@ -5,9 +5,12 @@ This is the documentation website for DSPy.rb, built with Bridgetown and styled 
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Ruby 3.0+
+- Ruby from the repository's `.ruby-version` (the authoritative rbenv/CI version)
 - Bun 1.0+
 - Bundler
+
+`.tool-versions` retains Ruby 3.3.7 for asdf compatibility; it does not override
+the `.ruby-version` pin used by this repository's documented commands and CI.
 
 ### Development
 
@@ -31,6 +34,39 @@ BRIDGETOWN_ENV=production bundle exec bridgetown build
 ```
 
 The built site will be in the `output/` directory.
+
+### Documentation quality
+
+From the repository root, install both bundles and the asset dependencies once:
+
+```bash
+rbenv exec bundle install
+cd docs
+rbenv exec bundle install
+bun install
+bunx playwright install chromium
+cd ..
+```
+
+Then run the one local and CI quality command from the repository root:
+
+```bash
+ruby docs/scripts/check_documentation_quality.rb
+```
+
+With rbenv, the repository's shim selects `.ruby-version` automatically;
+`rbenv exec` is an equivalent explicit wrapper.
+
+The command runs 21 fail-fast steps: it validates source structure and redirect
+script escaping, runs only the explicitly marked Quick Start, Toolsets, and
+long-page snippet specs, cleans and builds the production site once, and
+validates rendered routes, fragments, packages, and `llms*.txt`.
+Generic Ruby fences, Rails/provider recipes, and VCR examples are not selected
+for execution. Snippet specs use sentinel credentials and must prove that no
+live HTTP request occurs. The internal-link check resolves local links and
+anchors without fetching external URLs. The economy audit is advisory: its
+findings do not fail the command, while invocation, configuration, parse, and
+read failures do.
 
 ## 📁 Structure
 
@@ -95,10 +131,10 @@ or multi-audience page should remain in navigation without joining a pager.
 Never add `breadcrumb`, `nav`,
 `prev`, `next`, `nav_order`, `order`, or `parent` to page frontmatter.
 
-Run `rbenv exec ruby scripts/validate_documentation_navigation.rb` from `docs/`
-after a navigation change. Pass `--output output` after a production build to
-check the desktop sidebar, mobile sidebar, breadcrumbs, contextual exits, and
-each traversal's boundaries.
+Run the root documentation-quality command after a navigation change. It checks
+the source manifest before the build, then checks the desktop sidebar, mobile
+sidebar, breadcrumbs, contextual exits, and traversal boundaries against the
+fresh production output.
 
 ## 🐛 Troubleshooting
 

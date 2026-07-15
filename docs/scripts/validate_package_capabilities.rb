@@ -2,13 +2,14 @@
 # frozen_string_literal: true
 
 require "open3"
+require "optparse"
 require "pathname"
 require "yaml"
 
 ROOT = Pathname.new(__dir__).join("../..").expand_path
 MATRIX_PATH = ROOT.join("docs/src/_data/package_capabilities.yml")
 NAV_PATH = ROOT.join("docs/src/_data/documentation_navigation.yml")
-OUTPUT = ROOT.join("docs/output")
+DEFAULT_OUTPUT = ROOT.join("docs/output")
 STATUSES = %w[preview supported supporting].freeze
 ROLES = %w[core optional-feature provider-adapter supporting-library].freeze
 VISIBILITIES = %w[internal public].freeze
@@ -28,6 +29,13 @@ REQUIRED_SELECTION_SURFACES = %w[
 def read_utf8(path)
   File.binread(path).force_encoding(Encoding::UTF_8).scrub
 end
+
+output = DEFAULT_OUTPUT
+source_only = false
+OptionParser.new do |options|
+  options.on("--output PATH") { |path| output = Pathname.new(path).expand_path }
+  options.on("--source-only") { source_only = true }
+end.parse!
 
 matrix = YAML.safe_load_file(MATRIX_PATH)
 packages = matrix.fetch("packages")
@@ -234,7 +242,10 @@ errors << "CodeAct boundary must deny sandbox and permission guarantees" unless 
 end
 
 llms_source = read_utf8(ROOT.join("docs/src/llms.txt.erb"))
-errors << "llms.txt.erb: legacy hand-maintained provider inventory remains" if llms_source.include?("## Provider Adapter Gems") || llms_source.match?(/^gem 'dspy-(?:openai|anthropic|gemini)'/)
+legacy_provider_rows = llms_source.scan(/^gem 'dspy-(?:openai|anthropic|gemini)'/).uniq
+if llms_source.include?("## Provider Adapter Gems") || legacy_provider_rows.length > 1
+  errors << "llms.txt.erb: legacy hand-maintained provider inventory remains"
+end
 errors << "llms.txt.erb: hand-maintained observability install inventory remains" if llms_source.include?("Install `dspy-o11y` plus")
 package_guide_source = read_utf8(ROOT.join("docs/src/getting-started/packages.md"))
 %w[left_package.visibility right_package.visibility].each do |guard|
@@ -256,11 +267,11 @@ claim_sources.each do |path|
 end
 
 # When a production build exists, validate visibility and plain-text generation.
-if OUTPUT.directory?
+if !source_only && output.directory?
   public_gems = packages.select { _1["visibility"] == "public" }.map { _1["gem"] }
   internal_gems = packages.select { _1["visibility"] == "internal" }.map { _1["gem"] }
   %w[llms.txt llms-full.txt].each do |name|
-    path = OUTPUT.join(name)
+    path = output.join(name)
     unless path.file?
       errors << "#{path}: production output missing"
       next
@@ -272,7 +283,7 @@ if OUTPUT.directory?
     internal_gems.each { |gem| errors << "#{path}: internal package leaked #{gem}" if text.include?("- `#{gem}`") }
   end
 
-  guide = OUTPUT.join("getting-started/packages/index.html")
+  guide = output.join("getting-started/packages/index.html")
   if guide.file?
     html = read_utf8(guide)
     public_gems.each { |gem| errors << "#{guide}: public package heading missing #{gem}" unless html.include?(%(<h3 id="#{gem}">)) }

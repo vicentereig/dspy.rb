@@ -11,6 +11,53 @@ permissions:
   contents: read
 
 jobs:
+  docs-quality:
+    name: Documentation quality
+    runs-on: ubuntu-latest
+    env:
+      DSPY_WITH_OPENAI: '1'
+      DSPY_WITH_GEMINI: '1'
+      DSPY_WITH_ANTHROPIC: '1'
+      DSPY_WITH_SCHEMA: '1'
+      DSPY_WITH_CODE_ACT: '0'
+      DSPY_WITH_DATASETS: '0'
+      DSPY_WITH_EVALS: '0'
+      DSPY_WITH_MIPROV2: '0'
+      DSPY_WITH_O11Y: '1'
+      DSPY_WITH_O11Y_LANGFUSE: '1'
+      DSPY_WITH_GEPA: '0'
+      DSPY_WITH_RUBY_LLM: '0'
+      DSPY_DISABLE_OBSERVABILITY: 'true'
+      OPENAI_API_KEY: test-openai-key-no-network
+      ANTHROPIC_API_KEY: test-anthropic-key-no-network
+      GEMINI_API_KEY: test-gemini-key-no-network
+      LANGFUSE_PUBLIC_KEY: test-public-key-no-network
+      LANGFUSE_SECRET_KEY: test-secret-key-no-network
+    steps:
+    - uses: actions/checkout@v4
+    - name: Read Ruby version from .ruby-version
+      id: ruby-version
+      run: echo "version=$(cat .ruby-version)" >> $GITHUB_OUTPUT
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: ${{ steps.ruby-version.outputs.version }}
+        bundler-cache: false
+    - name: Set up Bun
+      uses: oven-sh/setup-bun@v2
+      with:
+        bun-version: latest
+    - name: Install root dependencies
+      run: bundle install --jobs 4
+    - name: Install documentation dependencies
+      working-directory: docs
+      run: |
+        bundle install --jobs 4
+        bun install --frozen-lockfile
+        bunx playwright install chromium --with-deps
+    - name: Run the documentation quality gate
+      run: ruby docs/scripts/check_documentation_quality.rb
+
   test:
     runs-on: ubuntu-latest
     # TODO: explore ways to test the matrix across several Ruby versions instead of a single .ruby-version pin.

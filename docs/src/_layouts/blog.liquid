@@ -13,7 +13,7 @@
         {{ page.title }}
       </h1>
       <p class="mt-2 text-base text-gray-500" style="font-family: 'Newsreader', Georgia, serif;">
-        {{ page.date | date: "%B %Y" }} – <a href="/" class="text-gray-500 no-underline hover:text-gray-900 hover:underline" style="text-underline-offset: 3px;">{{ page.author | default: "Vicente Reig Rincón de Arellano" }}</a>
+        {{ page.date | date: "%B %Y" }} – <a href="{{ '/' | relative_url }}" class="text-gray-500 no-underline hover:text-gray-900 hover:underline" style="text-underline-offset: 3px;">{{ page.author | default: "Vicente Reig Rincón de Arellano" }}</a>
       </p>
     </header>
 

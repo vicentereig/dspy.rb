@@ -225,6 +225,13 @@ optimized = gepa.compile(program, trainset: train_examples, valset: val_examples
 
 The canonical executable guide is [Quick Start](https://oss.vicente.services/dspy.rb/getting-started/quick-start/). Add the core `dspy` gem and the `dspy-openai` adapter to a Gemfile, run `bundle install`, export `OPENAI_API_KEY`, save the following as `classify.rb`, and run `bundle exec ruby classify.rb`.
 
+```ruby
+source 'https://rubygems.org'
+
+gem 'dspy'
+gem 'dspy-openai'
+```
+
 ```bash
 export OPENAI_API_KEY=sk-your-key-here
 ```
@@ -410,6 +417,7 @@ end
 ## Documentation Structure
 
 - **Getting Started** - Provider installation and one canonical Quick Start
+- **Toolsets** - https://oss.vicente.services/dspy.rb/core-concepts/toolsets/
 - **Core Concepts** - Signatures, modules, predictors, multimodal, examples
 - **Advanced** - Complex types, stateful agents, RAG
 - **Optimization** - Prompt tuning, evaluation, benchmarking

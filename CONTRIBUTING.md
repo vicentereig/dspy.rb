@@ -90,29 +90,30 @@ bundle exec rspec spec/path/to/file_spec.rb
 
 4. **Verify documentation builds:**
 
-   The documentation site requires additional setup:
+   The documentation site requires its Ruby bundle, Bun dependencies, and a
+   Playwright Chromium install for OG image generation:
 
    ```bash
    # Install Bun (if not already installed)
    curl -fsSL https://bun.sh/install | bash
 
-   # Navigate to docs directory
+   # Install root dependencies from the repository root
+   rbenv exec bundle install
+
+   # Install documentation dependencies
    cd docs
-
-   # Install npm dependencies
    bun install
+   bunx playwright install chromium
+   rbenv exec bundle install
+   cd ..
 
-   # Install Playwright browsers for OG image generation
-   npx playwright install --with-deps chromium
-
-   # Install Ruby dependencies
-   bundle install
-
-   # Verify the build works
-   BRIDGETOWN_ENV=production bun run build
+   # Run the sole local and CI documentation gate
+   ruby docs/scripts/check_documentation_quality.rb
    ```
 
-   The build should complete without errors. If successful, the site will be in `output/`.
+   `.ruby-version` is authoritative for rbenv and CI. The divergent Ruby 3.3.7
+   in `.tool-versions` remains an asdf compatibility declaration, not the
+   version used by this command.
 
 ### Commit Guidelines
 
@@ -160,6 +161,21 @@ When changing APIs or adding features, update the docs:
 - **Examples:** Add to `examples/` directory
 
 The documentation site is in `docs/` and built with Bridgetown. Always verify your changes build successfully.
+
+Run `ruby docs/scripts/check_documentation_quality.rb` from the
+repository root for every documentation change. It executes only snippets in
+`docs/editorial/executable-snippets.yml`: the canonical Quick Start, Toolsets,
+and long-page examples. Generic Ruby fences, Rails/provider examples, token
+examples, and VCR recipes are not executed. The designated specs use sentinel
+keys and enforce offline behavior. Rendered internal URLs and fragments are
+resolved locally; redirect JavaScript escaping is checked with the docs bundle;
+the gate never fetches external URLs. Economical-writing
+findings remain an advisory reviewer queue and do not fail CI, although scanner
+configuration, parsing, invocation, and read failures do.
+
+The canonical command relies on the rbenv shim to select `.ruby-version`
+locally and on `ruby/setup-ruby` to select the same file in CI. `rbenv exec` is
+an equivalent explicit local wrapper, but CI does not require an rbenv binary.
 
 ### Review Public Documentation Changes
 

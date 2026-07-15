@@ -1,0 +1,19 @@
+version: 1
+policy:
+  selection: Only fences immediately following these exact markers are executable documentation.
+  network: Specs must block or stub network access; no live provider request is permitted.
+  unmarked: Unmarked Ruby, Rails, provider, token, and VCR fences are illustrative and are never selected.
+specs:
+  - spec/documentation/quick_start_spec.rb
+  - spec/documentation/toolsets_spec.rb
+  - spec/documentation/long_page_examples_spec.rb
+snippets:
+  - {source: docs/src/getting-started/quick-start.md, marker: quick-start-gemfile, language: ruby, spec: spec/documentation/quick_start_spec.rb}
+  - {source: docs/src/getting-started/quick-start.md, marker: quick-start-install-command, language: bash, spec: spec/documentation/quick_start_spec.rb}
+  - {source: docs/src/getting-started/quick-start.md, marker: quick-start-api-key-command, language: bash, spec: spec/documentation/quick_start_spec.rb}
+  - {source: docs/src/getting-started/quick-start.md, marker: quick-start-program, language: ruby, spec: spec/documentation/quick_start_spec.rb}
+  - {source: docs/src/getting-started/quick-start.md, marker: quick-start-run-command, language: bash, spec: spec/documentation/quick_start_spec.rb}
+  - {source: docs/src/core-concepts/toolsets.md, marker: toolsets-text-processing-example, language: ruby, spec: spec/documentation/toolsets_spec.rb}
+  - {source: docs/src/advanced/concurrent-predictions.md, marker: concurrent-predictions-program, language: ruby, spec: spec/documentation/long_page_examples_spec.rb}
+  - {source: docs/src/advanced/module-lifecycle-callbacks.md, marker: module-lifecycle-callbacks-program, language: ruby, spec: spec/documentation/long_page_examples_spec.rb}
+  - {source: docs/src/production/score-reporting.md, marker: score-reporting-program, language: ruby, spec: spec/documentation/long_page_examples_spec.rb}

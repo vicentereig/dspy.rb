@@ -41,7 +41,7 @@ result = predictor.call(
 )
 ```
 
-[Predict](https://oss.vicente.services/dspy.rb/core-concepts/predictors/), [ChainOfThought](https://oss.vicente.services/dspy.rb/core-concepts/modules/#chain-of-thought), and [ReAct](https://oss.vicente.services/dspy.rb/blog/articles/react-agent-tutorial/) can carry the configured format through their prompts. ReAct also renders its history and observations through the configured data format.
+[Predict](https://oss.vicente.services/dspy.rb/core-concepts/predictors/), [ChainOfThought](https://oss.vicente.services/dspy.rb/core-concepts/predictors/#dspychainofthought), and [ReAct](https://oss.vicente.services/dspy.rb/blog/articles/react-agent-tutorial/) can carry the configured format through their prompts. ReAct also renders its history and observations through the configured data format.
 
 ## What the Benchmark Measured
 
