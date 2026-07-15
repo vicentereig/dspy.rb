@@ -1,10 +1,10 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require "open3"
 require "optparse"
 require "pathname"
 require "yaml"
+require_relative "validate_legacy_package_evidence"
 
 ROOT = Pathname.new(__dir__).join("../..").expand_path
 MATRIX_PATH = ROOT.join("docs/src/_data/package_capabilities.yml")
@@ -222,9 +222,8 @@ legacy_names = matrix.fetch("legacy_names")
 legacy_names.each do |legacy|
   errors << "legacy package still appears current: #{legacy['name']}" if packages.any? { _1["gem"] == legacy["name"] }
   errors << "legacy replacement missing: #{legacy['replacement']}" unless packages.any? { _1["gem"] == legacy["replacement"] }
-  _out, _err, status = Open3.capture3("git", "cat-file", "-e", "#{legacy.fetch('evidence_commit')}^{commit}", chdir: ROOT.to_s)
-  errors << "legacy evidence commit missing: #{legacy['evidence_commit']}" unless status.success?
 end
+errors.concat(DocumentationQuality::LegacyPackageEvidence.new(root: ROOT, entries: legacy_names).errors)
 
 ruby_llm = packages.find { _1["gem"] == "dspy-ruby_llm" }
 errors << "RubyLLM boundary must name provider/model/registry/SDK variability" unless %w[provider model registry sdk].all? { ruby_llm.fetch("limitations").downcase.include?(_1) }

@@ -99,11 +99,21 @@ legacy_names:
   - name: dspy-deepsearch
     replacement: dspy-deep_search
     disposition: retired-name
-    evidence_commit: 8702acb
+    evidence_commit: 8702acb800a6ddf75bbcddbec3dc6af318b30edf
+    evidence_subject: Rename gemspecs to deep_search and deep_research
+    former_gemspec: dspy-deepsearch.gemspec
+    former_locator: 'spec.name          = "dspy-deepsearch"'
+    replacement_gemspec: dspy-deep_search.gemspec
+    replacement_locator: 'spec.name          = "dspy-deep_search"'
   - name: dspy-deepresearch
     replacement: dspy-deep_research
     disposition: retired-name
-    evidence_commit: 8702acb
+    evidence_commit: 8702acb800a6ddf75bbcddbec3dc6af318b30edf
+    evidence_subject: Rename gemspecs to deep_search and deep_research
+    former_gemspec: dspy-deepresearch.gemspec
+    former_locator: 'spec.name          = "dspy-deepresearch"'
+    replacement_gemspec: dspy-deep_research.gemspec
+    replacement_locator: 'spec.name          = "dspy-deep_research"'
 
 packages:
   - gem: dspy

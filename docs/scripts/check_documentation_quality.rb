@@ -71,7 +71,10 @@ module DocumentationQuality
       rspec = [ruby, "-S", "bundle", "exec", "rspec", "--format", "documentation"]
       behavioral = Step.new(
         name: "Documentation validator behavioral faults",
-        command: rspec + ["spec/documentation/documentation_quality_validators_spec.rb"],
+        command: rspec + %w[
+          spec/documentation/documentation_quality_validators_spec.rb
+          spec/documentation/legacy_package_evidence_spec.rb
+        ],
         chdir: @root.to_s,
         environment: test_environment
       )
