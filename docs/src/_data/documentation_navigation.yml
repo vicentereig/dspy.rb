@@ -182,6 +182,14 @@ items:
       - { label: Prefer supported interception, url: /advanced/observability-interception/ }
   - { section: operate, label: Interception and Monkey-Patching, url: /advanced/observability-interception/, source: docs/src/advanced/observability-interception.md, status: published, traversal: operate }
   - { section: operate, label: Rails, url: /advanced/rails-integration/, source: docs/src/advanced/rails-integration.md, status: published, traversal: operate }
+  - section: operate
+    label: Reasoning Effort & Temperature
+    url: /advanced/reasoning/
+    source: docs/src/advanced/reasoning.md
+    status: published
+    traversal: none
+    exits:
+      - { label: Diagnose provider failures, url: /production/troubleshooting/ }
   - { section: operate, label: Storage, url: /production/storage/, source: docs/src/production/storage.md, status: published, traversal: operate }
   - { section: operate, label: Registry, url: /production/registry/, source: docs/src/production/registry.md, status: published, traversal: operate }
   - { section: operate, label: Observability, url: /production/observability/, source: docs/src/production/observability.md, status: published, traversal: operate }

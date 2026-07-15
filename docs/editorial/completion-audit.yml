@@ -55,6 +55,7 @@ source_audits:
   - {path: docs/src/advanced/python-comparison.md, kind: public, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: []}
   - {path: docs/src/advanced/rag.md, kind: public, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: []}
   - {path: docs/src/advanced/rails-integration.md, kind: public, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: []}
+  - {path: docs/src/advanced/reasoning.md, kind: public, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: []}
   - {path: docs/src/advanced/stateful-agents.md, kind: public, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: []}
   - {path: docs/src/blog/index.md, kind: history, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: [blog-layout-positioning]}
   - {path: docs/src/build/index.md, kind: public, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: []}
@@ -363,7 +364,7 @@ blind_review:
   role: blind_corpus_editor
   independent_from: Primary structural and economical-writing edits
   blinded_to: Author self-checks and prior candidate dispositions until each sampled verdict was recorded
-  denominator: 99
+  denominator: 100
   minimum_percent: 15
   minimum_sample: 15
   sample_method: SHA-256 normalized-path ranking; one minimum per public stratum, lowest unused public ranks to 10, two history representatives, then next unused ranks to a conservative 15.
