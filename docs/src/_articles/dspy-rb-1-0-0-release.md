@@ -1,7 +1,7 @@
 ---
 layout: blog
 title: "DSPy.rb 1.0.0"
-description: "DSPy.rb 1.0.0 lands after months of smaller revisions: TOON/BAML, RubyLLM, Anthropic structured outputs, stronger observability, safer coercion, and multimodal document support."
+description: "DSPy.rb 1.0.0 follows revisions that added TOON/BAML, RubyLLM, Anthropic structured outputs, Langfuse tracing, JSON coercion changes, and multimodal document support."
 date: 2026-04-11
 author: "Vicente Reig"
 category: "Release"
@@ -10,19 +10,22 @@ canonical_url: "https://oss.vicente.services/dspy.rb/blog/articles/dspy-rb-1-0-0
 image: /images/og/dspy-rb-1-0-0-release.png
 ---
 
-At some point, continuing to call a library `0.34.4` stops sounding careful and starts sounding like you have commitment issues.
-
 DSPy.rb 1.0.0 is out. If you've been on the `0.3x` releases, `1.0.0` should feel familiar. This release marks the `1.x` line as the stable API rather than introducing a new programming model.
 
-This release comes after months of smaller revisions, which is the least exciting way to improve software and also the only one that works. You fix edge cases. You clean up boundaries. You delete the abstractions you wrote when you were younger and more confident.
+The release follows months of smaller revisions to provider, parsing, type, and observability boundaries.
 
 ## What Changed on the Way to 1.0
 
-Over the last stretch of releases, DSPy.rb tightened several boundaries that matter once programs run outside a demo.
+The preceding releases added:
 
-TOON and BAML made structured prompting leaner. RubyLLM widened provider coverage without changing the programming model. Anthropic support got stricter and more predictable through strict mode and Beta structured outputs. Langfuse score reporting and observability made production behavior easier to inspect. Type coercion and JSON extraction got harder to break in boring, preventable ways. And multimodal document support closed one of the more visible gaps in the API.
+- TOON and BAML formats for prompt-rendered schemas and data;
+- a RubyLLM adapter for models and providers available through RubyLLM;
+- Anthropic strict mode and Beta structured-output support;
+- Langfuse tracing and score reporting;
+- additional type-coercion and JSON-extraction failure handling; and
+- multimodal document inputs for supported providers.
 
-None of this is especially flashy on its own. It does mean fewer application-specific workarounds around provider and parsing boundaries.
+Each feature has its own provider, model, SDK, or application boundary; the `1.x` label does not make those capabilities uniform.
 
 ## What Lands in 1.0.0 Itself
 
@@ -37,7 +40,7 @@ The dependency floors make compatibility explicit at installation time instead o
 
 ## Why 1.0 Now
 
-If you've been using the later `0.3x` releases, `1.0.0` should not feel like a dramatic reinvention. That would be suspicious. The point of a stable release is not to suddenly become a different library. The point is to admit the current one is coherent enough to depend on.
+For users of the later `0.3x` releases, `1.0.0` preserves the existing programming model. The `1.x` designation marks the current API as the supported stable surface.
 
 ## Thank You
 

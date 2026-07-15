@@ -35,7 +35,8 @@ samples:
   - id: existing-rubyllm-configuration
     source: lib/dspy/ruby_llm/README.md
     excerpt: "If you already have RubyLLM configured, DSPy will use your existing setup automatically:"
-    status: present
+    status: resolved
+    resolution_reference: "dspy.rb-2ey.14 names the no-override condition for reusing RubyLLM global configuration."
     edge: true-automatic
     requires_exception: false
     reviewer_a: KEEP technical
@@ -66,7 +67,8 @@ samples:
   - id: mvc-programming-aphorism-deck
     source: docs/src/_articles/ai-needs-its-mvc-moment.md
     excerpt: "description: \"Prompt engineering is just programming. Treat it that way and AI systems start working like real software.\""
-    status: present
+    status: resolved
+    resolution_reference: "dspy.rb-2ey.14 replaces the universal software maxim with typed contracts, tests, traces, and evaluation."
     edge: ai-aphorism
     requires_exception: false
     reviewer_a: EDIT
@@ -78,7 +80,8 @@ samples:
     source: docs/src/_articles/ai-needs-its-mvc-moment.md
     excerpt: Prompt engineering is just programming.
     match: exact-line
-    status: present
+    status: resolved
+    resolution_reference: "dspy.rb-2ey.14 replaces the repeated aphorism with the article's explicit engineering mechanisms."
     edge: ai-aphorism
     requires_exception: false
     reviewer_a: EDIT

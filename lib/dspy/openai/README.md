@@ -1,44 +1,52 @@
-# DSPy OpenAI adapter gem
+# DSPy OpenAI-Compatible Adapter
 
-See the [DSPy.rb package and capability matrix](https://oss.vicente.services/dspy.rb/getting-started/packages/) for canonical package status and model/SDK boundaries.
+`dspy-openai` provides the adapters selected by `openai/`, `openrouter/`, and `ollama/` model prefixes. It is a supported provider package, not a promise that those endpoints expose identical capabilities.
 
-Use [Installation and Provider Setup](https://oss.vicente.services/dspy.rb/getting-started/installation/) for application-level provider selection. After the adapter is configured, the [Extend guides](https://oss.vicente.services/dspy.rb/advanced/) lead to integration and runtime extension points.
+See [Installation and Provider Setup](https://oss.vicente.services/dspy.rb/getting-started/installation/) for provider selection and the [package matrix](https://oss.vicente.services/dspy.rb/getting-started/packages/) for canonical status and model/SDK boundaries.
 
-`dspy-openai` packages the OpenAI-compatible adapters for DSPy.rb so we can keep the core `dspy` gem lean while still talking to GPT models (and any OpenAI-compatible endpoint). Install it whenever your project needs to invoke `openai/*`, `openrouter/*`, or `ollama/*` models through DSPy.
+## Prerequisites
 
-## When you need it
-- You call `DSPy::LM.new` with a model id that starts with `openai/`, `openrouter/`, or `ollama/`.
-- You want to take advantage of structured outputs, streaming, or multimodal (vision) features exposed by OpenAI's API.
+- Ruby 3.3 or newer and Bundler
+- an endpoint and model compatible with the selected prefix
+- provider credentials when the endpoint requires them
 
-If your project only uses non-OpenAI providers (e.g. Anthropic or Gemini) you can omit this gem entirely.
+## Install and Run
 
-## Installation
-Add the gem next to your `dspy` dependency and install Bundler dependencies:
+Add both gems to your `Gemfile`:
 
 ```ruby
-# Gemfile
-gem 'dspy'
-gem 'dspy-openai'
+gem "dspy"
+gem "dspy-openai"
 ```
 
-```sh
+Save this as `openai_compatible_smoke.rb`:
+
+```ruby
+require "dspy"
+
+lm = DSPy::LM.new(
+  ENV.fetch("DSPY_MODEL"),
+  api_key: ENV["DSPY_API_KEY"]
+)
+
+response = lm.raw_chat([{ role: "user", content: "Reply with: adapter ready" }])
+puts response.content
+```
+
+Then install and run it:
+
+```bash
 bundle install
+export DSPY_MODEL="openai/your-model-id"
+export DSPY_API_KEY="your-key"
+bundle exec ruby openai_compatible_smoke.rb
 ```
 
-The gem depends on the official `openai` Ruby SDK (`~> 0.17`). The adapter checks this at load time and will raise if an incompatible version, or the older `ruby-openai` gem, is detected.
+The command prints the endpoint's response. Use an `openrouter/...` model and OpenRouter key for OpenRouter, or an `ollama/...` model with the locally required authentication and endpoint setup for Ollama.
 
-## Basic usage
+## Failure Conditions
 
-```ruby
-require 'dspy'
-# No need to explicitly require 'dspy/openai'
-
-lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV.fetch('OPENAI_API_KEY'))
-
-```
-
-## Working with alternate providers
-- **OpenRouter**: instantiate with `DSPy::LM.new('openrouter/x-ai/grok-4-fast:free', api_key: ENV['OPENROUTER_API_KEY'])`. Any OpenAI-compatible model exposed by OpenRouter will work.
-- **Ollama**: use `DSPy::LM.new('ollama/llama3.2', api_key: nil)`.
-
-All three adapters share the same request handling, structured output support, and error reporting, so you can swap providers without changing higher-level DSPy code.
+- A missing `DSPY_MODEL` raises before the request; a missing key fails when the chosen endpoint requires one.
+- A missing or incompatible official `openai` SDK, or the conflicting older `ruby-openai` gem, prevents the adapter from loading.
+- Model names, request options, structured output, streaming, images, and fallback behavior vary by model and compatible endpoint.
+- A provider prefix selects an adapter. It does not establish that the selected model supports a feature. Test the exact model, endpoint, SDK version, and request options.

@@ -1,73 +1,36 @@
-# Coffee Shop Agent Example
+# Run the Coffee Shop Union-Type Example
 
-This example demonstrates DSPy.rb's single-field union types feature, showing how to build an AI agent that can take different actions based on customer requests.
+This example sends four customer requests through a `DSPy::ChainOfThought` module. Each prediction returns one union-typed action, and Ruby pattern matching dispatches on the resulting `T::Struct`.
 
-## What it Shows
+## Prerequisites
 
-- **Single-field union types**: Using `T.any()` with automatic type detection
-- **No discriminator fields needed**: DSPy automatically handles the `_type` field
-- **Pattern matching on results**: Clean handling of different action types
-- **Real-world agent pattern**: Making decisions based on context
+- a repository checkout with `bundle install` completed
+- `ANTHROPIC_API_KEY` or `OPENAI_API_KEY`; when both are present, the script uses Anthropic
+- provider network access; the script makes four model calls
 
-## Running the Example
+The script loads `.env` from the repository root. It also starts the configured New Relic and DSPy observability integrations, so review local telemetry configuration before running it.
 
-1. Set your API key:
-   ```bash
-   export ANTHROPIC_API_KEY=your-key-here
-   # or
-   export OPENAI_API_KEY=your-key-here
-   ```
+## Run
 
-2. Run the agent:
-   ```bash
-   ruby coffee_shop_agent.rb
-   ```
+From the repository root:
 
-## Route a Customer Request
-
-The agent demonstrates single-field union types by:
-
-1. **Defining focused action structs** - Each action type (MakeDrink, RefundOrder, etc.) has only the fields it needs
-2. **Using a single `T.any()` field** - The signature has one `action` field that can be any of the action types
-3. **Automatic type detection** - DSPy adds the `_type` field during serialization and uses it for deserialization
-4. **Pattern matching** - The result contains the properly typed action struct
-
-## Key Benefits
-
-- **No nil checks**: Each action struct only has the fields it needs
-- **Type safety**: Pattern matching ensures you handle each action type correctly
-- **Clean code**: No discriminator enums or manual type checking needed
-- **Automatic conversion**: LLM JSON responses are automatically converted to the correct struct type
-
-## Example Output
-
-```
-Welcome to the AI Coffee Shop! 🤖☕
-
-🧠 Reasoning: The customer is asking for a specific coffee drink with customizations...
-
-☕ Taking action...
-Making a large iced latte
-Customizations: oat milk, extra shot
-
-💬 Response to customer: Coming right up! One large iced latte with oat milk and an extra shot. That'll be ready in about 3 minutes!
-
-============================================================
-
-🧠 Reasoning: The customer is upset about both the taste and wait time...
-
-☕ Taking action...
-📞 Calling manager about: Customer complaint about coffee quality and long wait time
-Urgency: high
-
-💬 Response to customer: I'm so sorry about that! Let me get my manager right away to help resolve this for you.
-
-============================================================
+```bash
+export OPENAI_API_KEY="your-key"
+bundle exec ruby examples/coffee-shop-agent/coffee_shop_agent.rb
 ```
 
-## Learn More
+The command prints the prediction reasoning, the concrete action struct selected for each request, and a customer-facing response. Exact actions and wording vary by model.
 
-- [Extend the example with a custom Toolset](https://oss.vicente.services/dspy.rb/advanced/custom-toolsets/)
-- [Blog post about union types](https://dspy-rb.vicente.io/blog/union-types-agentic-workflows/)
-- [Complex types documentation](https://dspy-rb.vicente.io/advanced/complex-types/)
-- [DSPy.rb repository](https://github.com/vicentereig/dspy.rb)
+## What the Type Boundary Does
+
+The signature returns one of `MakeDrink`, `RefundOrder`, `CallManager`, or `Joke`. DSPy.rb uses the generated `_type` discriminator to reconstruct the declared struct, and Ruby handles each class explicitly.
+
+This example does not execute real refunds, drinks, or manager calls. A union constrains result shape; an application must still authorize side effects, validate amounts and identifiers, and decide whether a model-selected action is appropriate.
+
+## Failure Conditions
+
+- The script exits when neither provider key is present.
+- Provider, transport, structured-output, or validation errors can stop a request.
+- The default Anthropic model can be overridden with `ANTHROPIC_MODEL`; choose a model available to the configured account.
+
+See [Rich Types](https://oss.vicente.services/dspy.rb/advanced/complex-types/) for union schemas and [Custom Toolsets](https://oss.vicente.services/dspy.rb/advanced/custom-toolsets/) when an agent must invoke bounded operations.

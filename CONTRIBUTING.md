@@ -1,6 +1,6 @@
 # Contributing to DSPy.rb
 
-Thanks for contributing to DSPy.rb. This guide gets you from zero to running tests in minutes.
+Thanks for contributing to DSPy.rb. Use this guide to install the development dependencies and run the test suite.
 
 ## Development Setup
 
@@ -138,7 +138,7 @@ git commit -m "docs(miprov2): clarify Bayesian optimization parameters"
 
 - **Follow Ruby idioms:** Use `Enumerable`, keyword arguments, pattern matching
 - **Type safety:** Add Sorbet signatures for public APIs
-- **Keep it simple:** Don't over-engineer. Small methods beat abstractions.
+- **Keep changes focused:** Add an abstraction only when the current change requires it.
 - **Test coverage:** Unit test logic, integration test LLM interactions
 
 See [CLAUDE.md](CLAUDE.md) for detailed development best practices.

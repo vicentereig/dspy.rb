@@ -1,8 +1,8 @@
 # DSPy.rb Documentation Site
 
-This is the documentation website for DSPy.rb, built with Bridgetown and styled with TailwindUI components.
+This directory contains the DSPy.rb documentation site, built with Bridgetown and Tailwind CSS components.
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 - Ruby from the repository's `.ruby-version` (the authoritative rbenv/CI version)
@@ -14,23 +14,26 @@ the `.ruby-version` pin used by this repository's documented commands and CI.
 
 ### Development
 
-1. Install dependencies:
+1. From the repository's `docs/` directory, install dependencies:
 ```bash
-bundle install
+rbenv exec bundle install
 bun install
 ```
 
-2. Start the development server:
+2. From `docs/`, start the development server:
 ```bash
-bundle exec bridgetown start
+rbenv exec bundle exec bridgetown start
 ```
 
 3. View the site at http://localhost:4000
 
 ### Building for Production
 
+From the repository root:
+
 ```bash
-BRIDGETOWN_ENV=production bundle exec bridgetown build
+cd docs
+BRIDGETOWN_ENV=production rbenv exec bundle exec bridgetown build
 ```
 
 The built site will be in the `output/` directory.
@@ -68,7 +71,7 @@ anchors without fetching external URLs. The economy audit is advisory: its
 findings do not fail the command, while invocation, configuration, parse, and
 read failures do.
 
-## 📁 Structure
+## Structure
 
 - `src/` - Source files for the documentation
   - `_layouts/` - Page layouts (home, docs)
@@ -80,15 +83,15 @@ read failures do.
 - `frontend/` - JavaScript and CSS assets
 - `output/` - Built site (git ignored)
 
-## 🎨 Design System
+## Design System
 
-The site uses TailwindUI components for a professional, consistent design:
-- Modern documentation layout with sidebar navigation
-- Responsive design for mobile and desktop
+The site uses Tailwind components for its documentation layout:
+- Sidebar navigation
+- Mobile and desktop layouts
 - Syntax highlighting for code blocks
-- Type-safe typography with @tailwindcss/typography
+- Typography styles from `@tailwindcss/typography`
 
-## 🚀 GitHub Pages Deployment
+## GitHub Pages Deployment
 
 The site is configured for GitHub Pages deployment:
 
@@ -96,16 +99,14 @@ The site is configured for GitHub Pages deployment:
 2. GitHub Actions will automatically build and deploy
 3. View at https://oss.vicente.services/dspy.rb/
 
-## 🛠️ Key Features
+## Site Components
 
-- **TailwindUI Integration**: Professional documentation design
-- **Responsive Navigation**: Collapsible sidebar for mobile
-- **Syntax Highlighting**: Beautiful code blocks
-- **SEO Optimized**: Meta tags and structured content
-- **Fast Build Times**: Optimized asset pipeline
-- **GitHub Pages Ready**: Automated deployment workflow
+- **Navigation**: Sidebar, mobile menu, breadcrumbs, and previous/next traversal
+- **Code rendering**: Syntax-highlighted fenced code blocks
+- **Metadata**: Page frontmatter and generated social cards
+- **Deployment**: GitHub Actions builds and publishes the Bridgetown output
 
-## 📝 Writing Documentation
+## Writing Documentation
 
 1. Create markdown files in the appropriate directory
 2. Add frontmatter with `layout`, `title`, and `description`
@@ -117,7 +118,7 @@ Example frontmatter:
 ---
 layout: docs
 title: Your Page Title
-description: Brief description for SEO
+description: Brief summary for route and search discovery
 ---
 ```
 
@@ -136,16 +137,17 @@ the source manifest before the build, then checks the desktop sidebar, mobile
 sidebar, breadcrumbs, contextual exits, and traversal boundaries against the
 fresh production output.
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
-If you encounter bundler version conflicts:
+Run these commands from `docs/`.
+
+If Bundler reports missing dependencies:
 ```bash
-bundle exec bridgetown build
-bundle exec bridgetown start
+rbenv exec bundle check
+rbenv exec bundle install
 ```
 
-For missing dependencies:
+If Bun reports missing front-end packages:
 ```bash
-bundle install
 bun install
 ```

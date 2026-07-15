@@ -1,271 +1,38 @@
-# HTML to Markdown AST Experiment
+# Compare Typed AST and String HTML Conversion
 
-This example explores whether **structured AST output types** produce better Markdown conversion compared to simple **String → String** conversion.
+This experiment sends the same sample HTML through two predictors: one returns a typed Markdown AST that Ruby renders, and one returns a Markdown string directly. It prints both results and a structural comparison.
 
-## The Experiment
+## Prerequisites
 
-We compare multiple approaches for converting HTML to Markdown:
+- a repository checkout with `bundle install` completed
+- `ANTHROPIC_API_KEY`
+- access to the Anthropic model configured in `main.rb`
 
-| Approach | Description | Output Type |
-|----------|-------------|-------------|
-| **A: Native JSON AST** | `structured_outputs: true` | `MarkdownDocument` struct |
-| **B: BAML AST** | `schema_format: :baml` (enhanced prompting) | `MarkdownDocument` struct |
-| **C: Direct String** | Simple string output | `String` |
-| **D: Hierarchical** | Two-phase parsing (outline → fill) | `MarkdownDocument` struct |
+The script loads `.env` through `dotenv/load` and makes two provider calls.
 
-```mermaid
-flowchart LR
-    subgraph Input
-        HTML["📄 HTML"]
-    end
+## Run
 
-    subgraph "Approach A & B: AST Pipeline"
-        direction TB
-        LLM1["🤖 LLM<br/>(structured output)"]
-        AST["🌳 MarkdownDocument<br/>typed AST"]
-        Render["⚙️ Renderer"]
-    end
-
-    subgraph "Approach C: Direct"
-        LLM2["🤖 LLM<br/>(string output)"]
-    end
-
-    subgraph "Approach D: Hierarchical"
-        direction TB
-        Phase1["🤖 Phase 1<br/>ParseOutline"]
-        Skeleton["📋 SkeletonSections"]
-        Phase2["🤖 Phase 2<br/>ParseSection ×N"]
-        AST2["🌳 MarkdownDocument"]
-        Render2["⚙️ Renderer"]
-    end
-
-    subgraph Output
-        MD["📝 Markdown"]
-    end
-
-    HTML --> LLM1 --> AST --> Render --> MD
-    HTML --> LLM2 --> MD
-    HTML --> Phase1 --> Skeleton --> Phase2 --> AST2 --> Render2 --> MD
-
-    style AST fill:#e1f5fe
-    style AST2 fill:#e1f5fe
-    style Skeleton fill:#fff3e0
-```
-
-**Pipeline Comparison:**
-- **A/B (AST)**: Single LLM call → typed struct → deterministic render
-- **C (Direct)**: Single LLM call → string output (fastest, cheapest)
-- **D (Hierarchical)**: Multiple LLM calls → handles complex docs that exceed token limits
-
-## Key Findings (Updated December 2025)
-
-### Issue #201 Fixed: OpenAI Native JSON Now Works
-
-**Before**: OpenAI structured outputs failed with recursive schemas:
-```
-Invalid schema for response_format: reference to component '#/definitions/ASTNode' which was not found
-```
-
-**After**: DSPy.rb now generates `#/$defs/` format (JSON Schema draft-07+), making recursive schemas work with OpenAI and Gemini.
-
-### Provider Comparison (Post-Fix)
-
-| Provider + Mode | Recursive Schema? | Code Blocks | Headings | Overall |
-|-----------------|-------------------|-------------|----------|---------|
-| **OpenAI Native** | ✅ **Fixed!** | ✅ Correct | ✅ Correct | **Best for OpenAI** |
-| **Anthropic BAML** | ✅ Yes | ✅ Correct | ✅ Correct | **Best for Anthropic** |
-| **Anthropic Native** | ✅ Yes | ⚠️ May truncate | ✅ Correct | Good |
-| **OpenAI BAML** | ✅ Yes | ✅ Correct | ⚠️ May lose text | Fallback |
-
-### Token Consumption (Complex Article)
-
-| Strategy | Input Tokens | Output Tokens | **Total** | Cost Ratio |
-|----------|-------------|---------------|-----------|------------|
-| **Direct String** | 1,767 | 454 | **2,221** | 1.0x |
-| **BAML AST** | 1,505 | 2,329 | **3,834** | 1.7x |
-| **Native JSON AST** | 2,229 | 3,168 | **5,397** | 2.4x |
-
-## New Features Demonstrated
-
-### 1. T::Struct Field Descriptions
-
-DSPy.rb extends T::Struct to support field-level `description:` kwargs that flow to JSON Schema:
-
-```ruby
-class ASTNode < T::Struct
-  const :node_type, NodeType, description: 'The type of node (heading, paragraph, etc.)'
-  const :text, String, default: "", description: 'Text content of the node'
-  const :level, Integer, default: 0  # No description - self-explanatory
-  const :children, T::Array[ASTNode], default: []
-end
-
-# Access descriptions programmatically
-ASTNode.field_descriptions[:node_type]  # => "The type of node (heading, paragraph, etc.)"
-```
-
-The generated JSON Schema includes these descriptions, helping LLMs understand field semantics.
-
-### 2. Recursive Types with `$defs`
-
-DSPy.rb now generates proper `#/$defs/` references for recursive types:
-
-```json
-{
-  "type": "object",
-  "properties": {
-    "children": {
-      "type": "array",
-      "items": { "$ref": "#/$defs/ASTNode" }
-    }
-  },
-  "$defs": {
-    "ASTNode": { ... }
-  }
-}
-```
-
-This format is compatible with OpenAI, Gemini, and Anthropic structured outputs.
-
-### 3. Hierarchical Parsing (Two-Phase)
-
-For complex documents that may exceed token limits, use two-phase parsing:
-
-```ruby
-# Phase 1: Extract skeleton structure
-class ParseOutline < DSPy::Signature
-  description 'Extract block-level structure from HTML as a flat list of skeleton sections.'
-
-  input do
-    const :html, String
-  end
-
-  output do
-    const :sections, T::Array[SkeletonSection]
-  end
-end
-
-# Phase 2: Parse each section in detail
-class ParseSection < DSPy::Signature
-  description 'Parse a single HTML section into a detailed Markdown AST node.'
-
-  input do
-    const :html, String
-    const :node_type, NodeType
-  end
-
-  output do
-    const :node, ASTNode
-  end
-end
-
-# Orchestrator
-parser = HtmlToMarkdown::HierarchicalParser.new
-document = parser.parse(complex_html)
-```
-
-### 4. Empty Arrays Instead of Nullable Arrays
-
-Use `default: []` when a missing child collection means "no children." The field remains an array and never needs a `nil` branch:
-
-```ruby
-# Models absence as an empty collection
-class ASTNode < T::Struct
-  const :children, T::Array[ASTNode], default: []
-  const :text, String, default: ""
-end
-
-# Models a distinct null state; use only when null has meaning
-class ASTNode < T::Struct
-  const :children, T.nilable(T::Array[ASTNode])
-  const :text, T.nilable(String)
-end
-```
-
-## Recommendations
-
-| Use Case | Recommended Approach |
-|----------|---------------------|
-| Simple HTML → MD conversion | **Direct String** (fastest, cheapest) |
-| Need to validate/transform structure | **Native JSON AST** (now works!) |
-| Complex documents hitting token limits | **Hierarchical parsing** |
-| Fallback for any provider issues | **BAML AST** (most robust) |
-
-## Files
-
-```
-html_to_markdown/
-├── main.rb              # Runnable comparison experiment
-├── types.rb             # NodeType enum + ASTNode struct (21 node types)
-├── renderer.rb          # AST → Markdown string renderer
-├── signatures.rb        # All signature definitions
-├── hierarchical_parser.rb  # Two-phase parsing orchestrator
-└── README.md            # This file
-```
-
-## Running the Experiment
+From the repository root:
 
 ```bash
-# Run the comparison
-ANTHROPIC_API_KEY=your-key ruby examples/html_to_markdown/main.rb
-
-# Run tests (includes OpenAI native JSON tests)
-bundle exec rspec spec/examples/html_to_markdown_spec.rb
-
-# Run specific strategy tests
-bundle exec rspec spec/examples/html_to_markdown_spec.rb -e "OpenAI Native JSON"
-bundle exec rspec spec/examples/html_to_markdown_spec.rb -e "Hierarchical"
+export ANTHROPIC_API_KEY="your-key"
+bundle exec ruby examples/html_to_markdown/main.rb
 ```
 
-## AST Node Types
+The command prints the source HTML, each Markdown result, elapsed time, AST node count, output length, and counts for selected Markdown elements. It does not compute a semantic quality score.
 
-The AST supports 21 Markdown element types:
+Run the repository specs without a live provider request:
 
-**Block Elements:**
-- `Heading` (levels 1-6)
-- `Paragraph`
-- `CodeBlock` (with language)
-- `Blockquote`
-- `HorizontalRule`
-- `List` (ordered/unordered)
-- `ListItem`
-- `Table`, `TableRow`, `TableCell`
+```bash
+bundle exec rspec spec/examples/html_to_markdown_spec.rb
+```
 
-**Inline Elements:**
-- `Text`
-- `Bold`, `Italic`, `Strikethrough`
-- `Code` (inline)
-- `Link`, `Image`
-- `LineBreak`
+## Interpret the Result
 
-**Extended:**
-- `FootnoteRef`, `FootnoteDef`
-- `TaskListItem`
+The AST path adds runtime shape validation and deterministic rendering. The direct path uses fewer application types. Either path can omit or alter source meaning, so compare outputs against task-specific examples rather than choosing from one sample or token count.
 
-## Cost Analysis (Claude Haiku 4.5)
+## Failure Conditions
 
-At Haiku pricing ($1/$5 per 1M input/output tokens):
-
-| Approach | Input Cost | Output Cost | **Total per 1K articles** |
-|----------|-----------|-------------|---------------------------|
-| Direct String | $0.0018 | $0.0023 | **$4.10** |
-| BAML AST | $0.0015 | $0.0116 | **$13.10** |
-| Native JSON AST | $0.0022 | $0.0158 | **$18.00** |
-
-**Direct String is 4.4x cheaper than Native JSON AST** for high-volume conversion.
-
-## Conclusion
-
-1. **OpenAI native structured outputs now work** with recursive schemas (issue #201 fixed)
-2. **Use `default: []` when omission means an empty array**
-3. **Field descriptions** help LLMs understand complex schemas
-4. **Hierarchical parsing** handles documents that exceed token limits
-5. **Direct String wins for simple conversion** - Fast, cheap, reliable
-6. **AST approach valuable for** validation, transformation, and tooling
-
-The hypothesis that structured AST types help produce "better" Markdown was **not confirmed** for simple conversion. However, structured types enable:
-- Schema validation at parse time
-- Programmatic AST transformation
-- Type-safe document manipulation
-- Better error messages when parsing fails
-
-**Key takeaway**: With the `#/$defs/` fix, native structured outputs are now the recommended approach for recursive types across all major providers.
+- A missing key raises before the first request.
+- Provider, model, schema, extraction, or prediction-conversion errors can stop either path.
+- Recursive-schema and structured-output support varies by provider, model, and SDK version. This script exercises its configured Anthropic prompt-based path; it does not prove support across all providers.

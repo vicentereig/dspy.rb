@@ -93,7 +93,7 @@ BAML is most relevant when:
 
 For a small signature, the difference may not matter. For provider-native structured output, choose based on the provider contract rather than prompt size. Measure the rendered request and task metric before making BAML the default.
 
-## Resources
+## Inspect Schemas and Benchmarks
 
 - [Schema Formats Documentation](https://oss.vicente.services/dspy.rb/core-concepts/signatures/#schema-formats)
 - [Rich Types Guide](https://oss.vicente.services/dspy.rb/advanced/complex-types/#schema-format-options)

@@ -10,7 +10,7 @@ canonical_url: "https://oss.vicente.services/dspy.rb/blog/articles/program-persi
 image: /images/og/program-persistence-and-serialization.png
 ---
 
-An optimizer can spend minutes, provider tokens, and a fair amount of patience finding better instructions and demonstrations. DSPy.rb v0.20.0 added storage primitives so applications do not have to discard that work.
+An optimizer can spend minutes and provider tokens finding better instructions and demonstrations. DSPy.rb v0.20.0 added storage primitives so applications do not have to discard that work.
 
 There are two APIs. They solve different problems.
 

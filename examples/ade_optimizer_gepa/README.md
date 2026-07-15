@@ -1,58 +1,33 @@
-# ADE GEPA Optimization Demo
+# Run GEPA on the ADE Classifier
 
-This example mirrors the MIPROv2 ADE optimizer, but uses `DSPy::Teleprompt::GEPA` with predictor-level feedback hooks. It downloads a subset of the Adverse Drug Event dataset, optimizes a simple classifier, and writes a summary plus metrics to the `results/` directory.
+This example downloads an Adverse Drug Event dataset slice, evaluates a typed classifier, runs `DSPy::Teleprompt::GEPA`, evaluates the selected program, and writes metrics and run metadata.
 
 ## Prerequisites
 
-- Ruby 3.3 via `rbenv`
-- Bundler dependencies installed (`bundle install`)
-- `OPENAI_API_KEY` set in the environment (used for both student and reflection LMs)
-- `dspy-gepa` present in your Gemfile (set `DSPY_WITH_GEPA=1` inside this monorepo before running `bundle install`)
+- the repository's pinned Ruby 3.4.5 and Bundler
+- `dspy-gepa` in the bundle (`DSPY_WITH_GEPA=1 rbenv exec bundle install` in this monorepo)
+- a provider key for the selected model; the default is `openai/gpt-4o-mini`
+- network access for the dataset download and provider calls
 
 ## Run
 
+From the repository root:
+
 ```bash
-bundle exec ruby examples/ade_optimizer_gepa/main.rb --limit 30 --max-metric-calls 600 --minibatch-size 6
+export OPENAI_API_KEY="your-key"
+rbenv exec bundle exec ruby examples/ade_optimizer_gepa/main.rb \
+  --limit 30 \
+  --max-metric-calls 600 \
+  --minibatch-size 6
 ```
 
-> **Notes:**
-> - GEPA starts from the default DSPy prompt; improvements depend on the dataset split and reflection budget.
-> - Ensure `--max-metric-calls` exceeds the validation set size (plus a couple of minibatches). The script auto-adjusts upward if the budget is too small.
+The script prints the baseline and optimized metrics. It writes a timestamped run beneath `examples/ade_optimizer_gepa/results/<provider>/<model>/`; `--track-stats` also writes GEPA event JSONL.
 
-Use `--help` to see all CLI options. Results and logs are stored under `examples/ade_optimizer_gepa/results/`.
+Use `--help` to inspect all flags. `--model provider/model` changes the provider and therefore the required `*_API_KEY` variable.
 
-## Usage Scenarios
+## Failure Conditions and Interpretation
 
-- **Comprehensive search** – give GEPA enough budget to explore multiple candidates:
-
-  ```bash
-  bundle exec ruby examples/ade_optimizer_gepa/main.rb \
-    --limit 200 \
-    --seed 123 \
-    --minibatch-size 6 \
-    --max-metric-calls 900
-  ```
-
-  The script also emits richer textual feedback (including sentence snippets) so reflective mutations can reason about errors.
-
-- **Audit the Pareto pool** – log every GEPA event and inspect the search trajectory:
-
-  ```bash
-  bundle exec ruby examples/ade_optimizer_gepa/main.rb \
-    --limit 200 \
-    --max-metric-calls 900 \
-    --track-stats
-  ```
-
-  Events are written to `results/gepa_events.jsonl`. Pipe the file through `jq` or `rg` to see which candidates were mutated or accepted.
-
-- **Quick experimentation** – reduce the minibatch size to iterate faster:
-
-  ```bash
-  bundle exec ruby examples/ade_optimizer_gepa/main.rb \
-    --limit 60 \
-    --minibatch-size 3 \
-    --max-metric-calls 400
-  ```
-
-  Smaller minibatches increase stochasticity but spend fewer metric calls per reflection loop.
+- An invalid model ID or missing provider key stops before optimization.
+- Dataset and provider requests require network access and may fail or be rate-limited.
+- `--max-metric-calls` is a hard evaluation budget. The script raises a too-small budget enough to cover validation and minibatch work, so the effective value can exceed the argument.
+- Scores depend on the split, model, metric, reflection budget, and run variance. Compare the selected program on held-out examples; do not treat one run as a general GEPA improvement claim.

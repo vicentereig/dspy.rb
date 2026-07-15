@@ -1,32 +1,33 @@
-# ADE MIPROv2 Optimization Demo
+# Run MIPROv2 on the ADE Classifier
 
-This example shows how to use DSPy.rb's MIPROv2 teleprompter to optimize prompts for an adverse drug event (ADE) classifier. It fetches a sample from the [ADE Corpus V2](https://huggingface.co/datasets/ade-benchmark-corpus/ade_corpus_v2) dataset, evaluates a baseline prompt, runs MIPROv2, and reports the improvement.
+This example downloads an Adverse Drug Event dataset slice, evaluates a typed classifier, runs `DSPy::Teleprompt::MIPROv2`, evaluates the selected program, and writes the run artifacts.
+
+## Prerequisites
+
+- the repository's pinned Ruby and Bundler
+- MIPROv2 and its numerical dependencies (`DSPY_WITH_MIPROV2=1 rbenv exec bundle install` in this monorepo)
+- a provider key for the selected model; the default is `openai/gpt-5-2025-08-07`
+- network access for the dataset download and provider calls
+
+## Run
+
+From the repository root:
 
 ```bash
-OPENAI_API_KEY=sk-... bundle exec ruby examples/ade_optimizer_miprov2/main.rb \
+export OPENAI_API_KEY="your-key"
+rbenv exec bundle exec ruby examples/ade_optimizer_miprov2/main.rb \
   --limit 200 \
-  --auto light
+  --auto light \
+  --seed 123
 ```
 
-Outputs (JSON, CSV, trial log JSON) are written under `examples/ade_optimizer_miprov2/results`. Dataset samples are cached under `examples/ade_optimizer_miprov2/data` and can be safely deleted to refresh the download.
+The script prints baseline and optimized ADE metrics, the seed, elapsed time, and artifact paths. JSON, CSV, and trial logs are written under `examples/ade_optimizer_miprov2/results/`; downloaded data is cached under `examples/ade_optimizer_miprov2/data/`.
 
-## Options
+Use `--help` for all options. `--auto` accepts `light`, `medium`, `heavy`, or `none`; `--trials` sets a manual trial count when an automatic preset is not used.
 
-| Flag | Description |
-| --- | --- |
-| `--limit` | Number of ADE examples to download (default: 300) |
-| `--trials` | Manual override for MIPROv2 trial count (default: 6 when `--auto` is omitted) |
-| `--auto` | Use a preset MIPROv2 configuration (`light`, `medium`, `heavy`) |
-| `--seed` | Random seed for dataset splits (defaults to a random seed printed at runtime) |
+## Failure Conditions and Interpretation
 
-## What it Does
-
-1. Downloads classification rows from the ADE dataset via the Hugging Face dataset server.
-2. Converts rows into `DSPy::Example`s for a simple `ADETextClassifier` signature.
-3. Evaluates a baseline `DSPy::Predict` instance.
-4. Runs `DSPy::Teleprompt::MIPROv2` with a small configuration to learn better instructions/demos.
-5. Evaluates the optimized program and stores the results (malformed outputs now count toward errors, so 100% precision is no longer assumed).
-
-The data split step keeps both ADE labels present in train/val/test when possible, ensuring validation metrics stay meaningful even with small sample sizes. The script prints the seed it used (helpful for reproducing a run) and the total optimization time so you can track throughput across experiments.
-
-The script is designed for storytelling/framing purposes (“how models can write prompts for you”). Feel free to expand it with additional metrics, visualisation, or article-friendly commentary.
+- A missing key, invalid `provider/model` ID, unavailable model, or missing numerical dependency stops the run.
+- Dataset and provider calls require network access and can be rate-limited or charged.
+- Small limits may make class-balanced train, validation, and test splits impossible.
+- Optimization searches against the supplied metric and validation set. Compare the selected program with the baseline on the held-out test split; one run does not establish general improvement.

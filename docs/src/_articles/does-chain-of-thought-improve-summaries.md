@@ -11,9 +11,7 @@ canonical_url: "https://oss.vicente.services/dspy.rb/blog/articles/does-chain-of
 tags: ["evaluation", "chain-of-thought", "summarization", "llm-judge"]
 ---
 
-You're pairing with a coworker. They claim Chain Of Thought always produces better output.
-
-You're skeptical. For a short summarization task, does an extra reasoning step help enough to justify another model behavior? We ran the comparison instead of settling it by taste.
+For a short summarization task, does an added reasoning field improve the result enough to justify its latency and token cost? This experiment compares the programs under the same examples and judge.
 
 The experiment uses one signature, two [DSPy.rb](https://github.com/vicentereig/dspy.rb) modules, five Wikipedia excerpts, and the same LLM judge for every output.
 

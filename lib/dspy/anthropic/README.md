@@ -1,38 +1,52 @@
-# DSPy Anthropic adapter gem
+# DSPy Anthropic Adapter
 
-See the [DSPy.rb package and capability matrix](https://oss.vicente.services/dspy.rb/getting-started/packages/) for canonical package status and model/SDK boundaries.
+`dspy-anthropic` lets `DSPy::LM` call model IDs with the `anthropic/` prefix. The package is a supported provider adapter; model and API-version capabilities still vary.
 
-`dspy-anthropic` provides the Claude adapter for DSPy.rb so we can rely on Anthropic's API without bloating the core gem. Install it whenever you plan to call `anthropic/*` model ids from DSPy.
+See the [package and capability matrix](https://oss.vicente.services/dspy.rb/getting-started/packages/) for canonical status and model/SDK boundaries.
 
-## When you need it
-- You initialize `DSPy::LM` with an Anthropic provider (e.g. `anthropic/claude-3.5-sonnet`).
-- You want Claude's structured output helpers, tool use, or streaming responses.
+## Prerequisites
 
-If your project only targets non-Claude providers you can omit this gem.
+- Ruby 3.3 or newer and Bundler
+- an Anthropic API key
+- an Anthropic model ID available to your account
 
-## Installation
+## Install and Run
+
+Add both gems to your `Gemfile`:
 
 ```ruby
-# Gemfile
-gem 'dspy'
-gem 'dspy-anthropic'
+gem "dspy"
+gem "dspy-anthropic"
 ```
 
-```sh
+Save this as `anthropic_smoke.rb`:
+
+```ruby
+require "dspy"
+
+lm = DSPy::LM.new(
+  ENV.fetch("ANTHROPIC_MODEL"),
+  api_key: ENV.fetch("ANTHROPIC_API_KEY")
+)
+
+response = lm.raw_chat([{ role: "user", content: "Reply with: adapter ready" }])
+puts response.content
+```
+
+Then install and run it:
+
+```bash
 bundle install
+export ANTHROPIC_API_KEY="your-key"
+export ANTHROPIC_MODEL="anthropic/your-model-id"
+bundle exec ruby anthropic_smoke.rb
 ```
 
-The adapter verifies that the official `anthropic` Ruby SDK `~> 1.12` is available and will raise if the version is missing or incompatible.
+The command prints the model response. Requiring `dspy` loads the installed adapter for an `anthropic/` model; explicit `require "dspy/anthropic"` is also supported.
 
-## Configuration
-- Set `ENV['ANTHROPIC_API_KEY']`, or pass `api_key:` when constructing the LM.
+## Failure Conditions
 
-## Basic usage
-
-```ruby
-require 'dspy'
-# No need to explicitly require 'dspy/anthropic'
-
-lm = DSPy::LM.new('anthropic/claude-3.5-sonnet', api_key: ENV.fetch('ANTHROPIC_API_KEY'))
-
-```
+- A missing key raises from `ENV.fetch` before the request.
+- A missing or incompatible Anthropic SDK prevents the adapter from loading.
+- An unavailable model or rejected request raises an adapter/provider error.
+- Structured output, tools, images, documents, and streaming depend on the selected model and Anthropic API version. Verify the exact request; installing the gem does not guarantee every capability.

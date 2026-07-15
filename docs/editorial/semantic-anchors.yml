@@ -265,15 +265,17 @@ aphorism_candidates:
   - id: mvc-plain-boring-engineering
     source: docs/src/_articles/ai-needs-its-mvc-moment.md
     locator: "Because that's what type systems do. Just plain and boring engineering."
-    status: present
+    status: resolved
+    resolution_reference: "dspy.rb-2ey.14 replaces the flourish with the runtime semantic-error boundary."
     lifecycle: active
     disposition: rewrite
     reason: Replace the flourish with the concrete rejection boundary; runtime conversion does not establish correctness.
   - id: mvc-real-software-closing
     source: docs/src/_articles/ai-needs-its-mvc-moment.md
     locator: "See what changes when you treat LLM code like real software."
-    status: present
-    lifecycle: active
+    status: resolved
+    resolution_reference: "dspy.rb-2ey.14 removes the motivational status claim while retaining the concrete action list and failure-learning loop."
+    lifecycle: retired
     disposition: delete
     reason: The preceding action list already names the useful decision; real software adds an untestable status claim.
 

@@ -10,9 +10,7 @@ canonical_url: "https://oss.vicente.services/dspy.rb/blog/articles/observability
 image: /images/og/observability-in-action-langfuse.png
 ---
 
-> You don't need Neo's Matrix X-Ray Vision to understand what's going on in your workflows and agents.
-
-You do need traces. A typed result tells you whether the response fit the declared shape. It does not tell you which module ran, what the provider received, where time went, or why an agent selected a tool.
+A typed result tells you whether the response fit the declared shape. A trace records which module ran, what the provider received, where time went, and which tool an agent selected.
 
 DSPy.rb instruments those boundaries with OpenTelemetry. The optional Langfuse gem exports the spans.
 
@@ -80,4 +78,4 @@ Before relying on the integration:
 4. Watch `observability.span_dropped` and export errors under load.
 5. Treat missing token usage as provider metadata variance, not as zero usage.
 
-The useful trace is the one that answers a production question. Everything else is storage with a dashboard.
+Collect the spans and attributes needed to answer a production question, and set retention and redaction policy for everything you export.

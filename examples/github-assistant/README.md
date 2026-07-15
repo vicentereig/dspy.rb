@@ -1,154 +1,38 @@
-# GitHub Assistant Example
+# Run the Read-Only GitHub Assistant
 
-This example demonstrates how to use DSPy.rb's GitHub CLI Toolset to create an intelligent read-only assistant that can perform various GitHub analysis and retrieval operations through natural language commands.
-
-## Features
-
-The GitHub Assistant can:
-
-- **Issue Analysis**: List, search, and get details of GitHub issues (read-only)
-- **Pull Request Analysis**: List, search, and get details of pull requests (read-only)
-- **Repository Analysis**: Get repository statistics and information
-- **API Queries**: Make read-only GitHub API requests (GET requests only)
-- **Multi-Step Analysis**: Perform complex analysis combining multiple read-only operations
+This example gives a bounded `DSPy::ReAct` agent the repository's read-only GitHub CLI Toolset. It can inspect repositories, issues, pull requests, and GET-only API routes; it does not expose create, update, or delete tools.
 
 ## Prerequisites
 
-1. **GitHub CLI**: Install and authenticate the GitHub CLI
-   ```bash
-   # Install GitHub CLI (macOS)
-   brew install gh
-   
-   # Or download from: https://cli.github.com/
-   
-   # Authenticate
-   gh auth login
-   ```
+- a repository checkout with `bundle install` completed
+- the GitHub CLI installed and authenticated (`gh auth login`)
+- `OPENAI_API_KEY`; the script constructs `openai/gpt-4o-mini`
+- network access to OpenAI and GitHub
 
-2. **API Keys**: Set up your LLM provider API key
-   ```bash
-   # For OpenAI
-   export OPENAI_API_KEY=your-openai-key
-   
-   # Or for Anthropic
-   export ANTHROPIC_API_KEY=your-anthropic-key
-   ```
+The script loads `.env` from the repository root. An Anthropic key alone is not sufficient because the current example selects an OpenAI model.
 
-3. **Dependencies**: Install Ruby gems
-   ```bash
-   bundle install
-   ```
+## Run
 
-## Usage
-
-### Demo Mode (Default)
-
-Run the demo to see various GitHub operations:
+Demo mode runs several predefined live queries:
 
 ```bash
-ruby examples/github-assistant/github_assistant.rb
-# or
-ruby examples/github-assistant/github_assistant.rb demo
+bundle exec ruby examples/github-assistant/github_assistant.rb demo
 ```
 
-The demo will execute several predefined tasks:
-- Repository analysis
-- Issue searching with labels
-- Pull request overview
-- API exploration
-- Multi-step comparative analysis
-
-### Interactive Mode
-
-Start an interactive session where you can ask questions:
+Interactive mode accepts one task at a time:
 
 ```bash
-ruby examples/github-assistant/github_assistant.rb interactive
+bundle exec ruby examples/github-assistant/github_assistant.rb interactive
 ```
 
-Example interactions:
-```
-You: List the recent issues from microsoft/vscode
-You: Find pull requests in rails/rails that need review
-You: Get statistics about the golang/go repository
-You: Compare issue activity vs PR activity in facebook/react
-```
+The script prints the available tools, the model's result, and any reported actions. Results vary with live repository data and model decisions.
 
-## Example Tasks
+## Read-Only Boundary
 
-Here are some example tasks you can try:
+The Toolset exposes list, search, detail, and GET operations. The model cannot select a GitHub mutation through these declared tools. The underlying `gh` credential may still have broader account permissions, so keep its scope narrow and do not treat this example as a general shell sandbox.
 
-### Repository Exploration
-- "Get basic information about the microsoft/vscode repository"
-- "How many stars and forks does the rails/rails repository have?"
-- "What's the current activity level in the nodejs/node repository?"
+## Failure Conditions
 
-### Issue Analysis
-- "List the 10 most recent open issues from facebook/react"
-- "Find issues labeled 'bug' in the golang/go repository"
-- "Get details about issue #123 from microsoft/vscode"
-
-### Pull Request Analysis
-- "List open pull requests in rails/rails"
-- "Find pull requests that might be ready for review"
-- "Compare the number of open issues vs open PRs"
-
-### Advanced Operations
-- "Use the API to get contributor statistics for kubernetes/kubernetes"
-- "Analyze the health of the rust-lang/rust repository"
-- "Find the most discussed issues in the last month"
-
-## Error Handling
-
-The assistant gracefully handles common errors:
-
-- **Authentication issues**: Prompts to run `gh auth login`
-- **Non-existent repositories**: Reports the error clearly
-- **Invalid issue/PR numbers**: Handles not found cases
-- **Rate limiting**: Includes delays between operations
-- **Network issues**: Provides informative error messages
-
-## Read-Only Design
-
-This assistant is designed to be **read-only** for security and safety. It can only:
-- Retrieve and analyze existing GitHub data
-- List issues, pull requests, and repository information
-- Make GET requests to the GitHub API
-- Perform multi-step analysis without modifying anything
-
-It **cannot**:
-- Create, edit, or delete issues or pull requests
-- Add comments or reviews
-- Modify repository settings
-- Make POST, PUT, DELETE, or PATCH requests
-
-## Customization
-
-You can customize the assistant by:
-
-1. **Modifying the signature**: Edit the `GitHubAssistant` class to add more fields
-2. **Adding more tools**: Combine with other DSPy toolsets (ensure they're also read-only if desired)
-3. **Changing the LM**: Use different language models
-4. **Adjusting parameters**: Modify max_iterations, add system prompts, etc.
-
-## Code Structure
-
-- `github_assistant.rb`: Main script with demo and interactive modes
-- `GitHubAssistant` signature: Defines the input/output structure
-- `GitHubAssistantDemo` class: Contains the demo logic and interactive mode
-- Error handling and CLI argument parsing
-
-## Tips for Best Results
-
-1. **Be specific**: Include repository names in your requests
-2. **Use natural language**: The assistant understands conversational requests
-3. **Complex tasks**: Break down complex analysis into specific questions
-4. **Repository format**: Use `owner/repository` format for repositories
-5. **Be patient**: Some operations may take time due to API calls
-
-## Troubleshooting
-
-- **"gh command not found"**: Install GitHub CLI
-- **"Not authenticated"**: Run `gh auth login`
-- **"No API key found"**: Set OPENAI_API_KEY or ANTHROPIC_API_KEY
-- **Rate limiting**: Add delays between requests or use smaller batch sizes
+- The script exits when `gh` is missing, authentication fails, or `OPENAI_API_KEY` is absent.
+- Missing repositories, insufficient GitHub permissions, rate limits, provider errors, and the 15-iteration bound can produce incomplete results.
+- A model summary is not a substitute for inspecting the returned issue, pull request, or API data before acting on it.

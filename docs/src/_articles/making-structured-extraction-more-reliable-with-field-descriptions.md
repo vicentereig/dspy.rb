@@ -12,15 +12,13 @@ image: /images/og/making-structured-extraction-more-reliable-with-field-descript
 
 Structured extraction fails when the model fills the right field with the wrong meaning.
 
-That is the annoying version of failure. The JSON is valid. The keys are present. The types pass. And the result is still quietly wrong, which is a terrible kind of wrong because it shows up later wearing a customer support ticket.
+The JSON is valid, the keys are present, and the types pass. The semantic error appears later, often in application behavior rather than at the prediction boundary.
 
-A production user recently asked whether field-level `description:` text in `DSPy::Signature` is officially supported: [GitHub issue #254](https://github.com/vicentereig/dspy.rb/issues/254). It is, and it matters more than it sounds, which is inconvenient because now the small question has become useful.
+A production user recently asked whether field-level `description:` text in `DSPy::Signature` is officially supported: [GitHub issue #254](https://github.com/vicentereig/dspy.rb/issues/254). It is. Field descriptions carry domain rules that a type and field name cannot express.
 
-Field descriptions are exactly the kind of boring feature that matters once your LLM code leaves the demo phase and starts touching real business text. That is where the word "deadline" can mean an explicit cutoff date, a seasonal rule, a relative planning window, a late-application exception, or a polite little trap in paragraph seven.
+The distinction becomes important with domain text. A "deadline" can mean an explicit cutoff date, a seasonal rule, a relative planning window, or a late-application exception.
 
 In DSPy.rb, a signature is the contract between your application and the model. The type says what shape the answer must have. The field description says what the field means.
-
-That distinction matters.
 
 ## Field Names Are Not Enough
 
@@ -68,9 +66,9 @@ class ProductExtraction < DSPy::Signature
 end
 ```
 
-The enum types do useful work. They constrain `country` and `category` so your code does not have to interpret whatever the model felt like calling the United Kingdom that day. That is already a win.
+The enum types constrain `country` and `category`, so application code receives one of the declared values or a validation failure.
 
-But the field description does a different job. A field named `application_deadline_note` gets you part of the way there. It does not tell the model whether to include exceptions, relative guidance, seasonal conditions, late-application rules, or whether to stay grounded in the source text. The name points at the drawer. The description labels what is allowed inside.
+The field description has a different job. A field named `application_deadline_note` does not tell the model whether to include exceptions, relative guidance, seasonal conditions, late-application rules, or whether to stay grounded in the source text. The description supplies those rules.
 
 That is what `description:` is for.
 
@@ -78,9 +76,9 @@ That is what `description:` is for.
 
 Structured extraction fails in two common ways.
 
-The first is shape failure. The model gives you the wrong type, misses a field, invents a key, or returns JSON that looks like it was assembled during turbulence. Types and structured outputs help with that.
+The first is shape failure. The model gives the wrong type, misses a field, or invents a key. Types and structured outputs constrain those cases.
 
-The second is meaning failure. The model returns valid structure, but the field does not mean what your application needs it to mean. This is sneakier because everything can pass validation while still being wrong.
+The second is meaning failure. The model returns valid structure, but the field does not mean what the application needs. The response can pass validation while still being wrong.
 
 For example:
 
@@ -94,9 +92,7 @@ output do
 end
 ```
 
-Those descriptions are not decorative. They are where the domain rules live.
-
-They tell the model what to include, what to exclude, how cautious to be, and what to do when the source is silent. Without them, you are asking the model to infer production semantics from a snake_case field name.
+The descriptions tell the model what to include, what to exclude, and what to do when the source is silent. Without them, the model must infer domain rules from a snake_case field name.
 
 ## What DSPy.rb Does with Descriptions
 
@@ -110,7 +106,7 @@ The relevant implementation is intentionally plain:
 - [`DSPy::Ext::StructDescriptions`](https://github.com/vicentereig/dspy.rb/blob/main/lib/dspy/ext/struct_descriptions.rb) supports `description:` on plain `T::Struct` `const` and `prop` fields too.
 - The specs cover storing descriptions and emitting them into schemas.
 
-This is not an accidental keyword that wandered in through an unlocked side door, looked around, and got a badge. It is part of the API surface.
+Field-level `description:` is part of the supported signature API.
 
 ## Where the Description Goes
 
@@ -151,7 +147,7 @@ const :deadline, T.nilable(String),
   description: "Application deadline stated in the source text. Include explicit dates, relative windows, seasonal rules, and exceptions. Return nil if no deadline is provided."
 ```
 
-The second version gives the model a job. The first version gives it a shrug wearing a lanyard and asks everyone to act surprised when the output gets weird.
+The second version defines the extraction rule. The first leaves the model to infer it.
 
 ## Put Semantics Next to the Field
 
@@ -166,6 +162,4 @@ Use the signature-level `description` for the overall task. Use field-level `des
 
 Keeping those rules in the signature makes the generated schema explicit and leaves fewer private assumptions in extraction code.
 
-Write your field descriptions like you are explaining the field to a smart coworker who is new to the domain and has no patience for vibes.
-
-Because, inconveniently, that is often the exact situation.
+Write each field description for a developer who is new to the domain: define what belongs in the field, name exclusions or exceptions, and state what to return when the source is silent.
