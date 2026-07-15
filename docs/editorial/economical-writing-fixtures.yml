@@ -1,0 +1,308 @@
+version: 1
+verdicts: [KEEP technical, KEEP voice, EDIT, DELETE]
+reviewers:
+  reviewer_a: economy-and-voice
+  reviewer_b: adversarial-correctness
+default_outcome: Review economical-writing calibration prose.
+# `expected_categories` tests candidate generation only. The independent
+# verdicts remain human adjudication and never instruct the scanner to rewrite.
+samples:
+  - id: ai-aphorism-portable
+    case: positive
+    excerpt: "Prompt engineering is simply modern programming."
+    expected_categories: [AI aphorism]
+    reviewer_a: EDIT
+    reviewer_b: DELETE
+    final: EDIT
+    why: The analogy needs local contracts, tests, traces, or evaluation evidence.
+
+  - id: synthetic-flourish-magic
+    case: positive
+    excerpt: "Connect the optimizer, and that is where the real magic happens."
+    expected_categories: [synthetic flourish]
+    reviewer_a: DELETE
+    reviewer_b: DELETE
+    final: DELETE
+    why: The metaphor adds no optimizer behavior or boundary.
+
+  - id: chatbot-ready-dive
+    case: positive
+    excerpt: "Ready to improve your prompts? Let's dive in."
+    expected_categories: [chatbot cadence]
+    reviewer_a: DELETE
+    reviewer_b: DELETE
+    final: DELETE
+    why: The simulated turn does not change the reader's path.
+
+  - id: empty-contrast-abstract
+    case: positive
+    excerpt: "This is not about chasing perfection; it is about embracing possibility."
+    expected_categories: [empty contrast]
+    reviewer_a: DELETE
+    reviewer_b: DELETE
+    final: DELETE
+    why: Neither side names a technical alternative or decision.
+
+  - id: tutorial-patter-progress
+    case: positive
+    excerpt: "Now that you have seen the basics, let's move on to the exciting part."
+    expected_categories: [tutorial patter]
+    reviewer_a: DELETE
+    reviewer_b: DELETE
+    final: DELETE
+    why: The sentence adds no prerequisite or instruction.
+
+  - id: generic-heading-position
+    case: positive
+    excerpt: "## Next Steps"
+    outcome: Read the documentation page.
+    expected_categories: [generic heading]
+    reviewer_a: EDIT
+    reviewer_b: EDIT
+    final: EDIT
+    why: The heading should identify the next reader task.
+
+  - id: generic-heading-outcome-aligned
+    case: protected
+    excerpt: "## Configuration"
+    outcome: Review provider configuration requirements.
+    expected_categories: []
+    reviewer_a: KEEP technical
+    reviewer_b: KEEP technical
+    final: KEEP technical
+    why: The heading names the configuration subject declared by this source's outcome.
+
+  - id: generic-heading-taskless-outcome
+    case: positive
+    excerpt: "## Configuration"
+    outcome: Read the documentation page.
+    expected_categories: [generic heading]
+    reviewer_a: EDIT
+    reviewer_b: EDIT
+    final: EDIT
+    why: The same heading carries no task value for a source with an unrelated outcome.
+
+  - id: vague-praise-stacked
+    case: positive
+    excerpt: "DSPy.rb provides a powerful, seamless, and flexible experience."
+    expected_categories: [vague praise]
+    reviewer_a: EDIT
+    reviewer_b: DELETE
+    final: EDIT
+    why: Three evaluations name no supported variant, dimension, or evidence.
+
+  - id: throat-clearing-note
+    case: positive
+    excerpt: "It is important to note that evaluation scores depend on the metric."
+    expected_categories: [throat-clearing]
+    reviewer_a: EDIT
+    reviewer_b: EDIT
+    final: EDIT
+    why: The technical boundary should stand without the preface.
+
+  - id: narrating-html-comment
+    case: positive
+    excerpt: "<!-- This example shows how to define a signature. -->"
+    expected_categories: [narrating comments]
+    reviewer_a: DELETE
+    reviewer_b: DELETE
+    final: DELETE
+    why: The adjacent example already exposes the operation.
+
+  - id: elegant-variation-signature
+    case: positive
+    excerpt: "The signature declares inputs. The contract class then declares outputs."
+    expected_categories: [elegant variation]
+    reviewer_a: EDIT
+    reviewer_b: EDIT
+    final: EDIT
+    why: Both noun phrases refer to one signature and imply a false distinction.
+
+  - id: protected-real-contrast
+    case: protected
+    excerpt: "Validation constrains typed output shape; correctness is measured by a metric over examples."
+    expected_categories: []
+    reviewer_a: KEEP technical
+    reviewer_b: KEEP technical
+    final: KEEP technical
+    why: The two mechanisms and their evidence boundary are explicit.
+
+  - id: protected-agent-ownership-contrast
+    case: protected
+    excerpt: "ReAct chooses a bounded tool action, while the application owns permissions and side effects."
+    expected_categories: []
+    reviewer_a: KEEP technical
+    reviewer_b: KEEP technical
+    final: KEEP technical
+    why: The contrast assigns different responsibilities and changes implementation decisions.
+
+  - id: protected-react-codeact-contrast
+    case: protected
+    excerpt: "ReAct selects a registered tool, whereas CodeAct generates Ruby code for the isolated execution harness."
+    expected_categories: []
+    reviewer_a: KEEP technical
+    reviewer_b: KEEP technical
+    final: KEEP technical
+    why: The named mechanisms distinguish tool selection from generated-code execution.
+
+  - id: protected-scoped-automatic
+    case: protected
+    excerpt: "Requiring sorbet/toon enables the T::Struct extensions automatically; adding the gem remains manual."
+    expected_categories: []
+    reviewer_a: KEEP technical
+    reviewer_b: KEEP technical
+    final: KEEP technical
+    why: The trigger, performed behavior, and remaining manual setup are explicit.
+
+  - id: protected-task-heading
+    case: protected
+    excerpt: "## Diagnose Provider Timeout Failures"
+    outcome: Resolve provider failures before release.
+    expected_categories: []
+    reviewer_a: KEEP technical
+    reviewer_b: KEEP technical
+    final: KEEP technical
+    why: The heading names a reader task and observable failure.
+
+  - id: protected-earned-voice
+    case: protected
+    excerpt: "Types give shape. Descriptions give meaning."
+    expected_categories: []
+    reviewer_a: KEEP voice
+    reviewer_b: KEEP technical
+    final: KEEP voice
+    why: Nearby schema and description examples earn the compact distinction.
+
+  - id: false-positive-qualifiers-alone
+    case: false-positive
+    excerpt: "Automatic. Simple. Robust."
+    expected_categories: []
+    reviewer_a: KEEP technical
+    reviewer_b: EDIT
+    final: EDIT
+    why: These claims need context, but isolated words must not create blacklist matches.
+
+  - id: stacked-qualifiers-form-a-claim
+    case: positive
+    excerpt: "An automatic, simple, robust framework."
+    expected_categories: [vague praise]
+    reviewer_a: EDIT
+    reviewer_b: DELETE
+    final: EDIT
+    why: The subject and three modifiers form an unbounded product-quality claim; no individual word triggers alone.
+
+  - id: scoped-stacked-qualifiers
+    case: false-positive
+    excerpt: "The workflow is automatic and robust because requiring the extension installs both hooks and rejects missing schemas."
+    expected_categories: []
+    reviewer_a: KEEP technical
+    reviewer_b: KEEP technical
+    final: KEEP technical
+    why: The claim names its trigger, installed behavior, and handled failure.
+
+  - id: false-positive-scoped-simple
+    case: false-positive
+    excerpt: "This example is simple because it uses one predictor and no persistence."
+    expected_categories: []
+    reviewer_a: KEEP technical
+    reviewer_b: KEEP technical
+    final: KEEP technical
+    why: The sentence names the dimension of simplicity.
+
+  - id: qualifier-does-not-whitelist-empty-contrast
+    case: positive
+    excerpt: "This is not automatic; it is effortless."
+    expected_categories: [empty contrast]
+    reviewer_a: DELETE
+    reviewer_b: DELETE
+    final: DELETE
+    why: Two unscoped qualifiers do not name distinct technical mechanisms.
+
+  - id: one-technical-noun-does-not-prove-contrast
+    case: positive
+    excerpt: "This is not magic; it is a model."
+    expected_categories: [empty contrast]
+    reviewer_a: EDIT
+    reviewer_b: DELETE
+    final: EDIT
+    why: One technical noun does not supply two alternatives or a decision consequence.
+
+  - id: exclusion-frontmatter
+    case: exclusion
+    excerpt: |-
+      ---
+      description: "Prompt engineering is simply modern programming."
+      ---
+      Configure the provider.
+    expected_categories: []
+    reviewer_a: KEEP voice
+    reviewer_b: KEEP voice
+    final: KEEP voice
+    why: Frontmatter is outside the scanner's prose candidate surface.
+
+  - id: exclusion-backtick-fence
+    case: exclusion
+    excerpt: |-
+      ````ruby
+      puts "where the magic happens"
+      ````
+    expected_categories: []
+    reviewer_a: KEEP technical
+    reviewer_b: KEEP technical
+    final: KEEP technical
+    why: Code fences are masked regardless of delimiter length.
+
+  - id: exclusion-tilde-fence
+    case: exclusion
+    excerpt: |-
+      ~~~~~text
+      Ready to begin? Let's dive in.
+      ~~~~~
+    expected_categories: []
+    reviewer_a: KEEP technical
+    reviewer_b: KEEP technical
+    final: KEEP technical
+    why: Tilde fences are masked.
+
+  - id: exclusion-indented-code-and-quote
+    case: exclusion
+    excerpt: |2-
+          Prompt engineering is simply modern programming.
+      > Ready to begin? Let's dive in.
+    expected_categories: []
+    reviewer_a: KEEP technical
+    reviewer_b: KEEP technical
+    final: KEEP technical
+    why: Indented code and quoted material are not scanned mechanically.
+
+  - id: exclusion-multiline-inline-code
+    case: exclusion
+    excerpt: |-
+      The literal ``Prompt engineering is simply
+      modern programming.`` is test input.
+    expected_categories: []
+    reviewer_a: KEEP technical
+    reviewer_b: KEEP technical
+    final: KEEP technical
+    why: Variable-length inline-code spans may cross physical lines.
+
+  - id: exclusion-links-retain-label
+    case: exclusion
+    excerpt: "Read [Diagnose Provider Timeout Failures](https://example.test/where-the-magic-happens) or <https://example.test/ready-to-dive> and https://example.test/the-journey-begins."
+    expected_categories: []
+    reviewer_a: KEEP technical
+    reviewer_b: KEEP technical
+    final: KEEP technical
+    why: Destinations and URLs are masked while the task-value link label remains.
+
+  - id: unicode-physical-line
+    case: positive
+    excerpt: |-
+      境界を確認します 🧪
+      Prompt engineering is simply modern programming.
+    expected_categories: [AI aphorism]
+    expected_lines: [2]
+    reviewer_a: EDIT
+    reviewer_b: DELETE
+    final: EDIT
+    why: CJK and emoji do not change the second physical line number.
