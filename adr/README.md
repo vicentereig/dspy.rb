@@ -1,19 +1,19 @@
 # Architecture Decision Records
 
-This directory contains Architecture Decision Records (ADRs) for the DSPy.rb project.
+This directory contains DSPy.rb Architecture Decision Records (ADRs).
 
 ## What is an ADR?
 
-An Architecture Decision Record (ADR) is a document that captures an important architectural decision made along with its context and consequences.
+An ADR records an architectural decision, its context, and its consequences.
 
 ## Format
 
-Each ADR is a markdown file with a descriptive name. ADRs are numbered sequentially and include:
+Each ADR is a sequentially numbered Markdown file with a descriptive name and four sections:
 
 - **Status**: Draft, Proposed, Accepted, Deprecated, Superseded
-- **Context**: What is the issue that we're seeing that is motivating this decision?
-- **Decision**: What is the change that we're proposing and/or doing?
-- **Consequences**: What becomes easier or more difficult to do because of this change?
+- **Context**: What motivates the decision?
+- **Decision**: What change will we make?
+- **Consequences**: What becomes easier or harder?
 
 ## Index
 

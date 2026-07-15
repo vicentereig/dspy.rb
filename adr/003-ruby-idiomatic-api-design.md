@@ -41,7 +41,7 @@ class Sentiment < DSPy::Signature
 end
 ```
 
-Notice how the Ruby version uses blocks for grouping related fields? This isn't just aesthetic - it opens up possibilities for metaprogramming and dynamic field definitions that feel natural to Ruby developers.
+The Ruby version groups related fields in blocks, supporting metaprogramming and dynamic field definitions through familiar Ruby syntax.
 
 ## Embracing Duck Typing
 
@@ -66,7 +66,7 @@ module TimeHelper
   end
 end
 
-# All work seamlessly with ReAct agents
+# Each works with ReAct agents
 agent = DSPy::ReAct.new(MySignature, tools: {
   weather: WeatherService.new,
   calculate: calculator,
@@ -171,7 +171,7 @@ You get type checking where it matters without verbose annotations everywhere.
 
 ## Rails Integration First-Class
 
-DSPy.rb is designed to work seamlessly with Rails:
+DSPy.rb integrates with Rails:
 
 ```ruby
 # app/services/content_moderator.rb

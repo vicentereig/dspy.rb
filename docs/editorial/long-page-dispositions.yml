@@ -24,7 +24,7 @@ initial_inventory:
 
 dispositions:
   - source: docs/src/production/observability.md
-    measured_tokens: 2787
+    measured_tokens: 2778
     outcome: split
     audience: Operator tracing runtime execution.
     reason: Score export is independently sought by quality owners; tracing architecture remains coherent and intentionally over the trigger.
@@ -108,7 +108,7 @@ dispositions:
     discovery_review: [corpus, navigation, sitemap]
     risk_review: Export configuration moved out; metric semantics remain canonical here.
   - source: docs/src/advanced/stateful-agents.md
-    measured_tokens: 1761
+    measured_tokens: 1752
     outcome: keep
     audience: Agent builder preserving conversation state.
     reason: State representation, turn execution, persistence, and recovery are one lifecycle task.
@@ -120,7 +120,7 @@ dispositions:
     discovery_review: [corpus, navigation, sitemap]
     risk_review: Splitting would detach recovery from state ownership.
   - source: docs/src/advanced/rails-integration.md
-    measured_tokens: 1758
+    measured_tokens: 1751
     outcome: keep
     audience: Rails developer integrating DSPy.rb into application lifecycles.
     reason: Service, job, cache, validation, and instrumentation choices share Rails ownership and setup.
@@ -144,7 +144,7 @@ dispositions:
     discovery_review: [corpus, navigation, sitemap, llms.txt, llms-full.txt]
     risk_review: Preserve the retained advanced route and migrate the already-active old-route fragment directly to the new owner.
   - source: docs/src/core-concepts/modules.md
-    measured_tokens: 1530
+    measured_tokens: 1526
     outcome: keep
     audience: Developer composing predictors into reusable behavior.
     reason: Forward semantics, composition, configuration, and serialization form the module contract.
@@ -168,7 +168,7 @@ dispositions:
     discovery_review: [corpus, navigation, sitemap]
     risk_review: Keep schema conversion distinct from authorization, isolation, resource limits, and subprocess cancellation.
   - source: docs/src/index.md
-    measured_tokens: 2695
+    measured_tokens: 2423
     outcome: keep
     audience: Documentation visitor selecting a task path.
     reason: This is a selector and orientation surface, not a linear guide; sections serve distinct entry audiences without duplicating task definitions.

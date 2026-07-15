@@ -1,8 +1,8 @@
-# Bug: DSPy::Image in signature inputs gets serialized as Ruby object string
+# Bug: Signature inputs serialize DSPy::Image as a Ruby object string
 
 ## Summary
 
-When using `DSPy::Image` as an input field in a signature, the image is serialized as its Ruby object string (`#<DSPy::Image:0x...>`) instead of being properly formatted for the LLM API. The LLM receives the literal string instead of actual image data.
+A signature input serializes `DSPy::Image` as its Ruby object string (`#<DSPy::Image:0x...>`) instead of image data the model API can accept. The model receives the literal string.
 
 ## Reproduction
 
@@ -44,7 +44,7 @@ def build_messages(inference_module, input_values)
 end
 ```
 
-The call chain:
+Call chain:
 1. `Prompt#render_user_prompt(input_values)` calls `serialize_for_json(input_values)`
 2. `serialize_for_json` handles `T::Struct`, `Hash`, `Array`, `T::Enum` but NOT `DSPy::Image`
 3. `DSPy::Image` falls through to the `else` branch which returns it as-is
@@ -52,7 +52,7 @@ The call chain:
 
 ## Expected Behavior
 
-The documentation at `docs/src/core-concepts/multimodal.md` shows signatures with `DSPy::Image` inputs should work:
+`docs/src/core-concepts/multimodal.md` shows that signatures should accept `DSPy::Image` inputs:
 
 ```ruby
 class ImageAnalysis < DSPy::Signature
@@ -135,7 +135,7 @@ end
 
 ## Impact
 
-This affects any signature that uses `DSPy::Image` as an input type. The multimodal integration tests pass because they use `raw_chat` with `user_with_image`, not `Predict` with signatures.
+This bug affects every signature with a `DSPy::Image` input. The multimodal integration tests use `raw_chat` with `user_with_image`, not `Predict` with signatures, so they do not expose it.
 
 ## Environment
 

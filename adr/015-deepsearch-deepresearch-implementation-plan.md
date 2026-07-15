@@ -14,7 +14,7 @@ Reference diagrams (dependency + sequence) live in [Issue #163 comment #34522922
 
 ## Decision
 
-We will tackle the work bottom-up, establishing guardrails with unit specs before wiring higher-level modules. The outline below serves as our running checklist; we will update this ADR as milestones are completed.
+We will work bottom-up: establish unit-spec guardrails, then wire the higher-level modules. Update this checklist as milestones land.
 
 ### Phase 0: Repository scaffolding ✅
 

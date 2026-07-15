@@ -12,17 +12,17 @@ date: 2025-07-11 00:00:00 +0000
 
 ### State vs Memory
 
-**State** refers to temporary information that agents maintain during a conversation or session:
+**Session state** is temporary information the application carries between calls:
 - Current conversation context
 - User preferences for the session
 - Temporary calculations or intermediate results
 
-**Memory** refers to persistent information stored across sessions at the application level:
+**Durable memory** is information the application stores across sessions:
 - User preferences and settings
 - Historical interactions
 - Learned patterns and behaviors
 
-DSPy.rb provides the building blocks (modules, tools, ReAct agents) while your application manages persistence using your preferred storage backend (database, Redis, etc.).
+DSPy.rb supplies modules, tools, and the ReAct loop. The application owns persistence in a database, Redis, or another store.
 
 ## Choose a Persistence Pattern
 

@@ -6,7 +6,7 @@
 [![Documentation](https://img.shields.io/badge/docs-oss.vicente.services%2Fdspy.rb-blue)](https://oss.vicente.services/dspy.rb/)
 [![Discord](https://img.shields.io/discord/1161519468141355160?label=discord&logo=discord&logoColor=white)](https://discord.gg/zWBhrMqn)
 
-**Program typed LLM systems in Ruby.**
+**Build typed agents and model-backed programs in Ruby.**
 
 DSPy.rb brings [DSPy](https://dspy.ai)'s signature, module, agent, and optimizer model to Ruby, with Sorbet types and Ruby-native integrations. A signature declares a task as typed inputs and outputs. A module chooses how to execute it. Ruby composes modules into programs, while `ReAct` adds a bounded loop when the model should choose the next action. DSPy.rb builds the provider request and validates the returned shape.
 
@@ -38,7 +38,7 @@ classifier = DSPy::Predict.new(Classify)
 result = classifier.call(sentence: "This book was fun to read!")
 ```
 
-Define a typed task contract, not a hand-maintained output template. Receive validated Ruby values, not application-owned JSON parsing. Handle explicit configuration, transport, and validation errors—not crossed fingers.
+Define a typed task contract instead of maintaining an output template. Receive validated Ruby values instead of parsing provider JSON. Handle configuration, transport, and validation errors explicitly.
 
 ## Start Here
 

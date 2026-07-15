@@ -8,16 +8,16 @@ anchors:
   - id: readme-product-promise
     acceptance_anchor: README product promise
     lifecycle: active
-    source: {path: README.md, locator: "# DSPy.rb", status: present, observed_excerpt: "**Program typed LLM systems in Ruby.**"}
+    source: {path: README.md, locator: "# DSPy.rb", status: present, observed_excerpt: "**Build typed agents and model-backed programs in Ruby.**"}
     semantic_job: State the product category and Ruby audience in one testable line.
     preservation: literal-preferred
     factual_owner: {path: README.md, locator: "# DSPy.rb"}
     canonical_destination: {path: README.md, locator: "# DSPy.rb"}
-    successor_contract: Name typed LLM programs and Ruby without implying autonomous improvement or upstream compatibility.
+    successor_contract: Name typed agents, model-backed programs, and Ruby without implying autonomous improvement or upstream compatibility.
     evidence: [{path: docs/editorial/dspy-port-positioning.md, locator: "## Verdict"}]
     duplicates:
-      - {path: docs/src/index.md, locator: '<h1 class="text-4xl font-bold font-serif tracking-tight text-gray-900 sm:text-6xl">Program typed LLM systems in Ruby</h1>', disposition: align-to-owner}
-      - {path: docs/src/llms.txt.erb, locator: "Program typed LLM systems in Ruby", disposition: derive-or-link}
+      - {path: docs/src/index.md, locator: '<h1 class="text-4xl font-bold font-serif tracking-tight text-gray-900 sm:text-6xl">Build typed AI agents in Ruby</h1>', disposition: specialize-agent-entry}
+      - {path: docs/src/llms.txt.erb, locator: "Build typed agents and model-backed programs in Ruby", disposition: derive-or-link}
 
   - id: readme-three-beat-contrast
     acceptance_anchor: README three-beat contrast

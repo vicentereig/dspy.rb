@@ -140,7 +140,7 @@ As of 2026-01-04, the plan has been executed in full:
 - Incremental adoption avoids a large, risky refactor.
 - WeakRef‑based auto‑unsubscribe eliminates the most severe memory leak without changing the subscription DSL.
 - Fiber‑aware request correlation fixes misattributed usage in concurrent `Async` workloads.
-- Adapter capability interface makes structured outputs and prompt selection robust and extensible.
+- The adapter capability interface supports structured outputs and extensible prompt selection.
 - Deterministic prompt formatting avoids subtle global‑config races.
 - Parallel evals become safe via instance cloning rather than heavy locking.
 

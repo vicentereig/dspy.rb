@@ -27,7 +27,7 @@ DUPLICATE_DISPOSITIONS = %w[
   summarize-and-link preserve-through-merge retain-historical
   specialize-for-optimization retain-optimizer-specific
   retain-historical-detail retain-stronger-codeact-boundary align-positioning
-  redirect-and-retire-copy
+  redirect-and-retire-copy specialize-agent-entry
 ].freeze
 
 def tracked_prose

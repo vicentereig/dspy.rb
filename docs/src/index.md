@@ -1,7 +1,7 @@
 ---
 layout: home
-title: "DSPy.rb | Typed LLM Systems in Ruby"
-description: "Program typed LLM systems in Ruby with contracts, modules, bounded agents, evaluation, and prompt optimization."
+title: "DSPy.rb | Typed AI Agents in Ruby"
+description: "Build typed agents in Ruby with Sorbet contracts, model tools, evaluation, and prompt optimization."
 date: 2025-06-28 00:00:00 +0000
 last_modified_at: 2026-07-15 00:00:00 +0000
 ---
@@ -12,11 +12,11 @@ last_modified_at: 2026-07-15 00:00:00 +0000
     </div>
   </div>
   <div class="text-center">
-    <p class="text-sm font-medium text-dspy-coral mb-4">A Ruby-native implementation of <a href="https://dspy.ai" rel="noopener noreferrer" class="underline hover:text-[#e05d3d]">DSPy's programming model</a></p>
-    <h1 class="text-4xl font-bold font-serif tracking-tight text-gray-900 sm:text-6xl">Program typed LLM systems in Ruby</h1>
-    <p class="mt-6 text-lg leading-8 text-gray-600">Define typed task contracts. Give agents tools. Evaluate outputs against metrics and optimize the prompts that work.</p>
+    <p class="text-sm font-medium text-dspy-coral mb-4">Ruby-native agents powered by <a href="https://dspy.ai" rel="noopener noreferrer" class="underline hover:text-[#e05d3d]">DSPy's programming model</a></p>
+    <h1 class="text-4xl font-bold font-serif tracking-tight text-gray-900 sm:text-6xl">Build typed AI agents in Ruby</h1>
+    <p class="mt-6 text-lg leading-8 text-gray-600">Define task contracts with Sorbet. Give models typed tools. Keep state, limits, errors, and side effects in Ruby.</p>
     <div class="mt-6 flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-gray-500">
-      <span class="flex items-center gap-x-1.5"><svg class="h-4 w-4 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" /></svg>Typed contracts with Sorbet</span>
+      <span class="flex items-center gap-x-1.5"><svg class="h-4 w-4 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" /></svg>Typed agent contracts with Sorbet</span>
       <span class="flex items-center gap-x-1.5"><svg class="h-4 w-4 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" /></svg>Evaluation and prompt optimization</span>
       <span class="flex items-center gap-x-1.5"><svg class="h-4 w-4 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" /></svg>OpenAI, Anthropic, Gemini, Ollama</span>
     </div>
@@ -30,121 +30,74 @@ last_modified_at: 2026-07-15 00:00:00 +0000
 <div class="mx-auto max-w-5xl px-6 lg:px-8">
   <div class="mx-auto max-w-3xl">
 
-    <h2 class="text-2xl font-bold font-serif text-gray-900 mb-6">Your first agent</h2>
-    <p class="text-lg text-gray-600 mb-12">A signature declares the contract — inputs, outputs, types. A module picks the strategy. Ruby keeps control of composition, errors, and side effects.</p>
+    <h2 class="text-2xl font-bold font-serif text-gray-900 mb-6">Build a tool-using agent</h2>
+    <p class="text-lg text-gray-600 mb-12">An agent is a model using tools in a bounded loop to reach a goal. A signature defines the task and result. Ruby implements the tools and owns permissions, errors, side effects, and iteration limits.</p>
 
-    <h3 class="text-xl font-semibold font-serif text-gray-900 mb-6">Define the contract</h3>
+    <h3 class="text-xl font-semibold font-serif text-gray-900 mb-6">Define the contract and tool</h3>
 
-    <p class="text-gray-600 mb-6">Name every field and its type. Field descriptions guide the model:</p>
+    <p class="text-gray-600 mb-6">The signature types the agent's boundary. The tool exposes one narrow Ruby capability:</p>
 <div markdown="1">
 ```ruby
-class Email < T::Struct
-  const :subject, String
-  const :from, String
-  const :to, String
-  const :body, String
-end
-
-class EmailCategory < T::Enum
-  enums do
-    Technical = new('technical')
-    Billing = new('billing')
-    General = new('general')
-  end
-end
-
-class Priority < T::Enum
-  enums do
-    Low = new('low')
-    Medium = new('medium')
-    High = new('high')
-  end
-end
-
-class ClassifyEmail < DSPy::Signature
-  description "Classify customer support emails by analyzing content and urgency"
+class AnswerWeather < DSPy::Signature
+  description "Answer weather questions with the available tools"
 
   input do
-    const :email, Email,
-          description: "The email to classify with all headers and content"
+    const :question, String
   end
 
   output do
-    const :category, EmailCategory,
-          description: "Main topic: technical (API, bugs), billing (payment, pricing), or general"
-    const :priority, Priority,
-          description: "Urgency level based on keywords like 'production', 'ASAP', 'urgent'"
-    const :summary, String,
-          description: "One-line summary of the issue for support dashboard"
+    const :answer, String
+  end
+end
+
+class WeatherTool < DSPy::Tools::Base
+  tool_name "weather"
+  tool_description "Get weather for a location"
+
+  sig { params(location: String).returns(String) }
+  def call(location:)
+    "72°F and sunny in #{location}"
   end
 end
 ```
 </div>
 
-<h3 class="text-xl font-semibold font-serif text-gray-900 mt-12 mb-6">Let the LLM show its work</h3>
-    <p class="text-gray-600 mb-6">Use Chain of Thought for complex reasoning:</p>
+<h3 class="text-xl font-semibold font-serif text-gray-900 mt-12 mb-6">Run a bounded tool loop</h3>
+    <p class="text-gray-600 mb-6"><code>ReAct</code> lets the model call the weather tool, observe its result, and finish with a typed answer:</p>
 <div markdown="1">
 ```ruby
-classifier = DSPy::ChainOfThought.new(ClassifyEmail)
-
-# Create a properly typed email object
-email = Email.new(
-  subject: "URGENT: API Key Not Working!!!",
-  from: "john.doe@acmecorp.com",
-  to: "support@yourcompany.com",
-  body: "My API key stopped working after the update. I need this fixed ASAP for our production deployment!"
+agent = DSPy::ReAct.new(
+  AnswerWeather,
+  tools: [WeatherTool.new],
+  max_iterations: 3
 )
 
-classification = classifier.call(email: email)  # Type-checked at runtime!
+result = agent.call(question: "What is the weather in Valencia?")
+puts result.answer
 ```
 </div>
 
-<h3 class="text-xl font-semibold font-serif text-gray-900 mt-12 mb-6">What you get back</h3>
-    <p class="text-gray-600 mb-6">Proper Ruby objects, not strings:</p>
+<h3 class="text-xl font-semibold font-serif text-gray-900 mt-12 mb-6">Inspect what happened</h3>
+    <p class="text-gray-600 mb-6">The answer follows the declared type. The history records tool choices and results:</p>
 <div markdown="1">
 ```ruby
-irb> classification.reasoning
-=> "Let me analyze this email step by step:
-1. The customer mentions an API key issue - this is technical
-2. They mention it stopped working after an update - suggests a system change
-3. They emphasize 'ASAP' and 'production deployment' - this is urgent
-4. Production issues always warrant high priority"
+result.answer.class
+# => String
 
-irb> classification.category
-=> #<EmailCategory::Technical:0x00007f8b2c0a1b80>
-
-irb> classification.category.class
-=> EmailCategory::Technical
-
-irb> classification.category == EmailCategory::Technical  # Type-safe comparison
-=> true
-
-irb> classification.priority
-=> #<Priority::High:0x00007f8b2c0a1c20>
-
-irb> classification.priority.serialize  # Get the string value when needed
-=> "high"
-
-irb> classification.summary
-=> "API key authentication failure post-update affecting production"
-
-# Your IDE knows these are the ONLY valid values:
-irb> EmailCategory.values
-=> [#<EmailCategory::Technical>, #<EmailCategory::Billing>, #<EmailCategory::General>]
-
-# Type errors caught at runtime (or by Sorbet static analysis):
-irb> classification.category = "invalid"  # This would raise an error!
+result.history.each do |step|
+  puts [step[:action], step[:tool_input], step[:observation]].inspect
+end
 ```
 </div>
 
-    <p class="text-lg text-gray-600 mt-12 mb-16">The result is a Ruby object whose category must be one of the declared enum values. Field descriptions guide the provider request without requiring a hand-built prompt template. Once the program has examples and a metric, an optimizer can search for better instructions and demonstrations.</p>
+    <p class="text-lg text-gray-600 mt-12 mb-16">The model chooses whether to call a tool or finish; Ruby executes each tool and enforces the loop limit. Evaluate complete runs with examples and metrics, then use an optimizer to search for better instructions and demonstrations.</p>
   </div>
 </div>
 
 <div class="mx-auto max-w-7xl px-6 lg:px-8 py-16">
   <div class="mx-auto max-w-2xl lg:text-center mb-16">
     <h2 class="text-3xl font-bold font-serif tracking-tight text-gray-900 sm:text-4xl">Built for Ruby developers</h2>
-    <p class="mt-4 text-lg text-gray-600">Ruby types and control flow for LLM programs and agents.</p>
+    <p class="mt-4 text-lg text-gray-600">Ruby types and control flow for agents and model-backed programs.</p>
   </div>
 
   <div class="mx-auto grid max-w-2xl grid-cols-1 gap-8 lg:mx-0 lg:max-w-none lg:grid-cols-3">
@@ -232,66 +185,25 @@ irb> classification.category = "invalid"  # This would raise an error!
   </div>
 
   <div class="mx-auto max-w-4xl">
-    <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
       <div class="rounded-lg bg-white p-4 sm:p-6 shadow-sm ring-1 ring-gray-900/5">
         <h3 class="text-lg font-semibold text-gray-900 mb-3">OpenAI</h3>
-        <p class="text-sm text-gray-600 mb-4">GPT-4, GPT-4o, GPT-4o-mini, GPT-5, and more with native JSON mode</p>
-<div markdown="1">
-```ruby
-DSPy.configure do |c|
-  c.lm = DSPy::LM.new(
-    'openai/gpt-4o-mini',
-    api_key: ENV['OPENAI_API_KEY'],
-    structured_outputs: true
-  )
-end
-```
-</div>
+        <p class="text-sm text-gray-600">Install <code>dspy-openai</code>. Check the selected model and endpoint for structured output, tools, media, and streaming support.</p>
       </div>
 
       <div class="rounded-lg bg-white p-4 sm:p-6 shadow-sm ring-1 ring-gray-900/5">
         <h3 class="text-lg font-semibold text-gray-900 mb-3">Google Gemini</h3>
-        <p class="text-sm text-gray-600 mb-4">Gemini 1.5 Pro, Flash, Gemini 2.0 with native structured outputs</p>
-<div markdown="1">
-```ruby
-DSPy.configure do |c|
-  c.lm = DSPy::LM.new(
-    'gemini/gemini-2.5-flash',
-    api_key: ENV['GEMINI_API_KEY'],
-    structured_outputs: true
-  )
-end
-```
-</div>
+        <p class="text-sm text-gray-600">Install <code>dspy-gemini</code>. Verify model capabilities before relying on structured output, tools, media, or streaming.</p>
       </div>
 
       <div class="rounded-lg bg-white p-4 sm:p-6 shadow-sm ring-1 ring-gray-900/5">
         <h3 class="text-lg font-semibold text-gray-900 mb-3">Anthropic Claude</h3>
-        <p class="text-sm text-gray-600 mb-4">Claude 3.5, Claude 4 with tool-based extraction</p>
-<div markdown="1">
-```ruby
-DSPy.configure do |c|
-  c.lm = DSPy::LM.new(
-    'anthropic/claude-sonnet-4-5-20250929',
-    api_key: ENV['ANTHROPIC_API_KEY'],
-    structured_outputs: true
-  )
-end
-```
-</div>
+        <p class="text-sm text-gray-600">Install <code>dspy-anthropic</code>. Verify model capabilities before relying on structured output, tools, media, or streaming.</p>
       </div>
 
       <div class="rounded-lg bg-white p-4 sm:p-6 shadow-sm ring-1 ring-gray-900/5">
-        <h3 class="text-lg font-semibold text-gray-900 mb-3">Ollama (Local Models)</h3>
-        <p class="text-sm text-gray-600 mb-4">Run Llama, Mistral, Gemma locally - free, no API key needed</p>
-<div markdown="1">
-```ruby
-DSPy.configure do |c|
-  c.lm = DSPy::LM.new('ollama/llama3.2')
-  # Runs locally, completely free
-end
-```
-</div>
+        <h3 class="text-lg font-semibold text-gray-900 mb-3">Local and compatible APIs</h3>
+        <p class="text-sm text-gray-600">Use Ollama or an OpenAI-compatible endpoint. Confirm the server and model support each capability your agent needs.</p>
       </div>
     </div>
 
@@ -301,18 +213,8 @@ end
           <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" />
         </svg>
         <div class="flex-1">
-          <h4 class="text-base font-semibold text-gray-900">OpenRouter: route through an OpenAI-compatible adapter</h4>
-          <p class="mt-2 text-sm text-gray-600">Check OpenRouter's current catalog and the selected model's capabilities before enabling schemas, media, tools, or streaming.</p>
-<div markdown="1">
-```ruby
-DSPy.configure do |c|
-  c.lm = DSPy::LM.new(
-    'openrouter/deepseek/deepseek-chat-v3.1:free',
-    api_key: ENV['OPENROUTER_API_KEY']
-  )
-end
-```
-</div>
+          <h4 class="text-base font-semibold text-gray-900">One agent, different models</h4>
+          <p class="mt-2 text-sm text-gray-600">Keep the signature, tools, and Ruby control flow stable when changing adapters. Re-evaluate the agent because model behavior and capabilities can change.</p>
         </div>
       </div>
     </div>

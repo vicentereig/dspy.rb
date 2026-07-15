@@ -650,7 +650,7 @@ With `dspy-o11y`, `dspy-o11y-langfuse`, the OpenTelemetry dependencies, and netw
 
 The integration requires `opentelemetry-sdk`, `opentelemetry-exporter-otlp`, valid Langfuse credentials, and network connectivity to the configured instance.
 
-**🆕 Enhanced in v0.25.0**: Comprehensive span reporting improvements including proper input/output capture, hierarchical nesting, accurate timing, token usage tracking, and correct Langfuse observation types (`generation`, `chain`, `span`).
+Since v0.25.0, spans capture inputs, outputs, nesting, timing, token usage, and Langfuse observation types (`generation`, `chain`, and `span`).
 
 ### Set Langfuse Credentials
 

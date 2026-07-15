@@ -11,11 +11,9 @@ DSPy.rb does not provide a vector store or embedding model. A RAG program retrie
 
 ## Assign Retrieval Ownership
 
-RAG in DSPy.rb involves:
-- **External Retrieval Integration**: Connect to vector databases and search services
-- **Context-Aware Signatures**: Design signatures that work with retrieved context
-- **Multi-Step Reasoning**: Chain retrieval and generation steps
-- **Manual Implementation**: Build custom RAG workflows using DSPy modules
+- **Application code or a tool** calls the vector database or search service.
+- **A signature** declares the retrieved context and answer fields.
+- **Ruby control flow or an agent loop** decides whether to retrieve once or choose among retrieval tools.
 
 ## Build the Retrieval Boundary
 
@@ -530,18 +528,18 @@ end
 - **[Modules](/dspy.rb/core-concepts/modules/)** - Compose retrieval and generation with Ruby control flow
 - **[Stateful Agents](/dspy.rb/advanced/stateful-agents/)** - Pass application-owned persistent state into agent calls
 
-### Advanced Patterns  
+### More Patterns
 - **[Multi-stage Pipelines](/dspy.rb/advanced/pipelines/)** - Compose multiple retrieval and generation stages
-- **[Custom Metrics](/dspy.rb/advanced/custom-metrics/)** - Create domain-specific evaluation metrics for RAG systems
-- **[Rails Integration](/dspy.rb/advanced/rails-integration/)** - Integrate RAG systems with Ruby on Rails applications
+- **[Custom Metrics](/dspy.rb/advanced/custom-metrics/)** - Define domain-specific evaluation metrics for RAG programs
+- **[Rails Integration](/dspy.rb/advanced/rails-integration/)** - Put RAG calls behind Rails services and jobs
 
 ### Optimization
-- **[MIPROv2](/dspy.rb/optimization/miprov2/)** - Use Bayesian optimization to tune multi-objective RAG systems
+- **[MIPROv2](/dspy.rb/optimization/miprov2/)** - Optimize supported instructions and examples against a metric
 - **[Evaluation](/dspy.rb/optimization/evaluation/)** - Measure retrieval and answer behavior with explicit metrics
 
 ### Framework Comparison
 - **[DSPy.rb vs LangChain](/dspy.rb/advanced/dspy-vs-langchain/)** - Compare RAG capabilities between Ruby frameworks
 
 ### Production
-- **[Observability](/dspy.rb/production/observability/)** - Monitor and trace RAG applications in production
-- **[Troubleshooting](/dspy.rb/production/troubleshooting/)** - Common RAG issues and solutions
+- **[Observability](/dspy.rb/production/observability/)** - Trace retrieval and model calls
+- **[Troubleshooting](/dspy.rb/production/troubleshooting/)** - Diagnose provider, parsing, and validation failures

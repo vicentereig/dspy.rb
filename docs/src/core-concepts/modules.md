@@ -244,7 +244,7 @@ class ResearchAssistant < DSPy::Module
 end
 ```
 
-### Complete Example: Code Analysis Agent
+### Bounded Code Analysis Agent
 
 This `ReAct` module exposes only the portable count and line-range operations. It caps application input and bounds model-directed steps:
 
@@ -316,13 +316,9 @@ CodeAct is available via the `dspy-code_act` gem. The complete Think-Code-Observ
 
 ## Define a Custom Execution Strategy
 
-### Creating Custom Modules
+### Create a Custom Module
 
-Subclass `DSPy::Module` when the built-in modules do not define the required execution pattern, as `DSPy::ReAct` (core) and `DSPy::CodeAct` (optional gem) do. Custom modules can own:
-- Building specialized agent architectures
-- Implementing custom inference patterns
-- Creating domain-specific processing pipelines
-- Extending DSPy.rb with new capabilities
+Subclass `DSPy::Module` when the built-in modules do not define the required execution pattern, as `DSPy::ReAct` (core) and `DSPy::CodeAct` (optional gem) do. A custom module can compose predictors, agents, application services, and Ruby control flow behind one typed call boundary.
 
 ```ruby
 class CustomAgentSignature < DSPy::Signature

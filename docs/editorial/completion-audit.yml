@@ -121,16 +121,16 @@ findings:
   - id: home-product-owner-alignment
     category: voice
     status: resolved
-    reason: The home-page headline narrowed the README's typed-system product category to agents.
+    reason: The home page now leads with the agent use case while the supporting copy distinguishes models, agents, and Ruby-owned execution.
     verification:
-      - {path: docs/src/index.md, absent: "Reliable agents in Ruby", present: "Program typed LLM systems in Ruby"}
+      - {path: docs/src/index.md, absent: "Program typed LLM systems in Ruby", present: "Build typed AI agents in Ruby"}
   - id: llms-product-simile
     category: voice
     status: resolved
     reason: The portable software simile hid validation and application-owned runtime boundaries.
     verification:
-      - {path: docs/src/llms.txt.erb, absent: "Build LLM apps like you build software", present: "Program typed LLM systems in Ruby"}
-      - {path: docs/src/llms-full.txt.erb, absent: "Build LLM apps like you build software", present: "Program typed LLM systems in Ruby"}
+      - {path: docs/src/llms.txt.erb, absent: "Build LLM apps like you build software", present: "Build typed agents and model-backed programs in Ruby"}
+      - {path: docs/src/llms-full.txt.erb, absent: "Build LLM apps like you build software", present: "Build typed agents and model-backed programs in Ruby"}
   - id: llms-unbounded-optimization
     category: factual
     status: resolved
@@ -227,7 +227,7 @@ findings:
       - {path: docs/src/_layouts/home.liquid, absent: "Everything you need to ship agents that work", present: "Build typed programs and bounded agents"}
       - {path: docs/src/_layouts/home.liquid, absent: "Know whether a change improves output", present: "Compare program behavior against chosen examples and metrics"}
       - {path: docs/src/_layouts/home.liquid, absent: "Ready to ship agents that work?", present: "Build your first typed program"}
-      - {path: docs/src/index.md, absent: "Everything you love about Ruby", present: "Ruby types and control flow for LLM programs and agents"}
+      - {path: docs/src/index.md, absent: "Everything you love about Ruby", present: "Ruby types and control flow for agents and model-backed programs"}
   - id: blog-layout-positioning
     category: voice
     status: resolved
@@ -305,7 +305,7 @@ anchor_audits:
   - {id: provider-capability-boundary, verdict: preserved, path: docs/src/production/troubleshooting.md, locator: "## JSON Parsing Issues", reason: Capability remains model- and SDK-specific.}
 
 duplicate_decisions:
-  - {anchor: readme-product-promise, source: docs/src/index.md, disposition: align-to-owner, action_verification: aligned-copy, distinction: The home page is a discovery surface and repeats the owner category without narrowing the product to agents.}
+  - {anchor: readme-product-promise, source: docs/src/index.md, disposition: specialize-agent-entry, action_verification: retained-distinction, distinction: The home page leads with tool-using agents, then distinguishes model choice from Ruby-owned tools and execution; README retains the broader product promise.}
   - {anchor: readme-product-promise, source: docs/src/llms.txt.erb, disposition: derive-or-link, action_verification: aligned-copy, distinction: The concise tool-facing reference summarizes the owner and states application-owned limits; derivation remains planned.}
   - {anchor: readme-three-beat-contrast, source: docs/src/llms.txt.erb, disposition: align-to-owner, action_verification: aligned-copy, distinction: The feature list names the typed mechanism while README owns the rhetorical contrast.}
   - {anchor: readme-mental-model, source: docs/src/advanced/python-comparison.md, disposition: link-and-specialize, action_verification: retained-distinction, distinction: The comparison translates concepts for Python DSPy readers instead of reteaching onboarding.}

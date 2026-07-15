@@ -4,7 +4,7 @@
 Accepted
 
 ## Context
-With the introduction of comprehensive provider compatibility validation for multimodal images (v0.16.0), a key architectural question emerged: should DSPy use a single unified `DSPy::Image` type with runtime validation, or should we have provider-specific image types for compile-time safety?
+Provider compatibility validation for multimodal images (v0.16.0) raised an architectural question: should DSPy use one `DSPy::Image` type with runtime validation or provider-specific image types for compile-time safety?
 
 ### The Problem
 Different LLM providers support different image features:

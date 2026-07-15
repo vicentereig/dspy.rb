@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: Troubleshooting
-description: Common issues and solutions for DSPy.rb
+description: Diagnose DSPy.rb provider configuration, gem, parsing, and validation failures
 date: 2025-07-20 00:00:00 +0000
 last_modified_at: 2025-08-08 00:00:00 +0000
 ---

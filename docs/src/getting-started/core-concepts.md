@@ -2,7 +2,7 @@
 layout: docs
 published: false
 name: Core Concepts
-description: Understand the fundamental building blocks of DSPy.rb
+description: Learn how signatures, predictors, modules, examples, and agents fit together in DSPy.rb
 date: 2025-07-10 00:00:00 +0000
 last_modified_at: 2025-08-08 00:00:00 +0000
 ---
@@ -12,7 +12,7 @@ DSPy.rb uses signatures to declare tasks and modules to execute them. Ruby compo
 
 ## Signatures: Defining LLM Interfaces
 
-Signatures are the foundation of DSPy. They define typed interfaces for LLM operations, specifying inputs, outputs, and behavior descriptions.
+Signatures declare typed inputs, outputs, and task descriptions for model calls.
 
 ```ruby
 class ClassifyText < DSPy::Signature
@@ -40,18 +40,18 @@ end
 
 ### What the Signature Provides
 
-- **Type Safety**: Signatures use Sorbet types to ensure runtime type checking
-- **Structured Outputs**: Define complex output schemas with enums, objects, and arrays
-- **Self-Documenting**: Descriptions provide context to the LLM about the task
-- **Composable**: Signatures can be reused across different predictors and modules
+- **Runtime validation**: Sorbet types define the accepted result shape
+- **Structured outputs**: Enums, objects, and arrays become output schemas
+- **Task guidance**: Descriptions tell the model what each field means
+- **Reuse**: One signature can serve several predictors and modules
 
 ## Predictors: Basic LLM Operations
 
-Predictors are the basic building blocks that execute signatures using language models.
+Predictors execute signatures with a language model.
 
 ### DSPy::Predict
 
-The simplest predictor that takes a signature and returns structured results:
+`Predict` makes one typed call and returns a structured result:
 
 ```ruby
 classifier = DSPy::Predict.new(ClassifyText)
@@ -64,7 +64,7 @@ puts result.confidence # => 0.92
 
 ### DSPy::ChainOfThought
 
-Adds step-by-step reasoning to improve accuracy on complex tasks:
+`ChainOfThought` adds a `reasoning` field before the signature outputs:
 
 ```ruby
 class SolveMath < DSPy::Signature
@@ -124,7 +124,7 @@ puts result.answer # => 66.0 or "66"
 
 ## Modules: Composing Ruby Programs
 
-Modules let you compose multiple predictors into sophisticated pipelines.
+Modules compose predictors with Ruby control flow.
 
 ```ruby
 class DocumentProcessor < DSPy::Module
@@ -178,7 +178,7 @@ results = evaluator.evaluate(examples)
 
 ## Configuration: Setting Up Your Environment
 
-Configure DSPy with your preferred language model:
+Configure DSPy with a language model:
 
 ```ruby
 DSPy.configure do |config|
@@ -209,7 +209,7 @@ end
 
 ### Raw Chat API
 
-For benchmarking or using existing prompts without DSPy's structured output features, use the `raw_chat` method:
+Use `raw_chat` to benchmark an existing prompt or call a provider without DSPy's structured output features:
 
 ```ruby
 lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
@@ -229,7 +229,7 @@ response = lm.raw_chat do |m|
 end
 ```
 
-This is particularly useful for:
+Use it for:
 - Benchmarking monolithic prompts against modular implementations
 - Gradual migration from existing prompt systems
 - Quick prototyping without signatures
@@ -254,7 +254,7 @@ end
 ## Best Practices
 
 ### 1. Start Simple
-Begin with basic Predict modules and add complexity gradually:
+Add reasoning or tools only when the task requires them:
 
 ```ruby
 # Start with this
@@ -268,7 +268,7 @@ agent_classifier = DSPy::ReAct.new(ComplexClassification, tools: [WebSearch.new]
 ```
 
 ### 2. Use Clear Descriptions
-Your signature descriptions directly impact LLM performance:
+Descriptions become provider-facing task guidance. Measure their effect against examples and a metric:
 
 ```ruby
 # Good: Clear and specific
@@ -279,7 +279,7 @@ description "Classify text"
 ```
 
 ### 3. Leverage Type Safety
-Use Sorbet types to catch errors early:
+Use Sorbet types to reject results outside the declared shape:
 
 ```ruby
 class Priority < T::Enum
@@ -324,8 +324,8 @@ end
 
 ## Next Steps
 
-- **[Signatures & Types](../../core-concepts/signatures)** - Deep dive into signature design
-- **[Predictors](../../core-concepts/predictors)** - Master the different predictor types
+- **[Signatures & Types](../../core-concepts/signatures)** - Design typed task contracts
+- **[Predictors](../../core-concepts/predictors)** - Choose a predictor type
 - **[Modules & Pipelines](../../core-concepts/modules)** - Compose modules with Ruby
 - **[Examples & Validation](../../core-concepts/examples)** - Create evaluation and few-shot data
 

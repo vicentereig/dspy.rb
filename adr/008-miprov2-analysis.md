@@ -332,7 +332,7 @@ TIPS = {
 
 1. **Optuna is fundamental** - The Python implementation is built around Optuna's API and capabilities, particularly the TPESampler for Bayesian optimization.
 
-2. **Minibatching is sophisticated** - It's not just "evaluate on smaller batches." The strategy involves:
+2. **Minibatching combines several operations** beyond evaluating smaller batches:
    - Track scores for each parameter combination across multiple trials
    - Calculate averages to identify promising configurations
    - Periodically evaluate best-averaging configurations on full dataset

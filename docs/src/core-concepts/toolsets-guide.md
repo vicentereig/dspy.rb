@@ -13,7 +13,7 @@ sitemap: false
 
 ## When to Use Toolsets
 
-Use toolsets when you have related operations that share state or logic:
+Use a toolset to group operations that share state or logic:
 
 - **Memory operations** - store, retrieve, search, delete
 - **File operations** - read, write, list, delete
@@ -100,7 +100,7 @@ tool :search,
 
 ## Type Safety
 
-Methods use Sorbet signatures for automatic schema generation:
+Toolset methods use Sorbet signatures to generate schemas:
 
 ```ruby
 sig { params(key: String, value: String, tags: T.nilable(T::Array[String])).returns(String) }
@@ -138,7 +138,7 @@ The `TextProcessingToolset` provides these operations:
 
 ## LLM Usage
 
-The LLM interacts with each method as a separate tool:
+The model can call each exported method as a separate tool during the agent loop:
 
 ```json
 {
@@ -184,8 +184,4 @@ A tool schema tells the model how to call a method. It does not authorize the op
 
 ## Design Decisions
 
-**Explicit Tool Exposure**: The `tool` DSL exposes only declared methods. This provides:
-- Clear documentation for each tool via the `description` parameter
-- Intentional tool interface design
-- Proper schema descriptions for LLM consumption
-- Type safety through Sorbet signatures
+**Explicit tool exposure**: The `tool` DSL exports only declared methods. The `description` parameter documents each tool for the model, while Sorbet signatures define its argument schema.

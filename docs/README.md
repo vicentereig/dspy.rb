@@ -1,6 +1,6 @@
 # DSPy.rb Documentation Site
 
-This directory contains the DSPy.rb documentation site, built with Bridgetown and Tailwind CSS components.
+This directory contains the DSPy.rb documentation site built with Bridgetown and Tailwind CSS.
 
 ## Quick Start
 
@@ -25,7 +25,7 @@ bun install --frozen-lockfile
 rbenv exec bundle exec bridgetown start
 ```
 
-3. View the site at http://localhost:4000
+3. Open http://localhost:4000.
 
 ### Building for Production
 
@@ -36,7 +36,7 @@ cd docs
 BRIDGETOWN_ENV=production rbenv exec bundle exec bridgetown build
 ```
 
-The built site will be in the `output/` directory.
+Bridgetown writes the built site to `output/`.
 
 ### Documentation quality
 
@@ -93,11 +93,7 @@ The site uses Tailwind components for its documentation layout:
 
 ## GitHub Pages Deployment
 
-The site is configured for GitHub Pages deployment:
-
-1. Push to the `main` branch
-2. GitHub Actions will automatically build and deploy
-3. View at https://oss.vicente.services/dspy.rb/
+Pushing to `main` triggers the GitHub Actions build and deployment. The published site is at https://oss.vicente.services/dspy.rb/.
 
 ## Site Components
 

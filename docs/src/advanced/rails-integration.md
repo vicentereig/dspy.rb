@@ -1,8 +1,7 @@
 ---
 layout: docs
 title: Rails Integration Guide
-description: Integrate DSPy.rb with Ruby on Rails applications, including
-  enum handling and best practices
+description: Put DSPy.rb enum coercion, model calls, callbacks, and telemetry behind Rails boundaries
 date: 2025-07-11 00:00:00 +0000
 last_modified_at: 2025-08-13 00:00:00 +0000
 ---
@@ -685,10 +684,10 @@ end
 
 ### Keep Rails Ownership Explicit
 
-1. **Use concerns for shared callback logic** - Extract common patterns like logging, metrics, and error handling
-2. **Integrate with ActiveRecord callbacks** - Coordinate module callbacks with model lifecycle hooks
-3. **Leverage Rails instrumentation** - Use ActiveSupport::Notifications for observability
-4. **Handle errors gracefully** - Use `around` callbacks to catch and report errors to your error tracking service
-5. **Track performance** - Use callbacks to measure and report execution time to APM tools
+1. **Share callback logic with concerns** - Extract repeated logging, metrics, and error handling
+2. **Coordinate lifecycle hooks** - Align module callbacks with Active Record callbacks
+3. **Use Rails instrumentation** - Publish application events through `ActiveSupport::Notifications`
+4. **Report failures** - Use `around` callbacks to send errors to the application's tracker
+5. **Measure execution time** - Report callback duration to the application's APM service
 
 For enum fields, compare the returned value with enum constants and call `.serialize` before storing it in a string column. Keep provider calls in service objects or jobs where timeout, retry, and telemetry policy are explicit.

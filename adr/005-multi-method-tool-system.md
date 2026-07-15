@@ -34,7 +34,7 @@ Implement a "Toolset" pattern that allows exposing multiple methods from a singl
    - `memory_store`, `memory_retrieve`, `memory_list`, etc.
    - Customizable via DSL options
 
-4. **Integration**: Seamless integration with existing tool infrastructure:
+4. **Integration**: Integration with the existing tool infrastructure:
    - ReAct agents accept arrays of tools from `to_tools`
    - Each method appears as a separate tool to the LLM
    - Maintains backward compatibility with single-method tools

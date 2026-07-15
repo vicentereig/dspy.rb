@@ -1,6 +1,6 @@
 # DSPy.rb Architecture and Provider Integration
 
-This document details the architectural decisions and provider-specific implementation strategies for DSPy.rb.
+This document records DSPy.rb's architecture and provider-specific implementation strategies.
 
 ## Table of Contents
 - [LLM Provider Integration Strategy](#llm-provider-integration-strategy)
@@ -14,13 +14,12 @@ This document details the architectural decisions and provider-specific implemen
 
 ### Current State Assessment (July 2025)
 
-**Anthropic/Claude - Excellent Foundation:**
-- Comprehensive 4-pattern JSON extraction system with extensive test coverage
-- Recent improvements (July 2025) show active development and solid architecture
-- Smart prefilling strategy and JSON detection heuristics
-- Model-specific behavior detection for optimal performance
+**Anthropic/Claude:**
+- Four-pattern JSON extraction system with test coverage
+- Prefilling strategy and JSON detection heuristics
+- Model-specific behavior detection
 
-**OpenAI - Strong Foundation (Implemented July 2025):**
+**OpenAI (implemented July 2025):**
 - ✅ Native structured output support (`response_format: { type: "json_schema" }`)
 - ✅ Automatic JSON schema conversion from DSPy signatures
 - ✅ Model compatibility detection for structured outputs
@@ -30,7 +29,7 @@ This document details the architectural decisions and provider-specific implemen
 ### Strategic Approach
 
 - **Explicit over implicit**: Prefer clear configuration over black-box auto-detection
-- **Provider-specific optimization**: Leverage each provider's strengths rather than lowest common denominator
+- **Provider-specific optimization**: Use each provider's strengths rather than the lowest common denominator
 - **User control**: Provide override options for advanced users
 - **Incremental improvement**: Start with high-impact changes (OpenAI structured outputs) before complex detection systems
 
@@ -71,7 +70,7 @@ This document details the architectural decisions and provider-specific implemen
 
 ### Module Organization
 
-DSPy.rb follows a modular architecture with clear separation of concerns:
+DSPy.rb separates its modules by responsibility:
 
 ```
 lib/dspy/
@@ -138,7 +137,7 @@ module.configure do |config|
 end
 ```
 
-This pattern allows:
+This pattern supports:
 - Runtime reconfiguration
 - Better testing isolation
 - Multiple module instances with different settings

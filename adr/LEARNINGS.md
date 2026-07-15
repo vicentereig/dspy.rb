@@ -1,6 +1,6 @@
 # DSPy.rb Development Learnings
 
-This document captures accumulated knowledge and patterns discovered during DSPy.rb development. These learnings inform best practices and help avoid repeating past mistakes.
+This document records patterns learned while developing DSPy.rb so contributors can avoid repeating mistakes.
 
 ## Table of Contents
 - [API Design](#api-design)
@@ -16,7 +16,7 @@ This document captures accumulated knowledge and patterns discovered during DSPy
 
 ### Strategy Configuration Architecture (July 2025)
 
-**Key Learning**: When designing user-facing APIs, prioritize simplicity over exposing internal complexity.
+**Lesson**: Keep internal complexity out of user-facing APIs.
 
 **Problem**: 
 - Exposing three internal strategy names (`openai_structured_output`, `anthropic_extraction`, `enhanced_prompting`) created confusion
@@ -38,7 +38,7 @@ This document captures accumulated knowledge and patterns discovered during DSPy
 
 ### Module-Level LM Configuration (July 2025)
 
-**Key Learning**: Module-level LM configuration uses dry-configurable's `.configure` blocks, not constructor parameters.
+**Lesson**: Configure module-level models with dry-configurable's `.configure` blocks, not constructor parameters.
 
 **Correct Pattern**:
 ```ruby
@@ -64,7 +64,7 @@ end
 
 ### Testing Philosophy - API Key Management (August 2025)
 
-**Key Principle**: Tests should FAIL when required environment variables are missing, not skip or use fallbacks.
+**Principle**: Tests should fail when required environment variables are missing, not skip or use fallbacks.
 
 **Correct Pattern**:
 ```ruby
