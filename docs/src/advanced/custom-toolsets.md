@@ -7,7 +7,7 @@ last_modified_at: 2026-07-15 00:00:00 +0000
 ---
 # Custom Toolsets
 
-This guide extends the [Toolsets reference](/dspy.rb/core-concepts/toolsets/) with an application recipe. It assumes you already know the `toolset_name`, `tool`, and `.to_tools` APIs.
+Use this application recipe after learning the `toolset_name`, `tool`, and `.to_tools` APIs in the [Toolsets reference](/dspy.rb/core-concepts/toolsets/).
 
 The current `.to_tools` export path constructs the Toolset with `new` and no arguments. The recipe is therefore stateless and has a zero-argument constructor. If a capability needs constructor-injected clients or per-request state, wrap it in individual `DSPy::Tools::Base` instances or keep the state outside the current Toolset export path.
 

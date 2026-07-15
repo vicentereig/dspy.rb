@@ -1,14 +1,14 @@
 ---
 layout: docs
 title: Stateful Agents
-description: Production patterns for building agents that maintain context and state
+description: Pass application-owned session state and durable memory through bounded agent calls
 date: 2025-07-11 00:00:00 +0000
 ---
 # Stateful Agents
 
 `DSPy::ReAct` runs a bounded tool-selection loop; it does not persist conversation state between calls. The application must load relevant history and preferences, pass them into the agent, and store approved changes.
 
-## Core Concepts
+## Separate Session State from Durable Memory
 
 ### State vs Memory
 
@@ -24,7 +24,7 @@ date: 2025-07-11 00:00:00 +0000
 
 DSPy.rb provides the building blocks (modules, tools, ReAct agents) while your application manages persistence using your preferred storage backend (database, Redis, etc.).
 
-## Production Patterns
+## Choose a Persistence Pattern
 
 ### 1. Session-Based Agent
 
@@ -268,9 +268,9 @@ class MultiContextAgent < DSPy::Module
 end
 ```
 
-### 4. Adaptive Learning Agent
+### 4. Adapt from Stored Feedback
 
-An agent that learns from interactions and adapts its behavior:
+This pattern stores interaction-derived patterns and uses them to adjust later inputs. Review and approve those patterns before persistence when they affect production behavior:
 
 ```ruby
 class AdaptiveLearningAgent < DSPy::Module
@@ -637,7 +637,7 @@ RSpec.describe "Stateful Agent Integration", vcr: { cassette_name: "stateful_age
 end
 ```
 
-## Best Practices
+## Bound State Ownership
 
 ### 1. State Management
 

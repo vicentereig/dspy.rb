@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: Advanced Topics
-description: Explore advanced patterns and techniques in DSPy.rb
+description: Select a DSPy.rb extension task after mastering the core programming model
 date: 2025-07-10 00:00:00 +0000
 last_modified_at: 2025-07-11 00:00:00 +0000
 ---
@@ -9,7 +9,7 @@ last_modified_at: 2025-07-11 00:00:00 +0000
 
 These guides cover extension points after you can define a signature and run a module. For ordinary composition, retrieval, multimodal inputs, or agents, start from [Build](/dspy.rb/build/). For runtime integration and deployment concerns, use [Operate](/dspy.rb/production/).
 
-## Advanced Guides
+## Choose an Extension Task
 
 ### [Custom Toolsets](./custom-toolsets/)
 Extend the baseline Toolset DSL with bounded application operations.

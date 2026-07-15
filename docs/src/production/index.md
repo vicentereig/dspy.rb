@@ -9,7 +9,7 @@ last_modified_at: 2025-07-20 00:00:00 +0000
 
 Production applications need explicit ownership of artifacts, telemetry, failures, secrets, and provider budgets. DSPy.rb supplies storage, registry, and observability components; the application still owns deployment policy and recovery.
 
-## Production Topics
+## Choose an Operational Concern
 
 ### [Events](/dspy.rb/core-concepts/events/)
 Subscribe to typed runtime events for application integrations.
@@ -44,7 +44,7 @@ Create typed evaluation scores and bound asynchronous Langfuse delivery.
 ### [Troubleshooting](./troubleshooting/)
 Diagnose configuration, provider, parsing, dependency, and test failures.
 
-## Key Considerations
+## Assign Application Ownership
 
 ### Performance
 - Measure latency and token usage before changing models or concurrency

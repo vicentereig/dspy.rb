@@ -17,12 +17,10 @@ Module runtime context controls language-model resolution and propagation for a 
 ### Basic Usage
 
 ```ruby
-# Configure a global default model
 DSPy.configure do |config|
   config.lm = DSPy::LM.new("openai/gpt-4o", api_key: ENV['OPENAI_API_KEY'])
 end
 
-# Create a module that uses the global LM by default
 class Classifier < DSPy::Module
   def initialize
     super
@@ -36,16 +34,13 @@ end
 
 classifier = Classifier.new
 
-# Use the global LM (gpt-4o)
 result1 = classifier.call(text: "This is great!")
 
-# Temporarily override with a different model
 fast_model = DSPy::LM.new("openai/gpt-4o-mini", api_key: ENV['OPENAI_API_KEY'])
 
 DSPy.with_lm(fast_model) do
   # Inside this block, all modules use the fast model
   result2 = classifier.call(text: "This is great!")
-  # result2 was generated using gpt-4o-mini
 end
 
 # Back to using the global LM (gpt-4o)
@@ -60,12 +55,10 @@ DSPy resolves language models in this order:
 3. **Global LM** - Set via `DSPy.configure`
 
 ```ruby
-# Global configuration
 DSPy.configure do |config|
   config.lm = DSPy::LM.new("openai/gpt-4o", api_key: ENV['OPENAI_API_KEY'])
 end
 
-# Create module with instance-level LM
 classifier = Classifier.new
 classifier.config.lm = DSPy::LM.new("anthropic/claude-sonnet-4-20250514", api_key: ENV['ANTHROPIC_API_KEY'])
 
@@ -78,7 +71,6 @@ DSPy.with_lm(fast_model) do
   result2 = classifier.call(text: "Test") # Still uses Claude Sonnet
 end
 
-# Create module without instance-level LM
 classifier2 = Classifier.new
 
 DSPy.with_lm(fast_model) do
@@ -102,7 +94,6 @@ local_model = DSPy::LM.new("ollama/llama3.1:8b", base_url: "http://localhost:114
 
 classifier = Classifier.new
 
-# Use fast model for testing
 DSPy.with_lm(fast_model) do
   test_results = test_cases.map do |test_case|
     classifier.call(text: test_case.text)
@@ -110,13 +101,12 @@ DSPy.with_lm(fast_model) do
   puts "Fast model accuracy: #{calculate_accuracy(test_results)}"
 end
 
-# Use the more capable model
 DSPy.with_lm(capable_model) do
   production_result = classifier.call(text: user_input)
   send_response(production_result)
 end
 
-# Use local model for sensitive data
+# A local endpoint does not by itself establish a data-handling boundary.
 DSPy.with_lm(local_model) do
   sensitive_result = classifier.call(text: sensitive_document)
   store_locally(sensitive_result)
@@ -125,12 +115,11 @@ end
 
 ## Configuring Agent LMs
 
-Complex agents like `ReAct` and `CodeAct` contain internal predictors. When you configure an agent's LM using `configure`, it automatically propagates to all child predictors.
+Complex agents such as `ReAct` and `CodeAct` contain internal predictors. Calling `configure(lm:)` on the parent propagates that LM to child predictors that do not already have an explicit LM.
 
 ### Basic Configuration
 
 ```ruby
-# Configure a ReAct agent - LM propagates to internal predictors
 agent = DSPy::ReAct.new(MySignature, tools: tools)
 agent.configure { |c| c.lm = DSPy::LM.new('openai/gpt-4o', api_key: ENV['OPENAI_API_KEY']) }
 

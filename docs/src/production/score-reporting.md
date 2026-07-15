@@ -60,7 +60,7 @@ The exporter consumes the same event asynchronously. Queueing is not delivery: n
 
 Use [Custom Metrics](/dspy.rb/advanced/custom-metrics/) when those predicates do not represent the application outcome. To emit evaluation scores automatically, construct `DSPy::Evals` with an existing program and metric plus `export_scores: true` and `score_name: "qa_accuracy"`; the evaluator emits one score per example and a `qa_accuracy_batch` score. The default is `false`.
 
-## Continue
+## Connect Scores to Their Owners
 
 - Build the underlying dataset and metric in [Evaluation](/dspy.rb/optimization/evaluation/).
 - Define domain-specific scoring in [Custom Metrics](/dspy.rb/advanced/custom-metrics/).

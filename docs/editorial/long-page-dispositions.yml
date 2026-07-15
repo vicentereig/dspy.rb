@@ -24,7 +24,7 @@ initial_inventory:
 
 dispositions:
   - source: docs/src/production/observability.md
-    measured_tokens: 2776
+    measured_tokens: 2787
     outcome: split
     audience: Operator tracing runtime execution.
     reason: Score export is independently sought by quality owners; tracing architecture remains coherent and intentionally over the trigger.
@@ -36,7 +36,7 @@ dispositions:
     discovery_review: [corpus, navigation, sitemap, llms.txt, llms-full.txt]
     risk_review: Trace setup and the protected trace-not-correctness boundary remain with Observability; score definitions are not duplicated.
   - source: docs/src/advanced/complex-types.md
-    measured_tokens: 3166
+    measured_tokens: 3170
     outcome: keep
     audience: Signature author modeling rich nested values.
     reason: The types share discriminator and schema definitions; splitting would duplicate setup and fragment one reference task.
@@ -84,7 +84,7 @@ dispositions:
     discovery_review: [corpus, navigation, sitemap]
     risk_review: Keep provider and payload limits adjacent to examples.
   - source: docs/src/optimization/gepa.md
-    measured_tokens: 1772
+    measured_tokens: 1747
     outcome: keep
     audience: Quality owner running reflective prompt evolution.
     reason: Budget, feedback map, compilation, telemetry, and result inspection are one optimization run.
@@ -96,7 +96,7 @@ dispositions:
     discovery_review: [corpus, navigation, sitemap]
     risk_review: Do not separate budgets from the loop they bound.
   - source: docs/src/advanced/custom-metrics.md
-    measured_tokens: 1684
+    measured_tokens: 1688
     outcome: keep
     audience: Quality owner implementing domain scoring logic.
     reason: Metric patterns share evaluation setup and progress from scalar to composite behavior.
@@ -108,7 +108,7 @@ dispositions:
     discovery_review: [corpus, navigation, sitemap]
     risk_review: Export configuration moved out; metric semantics remain canonical here.
   - source: docs/src/advanced/stateful-agents.md
-    measured_tokens: 1739
+    measured_tokens: 1761
     outcome: keep
     audience: Agent builder preserving conversation state.
     reason: State representation, turn execution, persistence, and recovery are one lifecycle task.
@@ -120,7 +120,7 @@ dispositions:
     discovery_review: [corpus, navigation, sitemap]
     risk_review: Splitting would detach recovery from state ownership.
   - source: docs/src/advanced/rails-integration.md
-    measured_tokens: 1731
+    measured_tokens: 1758
     outcome: keep
     audience: Rails developer integrating DSPy.rb into application lifecycles.
     reason: Service, job, cache, validation, and instrumentation choices share Rails ownership and setup.
@@ -132,7 +132,7 @@ dispositions:
     discovery_review: [corpus, navigation, sitemap]
     risk_review: Callback definitions link to their new owner; Rails-specific use remains here.
   - source: docs/src/core-concepts/module-runtime-context.md
-    measured_tokens: 837
+    measured_tokens: 785
     outcome: split
     audience: Module author selecting and propagating runtime models.
     reason: Lifecycle callbacks are independently sought module-authoring behavior; LM resolution remains one coherent task.

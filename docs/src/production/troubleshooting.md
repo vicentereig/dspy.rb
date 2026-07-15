@@ -155,7 +155,6 @@ If retained state grows without bound, inspect the application's database, cache
 3. Move independent batch work to an application job or concurrency boundary. DSPy does not schedule a batch automatically.
 
 ```ruby
-# Use faster model for development
 DSPy.configure do |config|
   config.lm = DSPy::LM.new("openai/gpt-3.5-turbo") if Rails.env.development?
 end
@@ -170,10 +169,8 @@ end
 **Solution**: Re-record cassettes when API changes:
 
 ```bash
-# Delete specific cassette
 rm spec/vcr_cassettes/my_test.yml
 
-# Re-run test to record new cassette
 bundle exec rspec spec/my_test_spec.rb
 ```
 
@@ -181,7 +178,7 @@ bundle exec rspec spec/my_test_spec.rb
 
 1. **Enable debug logging**:
 
-In development, DSPy.rb automatically logs to `log/development.log`. Simply tail the log file:
+In development, DSPy.rb writes logs to `log/development.log` under the default configuration. Tail that file:
 
 ```bash
 tail -f log/development.log
@@ -226,7 +223,7 @@ DSPy.configure do |config|
 end
 ```
 
-## Getting Help
+## Report an Unresolved Failure
 
 If you encounter issues not covered here:
 

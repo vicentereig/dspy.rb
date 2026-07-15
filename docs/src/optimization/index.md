@@ -11,7 +11,7 @@ Optimizers search over supported program parameters, including instructions and 
 
 Optimization does not define quality for you. Build and inspect the metric first, preserve a held-out test set, and record the model and dataset used for each run.
 
-## Optimization Guides
+## Choose an Evaluation or Optimization Task
 
 ### [Evaluation](./evaluation/)
 Build metrics and evaluation frameworks to measure and improve your modules systematically.

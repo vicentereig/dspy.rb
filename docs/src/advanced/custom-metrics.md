@@ -8,12 +8,12 @@ date: 2025-07-10 00:00:00 +0000
 
 A metric turns an example and a prediction into the score an evaluator or optimizer should use. Keep the metric close to the behavior you can inspect: exact fields, bounded numeric scores, or explicit feedback.
 
-## Overview
+## Choose a Metric Shape
 
 Custom metrics in DSPy.rb:
 - **Proc-based Implementation**: Define metrics as Ruby procedures
 - **Domain-specific Logic**: Create evaluation criteria specific to your use case
-- **Flexible Scoring**: Support for boolean, numeric, and composite scoring
+- **Score shapes**: Return boolean, numeric, or composite scores
 - **Integration**: Reuse the same metric in evaluation and optimization
 - **Built-in Evaluators**: Common evaluators like exact match, contains, regex, and similarity
 
@@ -21,9 +21,9 @@ Custom metrics in DSPy.rb:
 
 Before creating a custom metric, check the exact-match, containment, regex, length, similarity, and JSON-validity evaluators in [Score Reporting](/dspy.rb/production/score-reporting/#use-built-in-evaluators). That guide owns their arguments, `ScoreEvent` result, exporter configuration, and delivery boundaries. Continue here when the application outcome needs domain-specific logic.
 
-## Basic Custom Metrics
+## Implement Scalar Metrics
 
-### Simple Custom Metric
+### Return a Boolean Score
 
 ```ruby
 # Define a custom accuracy metric
@@ -437,7 +437,7 @@ result = optimizer.compile(program, trainset: training_examples)
 puts "Optimized for domain-specific quality: #{result.best_score_value}"
 ```
 
-## Best Practices
+## Keep Metrics Inspectable
 
 ### 1. Clear Scoring Logic
 

@@ -9,7 +9,7 @@ date: 2025-07-10 00:00:00 +0000
 
 DSPy.rb does not provide a vector store or embedding model. A RAG program retrieves context through application code or a tool, then passes that context into a typed module.
 
-## Overview
+## Assign Retrieval Ownership
 
 RAG in DSPy.rb involves:
 - **External Retrieval Integration**: Connect to vector databases and search services
@@ -17,12 +17,11 @@ RAG in DSPy.rb involves:
 - **Multi-Step Reasoning**: Chain retrieval and generation steps
 - **Manual Implementation**: Build custom RAG workflows using DSPy modules
 
-## Basic RAG Implementation
+## Build the Retrieval Boundary
 
-### Simple RAG with External Service
+### Call an External Retriever
 
 ```ruby
-# Define a signature for context-based question answering
 class ContextualQA < DSPy::Signature
   description "Answer questions using provided context"
   
@@ -37,7 +36,6 @@ class ContextualQA < DSPy::Signature
   end
 end
 
-# Basic RAG module
 class SimpleRAG < DSPy::Module
   def initialize(retrieval_service)
     super
@@ -46,10 +44,8 @@ class SimpleRAG < DSPy::Module
   end
 
   def forward(question:)
-    # Step 1: Retrieve relevant context
     context = @retrieval_service.search(question)
     
-    # Step 2: Generate answer with context
     result = @qa_predictor.call(
       question: question,
       context: context
@@ -64,7 +60,6 @@ class SimpleRAG < DSPy::Module
   end
 end
 
-# Example retrieval service integration
 class ColBERTRetriever
   def initialize(base_url)
     @base_url = base_url
@@ -84,7 +79,6 @@ class ColBERTRetriever
   end
 end
 
-# Usage
 retriever = ColBERTRetriever.new("http://localhost:8080")
 rag_system = SimpleRAG.new(retriever)
 
@@ -111,19 +105,16 @@ class AdvancedRAG < DSPy::Module
   def forward(question:)
     pipeline_result = { question: question, steps: [] }
     
-    # Step 1: Analyze question complexity
     question_analysis = @question_analyzer.call(question: question)
     pipeline_result[:question_type] = question_analysis.question_type
     pipeline_result[:complexity] = question_analysis.complexity
     pipeline_result[:steps] << "question_analysis"
     
-    # Step 2: Retrieve context (adjust based on complexity)
     num_passages = question_analysis.complexity == "high" ? 10 : 5
     context = @retrieval_service.search(question, k: num_passages)
     pipeline_result[:context] = context
     pipeline_result[:steps] << "retrieval"
     
-    # Step 3: Evaluate context relevance
     context_eval = @context_evaluator.call(
       question: question,
       context: context
@@ -131,7 +122,6 @@ class AdvancedRAG < DSPy::Module
     pipeline_result[:context_relevance] = context_eval.relevance_score
     pipeline_result[:steps] << "context_evaluation"
     
-    # Step 4: Generate answer
     answer_result = @answer_generator.call(
       question: question,
       context: context
@@ -140,7 +130,6 @@ class AdvancedRAG < DSPy::Module
     pipeline_result[:confidence] = answer_result.confidence
     pipeline_result[:steps] << "answer_generation"
     
-    # Step 5: Validate answer
     validation = @answer_validator.call(
       question: question,
       answer: answer_result.answer,
@@ -154,7 +143,6 @@ class AdvancedRAG < DSPy::Module
   end
 end
 
-# Supporting signatures
 class QuestionAnalysis < DSPy::Signature
   description "Analyze question complexity and type"
   
@@ -213,11 +201,9 @@ class FilteredRAG < DSPy::Module
   end
 
   def forward(question:, max_passages: 3)
-    # Step 1: Initial retrieval (get more than needed)
     raw_passages = @retrieval_service.search(question, k: max_passages * 2)
     passages = raw_passages.split('\n\n')
     
-    # Step 2: Filter for relevance
     filtered_passages = []
     passages.each do |passage|
       relevance = @relevance_filter.call(
@@ -233,9 +219,7 @@ class FilteredRAG < DSPy::Module
       end
     end
     
-    # Step 3: Rerank passages
     if filtered_passages.size > max_passages
-      # Use top passages by relevance score
       top_passages = filtered_passages
                       .sort_by { |p| -p[:relevance_score] }
                       .first(max_passages)
@@ -245,7 +229,6 @@ class FilteredRAG < DSPy::Module
       context = filtered_passages.map { |p| p[:text] }.join('\n\n')
     end
     
-    # Step 4: Generate answer
     result = @qa_predictor.call(
       question: question,
       context: context
@@ -319,7 +302,6 @@ class VectorDBRetriever
       # Filter by similarity threshold
       relevant_results = results.select { |r| r[:similarity] >= similarity_threshold }
       
-      # Extract text content
       relevant_results.map { |r| r[:text] }.join('\n\n')
     rescue => e
       puts "Vector search failed: #{e.message}"
@@ -355,7 +337,6 @@ class HybridRetriever
     vector_results = @vector_retriever.search(query, k: k)
     keyword_results = @keyword_retriever.search(query, k: k)
     
-    # Combine and deduplicate results
     combined_passages = [
       vector_results.split('\n\n'),
       keyword_results.split('\n\n')
@@ -418,7 +399,6 @@ class RAGEvaluator
       }
     end
     
-    # Calculate aggregate metrics
     avg_answer_quality = results.map { |r| r[:answer_quality] }.sum / results.size
     avg_context_usage = results.map { |r| r[:context_usage] }.sum / results.size
     
@@ -465,7 +445,7 @@ class ContextualAnswerEvaluation < DSPy::Signature
 end
 ```
 
-## Best Practices
+## Bound Retrieval and Context
 
 ### 1. Design Context-Aware Signatures
 
@@ -533,7 +513,6 @@ def call_with_monitoring(question:)
   
   result = forward(question: question)
   
-  # Add monitoring data
   result[:monitoring] = {
     processing_time: Time.now - start_time,
     context_length: result[:context].length,
@@ -544,21 +523,21 @@ def call_with_monitoring(question:)
 end
 ```
 
-## Related Topics
+## Continue by Reader Task
 
 ### Core Concepts
-- **[Signatures](/dspy.rb/core-concepts/signatures/)** - Learn how to design effective signatures for RAG systems
-- **[Modules](/dspy.rb/core-concepts/modules/)** - Understand module composition for complex RAG pipelines
-- **[Memory](/dspy.rb/advanced/stateful-agents/)** - Add persistent memory to your RAG applications
+- **[Signatures](/dspy.rb/core-concepts/signatures/)** - Define the typed context and answer fields
+- **[Modules](/dspy.rb/core-concepts/modules/)** - Compose retrieval and generation with Ruby control flow
+- **[Stateful Agents](/dspy.rb/advanced/stateful-agents/)** - Pass application-owned persistent state into agent calls
 
 ### Advanced Patterns  
-- **[Multi-stage Pipelines](/dspy.rb/advanced/pipelines/)** - Build complex processing pipelines with multiple RAG stages
+- **[Multi-stage Pipelines](/dspy.rb/advanced/pipelines/)** - Compose multiple retrieval and generation stages
 - **[Custom Metrics](/dspy.rb/advanced/custom-metrics/)** - Create domain-specific evaluation metrics for RAG systems
 - **[Rails Integration](/dspy.rb/advanced/rails-integration/)** - Integrate RAG systems with Ruby on Rails applications
 
 ### Optimization
 - **[MIPROv2](/dspy.rb/optimization/miprov2/)** - Use Bayesian optimization to tune multi-objective RAG systems
-- **[Evaluation](/dspy.rb/optimization/evaluation/)** - Systematically test and measure RAG application performance
+- **[Evaluation](/dspy.rb/optimization/evaluation/)** - Measure retrieval and answer behavior with explicit metrics
 
 ### Framework Comparison
 - **[DSPy.rb vs LangChain](/dspy.rb/advanced/dspy-vs-langchain/)** - Compare RAG capabilities between Ruby frameworks

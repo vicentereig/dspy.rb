@@ -9,7 +9,7 @@ last_modified_at: 2025-08-09 00:00:00 +0000
 
 The storage API persists optimization results and serialized program state. Use it to reload an optimized program and retain the metadata needed to identify the run that produced it.
 
-## Overview
+## Define What Storage Persists
 
 The storage system provides:
 - **Program Storage**: Persist optimized predictors and their configurations
@@ -18,18 +18,16 @@ The storage system provides:
 - **Checkpoint Management**: Save and restore optimization checkpoints
 - **Import/Export**: Share programs between environments
 
-## Basic Usage
+## Save and Load a Program
 
 ### Storing Optimization Results
 
 ```ruby
-# Run optimization
 program = DSPy::Predict.new(ClassifyText)
 metric = proc { |example, prediction| prediction.sentiment == example.expected_sentiment }
 optimizer = DSPy::Teleprompt::MIPROv2.new(metric: metric)
 result = optimizer.compile(program, trainset: examples)
 
-# Store the result using ProgramStorage directly
 storage = DSPy::Storage::ProgramStorage.new(storage_path: "./dspy_storage")
 saved_program = storage.save_program(
   result.optimized_program,
@@ -44,10 +42,9 @@ saved_program = storage.save_program(
 puts "Stored program with ID: #{saved_program.program_id}"
 ```
 
-### Using StorageManager (Recommended)
+### Save Through StorageManager
 
 ```ruby
-# Configure storage manager
 storage_manager = DSPy::Storage::StorageManager.new
 
 # Save optimization result automatically
@@ -64,7 +61,6 @@ DSPy::Storage::StorageManager.save(result, metadata: { version: '2.0' })
 ### Loading Programs
 
 ```ruby
-# Load by ID
 storage = DSPy::Storage::ProgramStorage.new
 saved_program = storage.load_program(program_id)
 
@@ -119,7 +115,6 @@ production_programs = storage_manager.find_programs(
 ### Get Best Program
 
 ```ruby
-# Get the best performing program for a signature
 best_program = storage_manager.get_best_program('ClassifyText')
 
 if best_program
@@ -137,7 +132,6 @@ best = DSPy::Storage::StorageManager.best('ClassifyText')
 Create and restore checkpoints during long-running optimizations:
 
 ```ruby
-# Create a checkpoint
 checkpoint = storage_manager.create_checkpoint(
   current_result,
   'iteration_50',
@@ -173,7 +167,6 @@ puts "Imported #{imported_programs.size} programs"
 Track optimization trends and performance over time:
 
 ```ruby
-# Get optimization history with trends
 history = storage_manager.get_optimization_history
 
 puts "Total programs: #{history[:summary][:total_programs]}"
@@ -184,7 +177,6 @@ history[:optimizer_stats].each do |optimizer, stats|
   puts "#{optimizer}: #{stats[:count]} programs, best score: #{stats[:best_score]}"
 end
 
-# Check improvement trends
 trends = history[:trends]
 puts "Performance improvement: #{trends[:improvement_percentage]}%"
 ```
@@ -201,19 +193,17 @@ puts "Better program: #{comparison[:comparison][:better_program]}"
 puts "Age difference: #{comparison[:comparison][:age_difference_hours]} hours"
 ```
 
-## Storage Management
+## Maintain Stored Artifacts
 
-### Configuration
+### Configure the Storage Directory
 
 ```ruby
-# Create custom storage configuration
 config = DSPy::Storage::StorageManager::StorageConfig.new
 config.storage_path = Rails.root.join('dspy_storage')
 config.auto_save = true
 config.save_intermediate_results = false
 config.max_stored_programs = 100
 
-# Initialize with custom config
 storage_manager = DSPy::Storage::StorageManager.new(config: config)
 ```
 
@@ -235,7 +225,6 @@ puts "Deleted #{deleted_count} old programs"
 ```ruby
 storage = DSPy::Storage::ProgramStorage.new
 
-# Get all stored programs
 programs = storage.list_programs
 programs.each do |program|
   puts "ID: #{program[:program_id]}"
@@ -244,7 +233,6 @@ programs.each do |program|
   puts "---"
 end
 
-# Get full history with metadata
 history = storage.get_history
 ```
 
@@ -263,7 +251,7 @@ The storage system emits structured log events for monitoring:
 - `dspy.storage.import` - Import operations
 - `dspy.storage.cleanup` - Cleanup operations
 
-## Best Practices
+## Preserve Artifact Provenance
 
 ### 1. Consistent Metadata
 
@@ -314,7 +302,6 @@ end
 For optimizations that take hours or days:
 
 ```ruby
-# Save checkpoints every N iterations
 if iteration % 10 == 0
   storage_manager.create_checkpoint(
     current_result,

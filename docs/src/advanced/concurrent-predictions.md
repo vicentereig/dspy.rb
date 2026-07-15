@@ -90,7 +90,7 @@ Concurrency overlaps waits only when the provider SDK and transport cooperate wi
 
 The example's measured limit is `MAX_BATCH_SIZE`. Increase it only while throughput improves without unacceptable throttling, queue growth, or error rate; `Async::Barrier` joins tasks but does not rate-limit them.
 
-## Continue
+## Inspect Concurrency in Production
 
 - Inspect concurrent spans in [Observability](/dspy.rb/production/observability/).
 - Diagnose transport, timeout, and provider failures in [Troubleshooting](/dspy.rb/production/troubleshooting/).

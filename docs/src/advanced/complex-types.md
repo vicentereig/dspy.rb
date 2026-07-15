@@ -9,7 +9,7 @@ last_modified_at: 2025-07-21 00:00:00 +0000
 
 Signatures can use Sorbet enums, structs, unions, arrays, hashes, and nullable fields. DSPy.rb converts those declarations into an output schema and coerces the returned values at runtime.
 
-## Overview
+## Choose a Rich Type
 
 DSPy.rb supports:
 - **Enums**: Constrained value sets with T::Enum
@@ -17,7 +17,7 @@ DSPy.rb supports:
 - **Union Types**: Multiple possible types with T.any()
 - **Collections**: Arrays and hashes of typed elements
 - **Nullable Fields**: Values that may be `nil`, declared with T.nilable
-- **JSON Schema Generation**: Automatic schema creation for LLM consumption
+- **Schema generation**: DSPy.rb renders the declared output types for the configured JSON strategy
 
 ## Enum Types
 
@@ -200,7 +200,7 @@ puts result.keywords  # => ["machine learning", "artificial intelligence", ...]
 
 ### Arrays of Structs
 
-DSPy.rb supports arrays of custom T::Struct types with automatic type coercion. When the LLM returns JSON arrays containing hash objects, DSPy.rb automatically converts them to the appropriate T::Struct instances.
+Arrays can contain custom `T::Struct` types. When a returned JSON array contains compatible hashes, prediction coercion converts each hash to the declared `T::Struct`.
 
 ```ruby
 class Product < T::Struct
@@ -359,7 +359,7 @@ end
 
 ## Union Types
 
-DSPy.rb supports union types using Sorbet's `T.any()` syntax, allowing fields that can accept multiple types. This is particularly useful when working with LLMs that may return different types of structured data based on the context.
+Use Sorbet's `T.any()` syntax when one field may return one of several declared types.
 
 ### Basic Union Types
 
@@ -468,15 +468,15 @@ when TaskActions::DeleteTask
 end
 ```
 
-### How Automatic Type Conversion Works
+### Follow Discriminator-Based Coercion
 
 When DSPy.rb receives a response from the LLM for a union type field:
 
-1. **Automatic _type Field**: DSPy adds a `_type` field to each struct's JSON schema with the struct's class name
+1. **`_type` field**: DSPy adds the struct's class name as `_type` in each struct schema
 2. **Type Detection**: When deserializing, DSPy looks for the `_type` field in the response
-3. **Automatic Conversion**: It converts the Hash response to the appropriate struct instance based on `_type`
+3. **Conversion**: It converts the hash to the struct selected by `_type`
 
-This happens automatically without any configuration needed from the developer.
+Declaring the union in the signature triggers these steps; no separate discriminator configuration is required.
 
 #### Behind the Scenes
 
@@ -494,7 +494,7 @@ When the LLM returns:
 }
 ```
 
-DSPy automatically:
+DSPy then:
 1. Sees `_type: "CreateTask"`
 2. Finds `TaskActions::CreateTask` in the union types
 3. Creates a proper `CreateTask` struct instance
@@ -544,7 +544,7 @@ end
 
 ### Best Practices for Union Types
 
-1. **Single-Field Unions** (v0.11.0+): Use a single `T.any()` field and let DSPy handle type detection automatically:
+1. **Single-field unions** (v0.11.0+): Use one `T.any()` field so DSPy can select the type from its discriminator:
 
 ```ruby
 # Good: Single union field
@@ -559,7 +559,7 @@ output do
 end
 ```
 
-2. **Keep Unions Simple**: Limit unions to 2-4 types for better LLM comprehension and reliability.
+2. **Bound the alternatives**: Start with two to four types, then inspect the generated schema and evaluate returned values before adding more.
 
 3. **Meaningful Struct Names**: Use clear struct names as they become the `_type` value:
 
@@ -591,20 +591,20 @@ end
 
 **Tip**: Use `T::Array[X], default: []` when omission should produce an empty collection and `nil` is not meaningful. This is a data-modeling choice, not a universal provider requirement. Check the generated schema for nested structs: a Ruby default does not necessarily remove an array property from the schema's `required` list.
 
-## Automatic Type Conversion with DSPy::Prediction
+## Coerce Results with DSPy::Prediction {#automatic-type-conversion-with-dspyprediction}
 
-DSPy.rb v0.9.0+ includes automatic type conversion that transforms LLM JSON responses into properly typed Ruby objects. This happens transparently when using DSPy modules.
+Since v0.9.0, `DSPy::Prediction` has used the signature's output schema to coerce compatible JSON values into declared Ruby types when a DSPy module builds the prediction.
 
-### How It Works
+### Follow Prediction Coercion
 
 1. **Schema Awareness**: DSPy::Prediction uses the signature's output schema to understand expected types
 2. **Recursive Conversion**: Nested hashes are converted to their corresponding T::Struct types
-3. **Enum Deserialization**: String values are automatically converted to T::Enum instances
+3. **Enum deserialization**: Compatible string values are converted to `T::Enum` instances
 4. **Array Handling**: Arrays of structs are converted element by element
 5. **Default Values**: Missing fields use their default values from the struct definition
 6. **Graceful Fallback**: If conversion fails, the original hash is preserved
 
-### Example: Automatic Conversion in Action
+### Inspect a Converted Prediction
 
 ```ruby
 class AnalysisResult < DSPy::Signature
@@ -752,7 +752,7 @@ end
 
 ## Schema Format Options
 
-DSPy.rb automatically generates schemas for your rich types. You can choose between two formats:
+DSPy.rb renders declared rich types in either of two schema formats:
 
 ### JSON Schema (Default)
 
@@ -820,7 +820,7 @@ Schema length does not establish output quality. Compare token usage, validation
 
 See the [Schema Formats section in Signatures](/dspy.rb/core-concepts/signatures/#schema-formats) for detailed comparison.
 
-## Best Practices
+## Design Types for Coercion
 
 ### 1. Use Descriptive Names
 
@@ -914,7 +914,7 @@ class EmailClassification < T::Struct
 end
 ```
 
-## Limitations and Best Practices
+## Bound Nesting and Provider Risk
 
 ### Nesting Depth Limitations
 
@@ -963,7 +963,7 @@ end
 ### Performance Considerations
 
 **Schema Caching:**
-DSPy.rb automatically caches JSON schemas for repeated use:
+DSPy.rb caches rendered JSON schemas for repeated use:
 ```ruby
 # First call generates schema
 result1 = predictor.call(input: "text")
@@ -974,9 +974,9 @@ result2 = predictor.call(input: "more text")
 
 **Provider Optimization:**
 Different providers handle rich types differently:
-- **OpenAI Structured Outputs**: Excellent for 1-3 level nesting
-- **Anthropic**: JSON extraction supports the nested examples shown here
-- **Enhanced Prompting**: Fallback for any provider, handles simpler structures better
+- **OpenAI structured outputs**: Verify the selected model and SDK against its current depth and schema limits.
+- **Anthropic**: JSON extraction supports the nested examples shown here; evaluate the same shape with the model you deploy.
+- **Enhanced prompting**: This fallback avoids native schema parameters; prefer shallower structures and measure validation failures.
 
 ### Troubleshooting Rich Types
 

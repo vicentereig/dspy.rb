@@ -8,13 +8,13 @@ last_modified_at: 2025-08-13 00:00:00 +0000
 ---
 # Rails Integration Guide
 
-This guide covers enum coercion, service objects, jobs, caching, validation, callbacks, and instrumentation in Rails applications.
+Place enum coercion, provider calls, caching, callbacks, and instrumentation behind explicit Rails service and job boundaries.
 
 ## Enum Handling
 
 DSPy.rb coerces returned enum strings into the `T::Enum` declared by the signature.
 
-### The Problem
+### Recognize the enum mismatch
 
 You might see code like this in Rails applications:
 
@@ -28,9 +28,9 @@ result = OpenStruct.new(
 )
 ```
 
-### The Solution
+### Compare the declared enum
 
-DSPy.rb automatically handles enum conversion:
+When a signature declares a `T::Enum`, prediction coercion converts a compatible returned string to that enum:
 
 ```ruby
 class SearchStrategy < DSPy::Signature
@@ -111,7 +111,7 @@ end
 
 ## Service Object Pattern
 
-DSPy.rb works great with Rails service objects:
+Use a Rails service object to keep the provider call, returned value, and application mapping together:
 
 ```ruby
 # app/services/content_analyzer.rb
@@ -432,7 +432,7 @@ result = analyzer.call(content: "Some content")
 
 ### Callbacks with ActiveRecord Integration
 
-Use callbacks to automatically load and save state from ActiveRecord:
+Use callbacks to load and save state through the ActiveRecord boundary around each module call:
 
 ```ruby
 # app/models/conversation.rb
@@ -683,7 +683,7 @@ ActiveSupport::Notifications.subscribe('dspy.analysis.error') do |name, start, f
 end
 ```
 
-### Best Practices for Rails Integration
+### Keep Rails Ownership Explicit
 
 1. **Use concerns for shared callback logic** - Extract common patterns like logging, metrics, and error handling
 2. **Integrate with ActiveRecord callbacks** - Coordinate module callbacks with model lifecycle hooks

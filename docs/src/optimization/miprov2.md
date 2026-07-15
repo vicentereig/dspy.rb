@@ -11,7 +11,7 @@ See the [package and capability matrix](/dspy.rb/getting-started/packages/) for 
 
 MIPROv2 searches over instructions and few-shot demonstrations for one or more predictors. You provide a typed program, examples, a metric, and a budget. It evaluates candidates on minibatches and returns the best program it found for the validation data.[^miprov2-paper]
 
-## Why teams reach for MIPROv2
+## Decide Whether MIPROv2 Fits
 
 - **Metric-driven**: Candidate selection follows the metric you provide.
 - **Program-aware**: Multi-stage predictors (e.g., ReAct agents) receive separate instructions, so improvements land where they matter.
@@ -27,7 +27,7 @@ MIPROv2 searches over instructions and few-shot demonstrations for one or more p
 
 ## Quickstart (ADE demo)
 
-The fastest way to see MIPROv2 is to run the ADE demo that lives in this repository:
+Run the repository's ADE demo to inspect one bounded MIPROv2 workflow:
 
 ```bash
 bundle exec ruby examples/ade_optimizer_miprov2/main.rb \
@@ -41,7 +41,7 @@ What you get out of a single command:
 - Baseline accuracy/precision/recall/F1 for the typed ADE classifier.
 - Six optimization trials (via the `light` preset) with per-trial instruction snapshots.
 - Test-set metrics for the best candidate and a saved summary under `examples/ade_optimizer_miprov2/results/`.
-- A JSON dump of the trial logs, handy for replaying improvements inside your own app.
+- A JSON dump of the trial logs for inspecting candidate changes in your application.
 
 Treat the demo as a recipe. Replace the dataset builder and metric with your own code, keep the rest.
 
@@ -86,7 +86,7 @@ baseline_metrics = ADEExample.evaluate(baseline_program, test)
 puts "Baseline accuracy: #{(baseline_metrics.accuracy * 100).round(2)}%"
 ```
 
-Hold back a test set from the optimization loop. MIPROv2 optimizes on train/val, but only your own test (or prod) data proves it generalized.
+Hold back a test set from the optimization loop. MIPROv2 selects candidates on train and validation data; compare the selected program on held-out or production data before making a generalization claim.
 
 ### 3. Define a developer-friendly metric
 
@@ -128,9 +128,9 @@ Presets follow the paper’s guidance on how many trials, instruction candidates
 
 | Preset | Trials | When to use |
 | --- | --- | --- |
-| `light` | 6 | Quick wins on small datasets or during prototyping. |
-| `medium` | 12 | Balanced exploration vs. runtime for most production pilots. |
-| `heavy` | 18 | Highest accuracy targets or multi-stage programs with several predictors. |
+| `light` | 6 | Small datasets or prototypes with a six-trial budget. |
+| `medium` | 12 | More candidate exploration when twelve trials fit the runtime budget. |
+| `heavy` | 18 | Multi-stage programs that justify an eighteen-trial budget. |
 
 Switch to manual configuration when you already know the budget you can afford.
 
@@ -151,7 +151,7 @@ puts "Accuracy gained: #{((optimized_metrics.accuracy - baseline_metrics.accurac
 
 The `result` object exposes:
 
-- `optimized_program` — ready-to-use `DSPy::Predict` with new instruction and demos.
+- `optimized_program` — `DSPy::Predict` with the selected instruction and demonstrations; evaluate it before use.
 - `optimization_trace[:trial_logs]` — per-trial record of instructions, demos, and scores.
 - `metadata[:optimizer]` — `"MIPROv2"`, useful when you persist experiments from multiple optimizers.
 
@@ -183,7 +183,7 @@ The program and signature classes must be loaded when you restore the artifact, 
 
 ## Fits multi-stage programs too
 
-The ADE demo has a single predictor, but MIPROv2 shines when you have chains. See `spec/integration/dspy/mipro_v2_re_act_integration_spec.rb` for how the optimizer:
+The ADE demo has one predictor. For a multi-predictor example, see `spec/integration/dspy/mipro_v2_re_act_integration_spec.rb`, where the optimizer:
 
 - Generates dataset summaries for each predictor.
 - Proposes per-stage instructions for a ReAct agent (`thought_generator`, `observation_processor`).
@@ -197,11 +197,11 @@ The Stanford team behind MIPROv2 observed three practices that translate well to
 
 1. **Ground proposals in real data** — They seed candidates with dataset summaries and bootstrap few-shot examples. DSPy.rb's implementation does this through `DatasetSummaryGenerator` and the bootstrap phase, so the quality of the examples matters.
 2. **Stochastic evaluation keeps the loop affordable** — Mini-batching during evaluation mimics a noisy but cheaper fitness function. Use the presets’ defaults unless you have a strict budget; then lower `minibatch_size` to stretch API calls.
-3. **Meta-learning improves over time** — MIPROv2 adjusts which proposal strategies to favor based on past wins. You only see the payoff (better instructions, fewer useless trials), so let multi-trial runs finish before judging the outcome.
+3. **Proposal strategy adapts within a run** — MIPROv2 changes which proposal strategies it favors based on earlier trial results. Inspect the completed trial log rather than inferring behavior from an early candidate.
 
 The paper reports improvements on its evaluated tasks. Measure the Ruby program on a held-out set before promoting an optimized artifact.
 
-## Production checklist
+## Gate Promotion on Held-Out Evidence
 
 - Add both `dspy` and `dspy-miprov2` to the Gemfile.
 - Keep validation and held-out test sets separate.

@@ -15,7 +15,7 @@ The walkthrough uses `examples/ade_optimizer_gepa/` as a concrete implementation
 
 ## Installation
 
-Add the optional gem so Bundler pulls in the teleprompter plus its GEPA core dependency:
+Add the optional gem so Bundler pulls in the DSPy.rb optimizer integration and its GEPA core dependency:
 
 ```ruby
 gem 'dspy'
@@ -24,7 +24,7 @@ gem 'dspy-gepa'
 
 If you're working inside the DSPy.rb monorepo, set `DSPY_WITH_GEPA=1 bundle install` so the local gemspecs are included. The `dspy-gepa` gem depends on the `gepa` core optimizer gem automatically.
 
-## Overview
+## Understand the GEPA Loop
 
 GEPA runs in iterative loops:
 
@@ -33,7 +33,7 @@ GEPA runs in iterative loops:
 - **Ask the reflection LM** to propose an improved instruction.
 - **Accept or reject** the new candidate using Pareto dominance on score and novelty.
 
-DSPy.rb's GEPA implementation ships with telemetry, merge proposers, and experiment tracking out of the box. You only need to provide three inputs: a DSPy module, a metric that returns `DSPy::Prediction`, and an optional `feedback_map`.
+DSPy.rb's GEPA implementation includes telemetry, merge proposers, and experiment tracking. Supply a DSPy module and a metric that returns `DSPy::Prediction`; add a `feedback_map` when individual predictors need separate feedback.
 
 ## Quickstart (ADE demo)
 
@@ -49,9 +49,9 @@ bundle exec ruby examples/ade_optimizer_gepa/main.rb \
 - Uses `DSPy::Teleprompt::GEPA` with a reflective OpenAI LM.
 - Requires the optional `dspy-gepa` gem (see installation notes above).
 - Downloads a small ADE dataset, splits into train/val/test, and logs results under `examples/ade_optimizer_gepa/results/`.
-- Auto-adjusts `max_metric_calls` to cover validation if your budget is too low.
+- Raises `max_metric_calls` to the validation-set size when the configured budget is lower.
 
-Once you have the basics running, lift the same structure into your application.
+Reuse this dataset, metric, budget, and held-out-test structure with the application task.
 
 ## Step-by-step Integration
 
@@ -131,7 +131,7 @@ feedback_map = {
 
 Leave `feedback_map` empty if your metric already covers the basics. For multi-predictor chains, add entries per component so the reflection LM sees localized context at each step.
 
-### 5. Configure the teleprompter
+### 5. Configure the Optimizer
 
 ```ruby
 teleprompter = DSPy::Teleprompt::GEPA.new(
@@ -171,7 +171,7 @@ test_metrics = ADEExampleGEPA.evaluate(optimized_program, test)
 
 The returned `result` exposes:
 
-- `optimized_program`: ready-to-use `DSPy::Predict` with updated instruction and few-shot examples.
+- `optimized_program`: `DSPy::Predict` with the selected instruction and few-shot examples; evaluate it before promotion.
 - `best_score_value`: validation score for the best candidate.
 - `metadata`: map containing candidate counts, trace hashes, and telemetry IDs.
 
@@ -216,25 +216,22 @@ The ADE demo script already follows most of these recommendations. To extend it:
 
 1. **Pareto-friendly budget**: keep `--max-metric-calls` comfortably above the validation set size so GEPA can evaluate multiple candidates before exhausting the budget.
 2. **Rich feedback**: expand the metric lambda in `ADEExampleGEPA.metric` to return descriptive failure messages (e.g., include the misclassified span) so reflective mutations see actionable context; the ADE demo now embeds short sentence snippets in both metric and predictor-level feedback.
-3. **Validation discipline**: continue to treat the validation split as read-only telemetry (as the script does) and inspect `results/gepa_summary.json` for generalization on the held-out test split.
+3. **Validation discipline**: keep the validation split for candidate selection and inspect `results/gepa_summary.json` for results on the held-out test split.
 4. **Track candidates**: run with `--track-stats` (or enable the experiment tracker manually) when you want to audit whether GEPA is proposing genuinely new prompts instead of recycling the seed instruction.
 5. **Merge gating**: leave merge disabled for the small ADE module, but if you experiment with larger pipelines, gate merge on reaching several validated candidates before flipping `config[:enable_merge_proposer]`.
 
 Copy-paste helpers:
 
 ```bash
-# Run ADE GEPA with richer feedback budget and track stats
 bundle exec ruby examples/ade_optimizer_gepa/main.rb \
   --limit 200 \
   --seed 123 \
   --minibatch-size 6 \
   --max-metric-calls 900
 
-# Inspect the most recent GEPA summary and metrics
 cat examples/ade_optimizer_gepa/results/gepa_summary.json
 column -t -s, examples/ade_optimizer_gepa/results/gepa_metrics.csv
 
-# Record GEPA Pareto events for later inspection
 bundle exec ruby examples/ade_optimizer_gepa/main.rb \
   --limit 200 \
   --max-metric-calls 900 \
@@ -251,7 +248,7 @@ The JSONL log contains every Pareto update and merge decision, so you can inspec
 - **Reflection LM failures**: verify `OPENAI_API_KEY` is set and that your LM supports plain-text completions. GEPA disables structured outputs for compatibility.
 - **No improvement**: try seeding GEPA with richer training data, lower the minibatch size, or provide more specific feedback strings so the reflection LM can reason about mistakes.
 
-## Next Steps
+## Adapt the Workflow
 
 Use the ADE workflow as a template:
 

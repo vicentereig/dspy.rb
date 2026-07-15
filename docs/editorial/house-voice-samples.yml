@@ -143,7 +143,8 @@ samples:
   - id: zero-config-langfuse
     source: docs/src/production/observability.md
     excerpt: "DSPy.rb includes **zero-config Langfuse integration** via OpenTelemetry. Simply set your Langfuse environment variables and DSPy will automatically export spans to Langfuse alongside the normal logging."
-    status: present
+    status: resolved
+    resolution_reference: "dspy.rb-2ey.13 replaces zero-config language with explicit packages, credentials, network, export, and verification conditions."
     edge: caveat-overload
     requires_exception: false
     reviewer_a: EDIT

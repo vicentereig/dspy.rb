@@ -1,24 +1,22 @@
 ---
 layout: docs
 name: Event System vs Monkey-Patching
-description: Compare the new event system with old interception approaches
+description: Prefer supported DSPy.rb events over patches to logger and module internals
 date: 2025-09-03 00:00:00 +0000
 ---
 # Event System vs Monkey-Patching
 
 Subscribe to DSPy.rb events when you need custom metrics or logs. The public event API avoids replacing logger internals or patching module methods.
 
-## The Problem with Monkey-Patching
+## Identify the Patch Boundary
 
-Before the event system, intercepting DSPy events required complex approaches:
+Replacing logger backends reaches into internals that the public event API already exposes:
 
-### ❌ Old Approach: Complex Logger Backend Override
+### Replace a Logger Backend
 
 ```ruby
-# Required custom backend classes
 class EventInterceptorBackend < Dry::Logger::Backends::Stream
   def call(entry)
-    # Complex interception logic
     if handler = @event_handlers[entry[:event]]
       handler.call(entry)
     end
@@ -26,7 +24,6 @@ class EventInterceptorBackend < Dry::Logger::Backends::Stream
   end
 end
 
-# Fragile configuration
 DSPy.configure do |config|
   config.logger = Dry.Logger(:dspy) do |logger|
     logger.add_backend(EventInterceptorBackend.new(stream: "log/production.log"))
@@ -34,9 +31,9 @@ DSPy.configure do |config|
 end
 ```
 
-## ✅ New Approach: Event System
+## Subscribe Through the Event API
 
-The new event system provides clean, simple observability without monkey-patching:
+The event system exposes subscriptions without replacing logger or module internals:
 
 ### Token Cost Tracking
 
@@ -64,7 +61,7 @@ class TokenCostTracker
 end
 
 tracker = TokenCostTracker.new
-# Automatically tracks all LLM costs - no configuration needed
+# Tracks subscribed llm.* events until tracker.unsubscribe is called.
 ```
 
 ### Rate Limiting
@@ -117,18 +114,18 @@ class AuditLogger
 end
 ```
 
-## Why the Event System is Better
+## Compare the Supported Boundaries
 
-### ✅ Advantages
+### Event API properties
 
-1. **Discoverable**: `DSPy.events.subscribe()` is explicit and searchable
-2. **Testable**: Easy to test subscribers in isolation  
+1. **Public entry point**: `DSPy.events.subscribe()` is explicit and searchable
+2. **Subscriber isolation**: Subscribers can be tested without patching module internals
 3. **Type Safe**: Sorbet T::Struct validation for event structures
 4. **Thread Safe**: Built-in concurrency protection
 5. **Error Isolated**: Failing listeners don't break others
-6. **No Dependencies**: Doesn't require custom backend classes
+6. **No custom backend**: Subscription does not require an application-defined logger backend
 
-### ❌ Problems with Monkey-Patching
+### Monkey-patch liabilities
 
 1. **Hidden behavior**: Prepend modules are invisible in code
 2. **Testing complexity**: Hard to test interceptors in isolation  
@@ -136,23 +133,20 @@ end
 4. **Performance overhead**: Every call goes through override chain
 5. **Debugging difficulty**: Stack traces become confusing
 
-## Migration Guide
+## Replace a Logger Patch
 
-### Before (Complex)
+### Before: replace the backend
 ```ruby
-# Required monkey-patching
 module ContextInterceptor
   def with_span(operation:, **attributes)
-    # Complex interception logic
     super  
   end
 end
 DSPy::Context.singleton_class.prepend(ContextInterceptor)
 ```
 
-### After (Simple)
+### After: subscribe to the event
 ```ruby
-# Clean subscriber pattern
 class MyTracker
   def initialize
     @subscriptions = []
@@ -168,21 +162,20 @@ end
 tracker = MyTracker.new
 ```
 
-## When to Use Each Approach
+## Choose an Interception Boundary
 
-### Use Event System (Recommended)
+### Use the event system
 - Token tracking and budget management
 - Custom analytics and reporting  
 - Integration with external services
 - Performance monitoring
 - User-facing observability features
 
-### Use Monkey-Patching (Legacy)
-- Deep system modifications (not recommended)
-- Intercepting internal APIs (brittle)
-- When event system doesn't provide needed hooks
+### Patch only an unavailable internal hook
+- Modify an internal behavior the event API does not expose.
+- Treat the patch as version-coupled application code and test it against upgrades.
 
-## Examples in Source
+## Inspect Tested Subscribers
 
 See working implementations:
 - `spec/unit/event_system_spec.rb` - Thread safety tests

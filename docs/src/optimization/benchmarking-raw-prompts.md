@@ -9,12 +9,12 @@ last_modified_at: 2025-08-09 00:00:00 +0000
 
 Use `raw_chat` to establish a baseline for an existing provider prompt before replacing it with a typed module. Compare both implementations with the same model, inputs, metric, and telemetry.
 
-## Why Benchmark Raw Prompts?
+## Establish a Comparable Baseline
 
-1. **Fair Comparison**: Compare apples-to-apples between monolithic and modular approaches
-2. **Migration Path**: Gradually migrate existing prompts while measuring impact
-3. **Cost Analysis**: Accurate token usage comparison for budget planning
-4. **Performance Metrics**: Measure latency, token efficiency, and quality
+1. **Comparable inputs**: Run both implementations with the same model and data.
+2. **Measured migration**: Replace prompts incrementally while recording behavior changes.
+3. **Cost evidence**: Compare token usage under the same workload.
+4. **Operational evidence**: Record latency beside the task metric.
 
 ## Using raw_chat
 
@@ -25,7 +25,6 @@ The `raw_chat` method supports two formats: array format and DSL format.
 ```ruby
 lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
 
-# Run a raw prompt
 result = lm.raw_chat([
   { role: 'system', content: 'You are a helpful assistant.' },
   { role: 'user', content: 'What is the capital of France?' }
@@ -47,7 +46,7 @@ puts result # => "# Changelog\n\n## Features\n- Add user authentication..."
 
 ## Capturing Observability Data
 
-Both `raw_chat` and regular DSPy modules emit the same log events with span tracking, making comparison straightforward:
+Both `raw_chat` and DSPy modules emit log events and spans that can feed the same comparison:
 
 ```ruby
 # Capture events for analysis by processing logs
@@ -60,42 +59,36 @@ DSPy.configure do |config|
   end
 end
 
-# Run monolithic prompt
 monolithic_result = lm.raw_chat do |m|
   m.system MONOLITHIC_CHANGELOG_PROMPT
   m.user commit_data
 end
 
-# Extract token usage from logs
 log_file.rewind
 events = log_file.readlines.map { |line| JSON.parse(line) }
 monolithic_tokens = events
   .select { |e| e["event"] == 'llm.generate' }
   .last
 
-# Clear logs for next test
 log_file.truncate(0)
 log_file.rewind
 
-# Run modular DSPy version
 changelog_generator = DSPy::ChainOfThought.new(ChangelogSignature)
 modular_result = changelog_generator.forward(commits: commit_data)
 
-# Extract token usage
 modular_tokens = captured_events
   .select { |e| e.id == 'lm.tokens' }
   .last
   .payload
 
-# Compare results
 puts "Monolithic: #{monolithic_tokens[:total_tokens]} tokens"
 puts "Modular: #{modular_tokens[:total_tokens]} tokens"
 puts "Savings: #{((1 - modular_tokens[:total_tokens].to_f / monolithic_tokens[:total_tokens]) * 100).round(2)}%"
 ```
 
-## Complete Benchmarking Example
+## Run a Changelog Benchmark
 
-Here's a complete example comparing a monolithic changelog generator with a modular DSPy implementation:
+The following example compares a monolithic changelog generator with a modular DSPy implementation:
 
 ```ruby
 require 'dspy'
@@ -132,10 +125,8 @@ def benchmark_approaches(commits_data)
   
   results = {}
   
-  # Benchmark monolithic approach
   start_time = Time.now
   
-  # Reset log file
   log_file.truncate(0)
   log_file.rewind
   
@@ -146,7 +137,6 @@ def benchmark_approaches(commits_data)
   
   monolithic_time = Time.now - start_time
   
-  # Extract tokens from logs
   log_file.rewind
   events = log_file.readlines.map { |line| JSON.parse(line) }
   monolithic_tokens = events.find { |e| e["event"] == 'llm.generate' }
@@ -157,10 +147,8 @@ def benchmark_approaches(commits_data)
     result: monolithic_result
   }
   
-  # Reset
   events.clear
   
-  # Benchmark modular approach
   start_time = Time.now
   
   generator = DSPy::ChainOfThought.new(ChangelogSignature)
@@ -178,7 +166,6 @@ def benchmark_approaches(commits_data)
   results
 end
 
-# Run benchmark
 commits = [
   "feat: Add user authentication system",
   "fix: Resolve memory leak in worker process",
@@ -189,7 +176,6 @@ commits = [
 
 results = benchmark_approaches(commits)
 
-# Display results
 puts "=== Benchmark Results ==="
 puts "\nMonolithic Approach:"
 puts "  Time: #{results[:monolithic][:time].round(3)}s"
@@ -201,7 +187,6 @@ puts "  Time: #{results[:modular][:time].round(3)}s"
 puts "  Tokens: #{results[:modular][:tokens][:total_tokens]}"
 puts "  Cost: $#{(results[:modular][:tokens][:total_tokens] * 0.00015 / 1000).round(4)}"
 
-# Calculate improvements
 token_reduction = ((1 - results[:modular][:tokens][:total_tokens].to_f / 
                        results[:monolithic][:tokens][:total_tokens]) * 100).round(2)
 
@@ -210,7 +195,7 @@ puts "  Token reduction: #{token_reduction}%"
 puts "  Additional benefits: Type safety, testability, composability"
 ```
 
-## Advanced Benchmarking with Multiple Providers
+## Compare Multiple Providers
 
 Compare performance across different LLM providers:
 
@@ -226,7 +211,6 @@ def benchmark_providers(prompt_messages)
   providers.each do |provider|
     lm = DSPy::LM.new(provider[:id], api_key: provider[:key])
     
-    # Reset log file for each provider
     log_file.truncate(0)
     log_file.rewind
     
@@ -234,7 +218,6 @@ def benchmark_providers(prompt_messages)
     result = lm.raw_chat(prompt_messages)
     elapsed = Time.now - start_time
     
-    # Extract token usage from logs
     log_file.rewind
     events = log_file.readlines.map { |line| JSON.parse(line) }
     token_event = events.find { |e| e["event"] == 'llm.generate' }
@@ -250,12 +233,11 @@ def benchmark_providers(prompt_messages)
 end
 ```
 
-## Integration with Observability Tools
+## Capture Both Paths in Observability
 
-The `raw_chat` method emits standard DSPy log events with span tracking, making it compatible with all observability integrations:
+`raw_chat` emits DSPy log events and spans; configure the selected observability integration to capture both paths:
 
 ```ruby
-# Configure observability
 DSPy.configure do |config|
   config.logger = Dry.Logger(:dspy, formatter: :json) do |logger|
     logger.add_backend(stream: "/var/log/dspy/benchmarks.json")
@@ -272,14 +254,12 @@ predictor.forward(input: 'Hello')                   # Logged as dspy.predict
 DSPy.rb supports JSON Schema and BAML schema rendering. Measure both formats on your actual signature; the difference depends on schema shape and provider formatting.
 
 ```ruby
-# Test JSON schema (default)
 json_lm = DSPy::LM.new(
   'openai/gpt-4o-mini',
   api_key: ENV['OPENAI_API_KEY'],
   schema_format: :json
 )
 
-# Test BAML schema
 baml_lm = DSPy::LM.new(
   'openai/gpt-4o-mini',
   api_key: ENV['OPENAI_API_KEY'],
@@ -304,7 +284,6 @@ class TaskDecomposition < DSPy::Signature
   end
 end
 
-# Run with JSON schema
 DSPy.configure { |c| c.lm = json_lm }
 json_predictor = DSPy::Predict.new(TaskDecomposition)
 json_result = json_predictor.call(
@@ -312,7 +291,6 @@ json_result = json_predictor.call(
   context: "Focus on practical challenges"
 )
 
-# Run with BAML schema
 DSPy.configure { |c| c.lm = baml_lm }
 baml_predictor = DSPy::Predict.new(TaskDecomposition)
 baml_result = baml_predictor.call(
@@ -320,7 +298,6 @@ baml_result = baml_predictor.call(
   context: "Focus on practical challenges"
 )
 
-# Compare token usage from logs
 # Record input tokens and output quality for each run.
 ```
 
@@ -328,11 +305,11 @@ Do not infer output quality from schema length. Compare validation failures and 
 
 See [Schema Formats](/dspy.rb/core-concepts/signatures/#schema-formats) for detailed comparison.
 
-## Best Practices
+## Keep the Benchmark Comparable
 
 1. **Use Consistent Test Data**: Ensure both approaches receive identical inputs
 2. **Multiple Runs**: Average results across multiple runs to account for variance
-3. **Consider Quality**: Token count isn't everything - evaluate output quality too
+3. **Measure task behavior**: Record the chosen metric beside token counts
 4. **Track Over Time**: Monitor performance as you migrate from monolithic to modular
 5. **Use with CI/CD**: Integrate benchmarks into your deployment pipeline
 6. **Test Schema Formats**: For rich signatures, benchmark BAML vs JSON Schema to measure token savings
@@ -340,18 +317,14 @@ See [Schema Formats](/dspy.rb/core-concepts/signatures/#schema-formats) for deta
 ## Migration Strategy
 
 ```ruby
-# Phase 1: Benchmark existing prompts
 baseline = benchmark_raw_prompt(LEGACY_PROMPT, test_data)
 
-# Phase 2: Create modular version
 class ModularVersion < DSPy::Module
   # Implementation
 end
 
-# Phase 3: Compare and validate
 comparison = benchmark_modular(ModularVersion.new, test_data)
 
-# Phase 4: Deploy if metrics improve
 if comparison[:tokens] < baseline[:tokens] * 0.9  # 10% improvement
   deploy_modular_version
 else

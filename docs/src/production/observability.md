@@ -9,15 +9,15 @@ last_modified_at: 2025-08-09 00:00:00 +0000
 
 DSPy.rb emits structured events and OpenTelemetry spans for modules, LM calls, tools, evaluation, and optimization. Subscribe to events for application metrics; install the optional Langfuse integration when you need span export there.
 
-## Overview
+## Choose an Observability Boundary
 
 The observability system offers:
-- **Event System**: Simple `DSPy.event()` API for structured event emission
+- **Event system**: `DSPy.event()` emits a structured application event
 - **Pluggable Listeners**: Subscribe to events with pattern matching
-- **OpenTelemetry Integration**: Automatic span creation with semantic conventions  
+- **OpenTelemetry integration**: Instrumented operations create spans with semantic conventions
 - **Langfuse Export**: Optional export through `dspy-o11y-langfuse` and OpenTelemetry configuration
 - **Type Safety**: Sorbet T::Struct event validation
-- **Non-Blocking Exports**: Dedicated single-thread executor keeps telemetry off hot paths
+- **Asynchronous routine export**: A dedicated single-thread executor keeps routine telemetry export off request threads
 - **Logging Compatibility**: Existing `DSPy.log()` calls continue to emit log events
 
 ## Installation
@@ -82,7 +82,7 @@ DSPy.event('llm.response', {
   duration_ms: 1200
 })
 
-# Events automatically create OpenTelemetry spans and log entries
+# Subscribers receive the event; enabled observability also creates a span.
 ```
 
 ### Event Listeners
@@ -134,7 +134,7 @@ tracker = TokenTracker.new
 
 ## Observation Types
 
-DSPy.rb uses Langfuse's semantic observation types to classify spans correctly in observability systems. These types provide meaningful categorization for different kinds of operations:
+DSPy.rb maps instrumented operations to Langfuse observation types so consumers can distinguish generations, agents, tools, chains, retrievers, and embeddings:
 
 ### Observation Type Classification
 
@@ -176,7 +176,7 @@ lm.raw_chat([
 **Agent** (`agent`):
 - Multi-step reasoning agents (ReAct core, CodeAct via dspy-code_act)
 - Iterative decision-making processes
-- Tool-using autonomous agents
+- Bounded tool-using agent loops
 
 ```ruby
 # Automatically used for:
@@ -276,7 +276,7 @@ end
 
 ## Built-in Events
 
-DSPy modules automatically emit events following OpenTelemetry semantic conventions:
+Instrumented DSPy module calls emit events with OpenTelemetry semantic attributes:
 
 ### LLM Events
 
@@ -543,40 +543,35 @@ class EventAnalytics
 end
 ```
 
-## Backward Compatibility
+## Keep Logging Separate from Event Telemetry
 
-All existing `DSPy.log()` calls automatically benefit from the event system:
+`DSPy.log()` writes to the configured logger. It does not notify event subscribers or create telemetry spans. Use `DSPy.event()` when listeners or an OpenTelemetry exporter must receive the operation:
 
 ```ruby
-# Existing code (unchanged)
 DSPy.log('chain_of_thought.reasoning_complete', {
   signature_name: 'QuestionAnswering', 
   reasoning_steps: 3
 })
 
-# Now automatically:
-# ✅ Logs to stdout/file (same as before)
-# ✅ Creates OpenTelemetry spans  
-# ✅ Notifies event listeners
-# ✅ Exports to Langfuse when configured
+DSPy.event('chain_of_thought.reasoning_complete', {
+  signature_name: 'QuestionAnswering',
+  reasoning_steps: 3
+})
 ```
 
-No code changes required - existing modules get enhanced observability automatically.
+Existing `DSPy.log()` call sites continue to log without change. Moving a call site to `DSPy.event()` is an application decision because subscribers may add processing and side effects. Span export also requires the observability packages and exporter configuration.
 
-## Configuration
+## Configure Event and Export Behavior
 
 ```ruby
 DSPy.configure do |config|
-  # Logger configuration (same as before)
   config.logger = Dry.Logger(:dspy, formatter: :json)
 end
-
-# Events work immediately - no additional setup needed
-# Langfuse: Just set environment variables
-# Custom subscribers: Create and they start working
 ```
 
-## Best Practices
+Create and retain each custom subscriber explicitly, then unsubscribe it during shutdown. Langfuse export requires the packages, credentials, network access, and exporter lifecycle described below.
+
+## Bound Subscribers and Event Data
 
 1. **Use Semantic Names**: Follow dot notation (`llm.generate`, `module.forward`)
 
@@ -649,15 +644,15 @@ end
 threads.each(&:join)
 ```
 
-## Langfuse Integration (Zero Configuration)
+## Configure Langfuse from Environment Variables {#langfuse-integration-zero-configuration}
 
-DSPy.rb includes **zero-config Langfuse integration** via OpenTelemetry. Simply set your Langfuse environment variables and DSPy will automatically export spans to Langfuse alongside the normal logging.
+With `dspy-o11y`, `dspy-o11y-langfuse`, the OpenTelemetry dependencies, and network access installed, setting the required Langfuse environment variables configures OTLP span export alongside logging.
 
-**Note**: Integration requires the `opentelemetry-sdk` and `opentelemetry-exporter-otlp` gems to be available and proper network connectivity to your Langfuse instance.
+The integration requires `opentelemetry-sdk`, `opentelemetry-exporter-otlp`, valid Langfuse credentials, and network connectivity to the configured instance.
 
 **🆕 Enhanced in v0.25.0**: Comprehensive span reporting improvements including proper input/output capture, hierarchical nesting, accurate timing, token usage tracking, and correct Langfuse observation types (`generation`, `chain`, `span`).
 
-### Setup
+### Set Langfuse Credentials
 
 ```bash
 # Required environment variables
@@ -696,7 +691,7 @@ export DSPY_TELEMETRY_SHUTDOWN_TIMEOUT=10.0
 - `DSPY_TELEMETRY_SHUTDOWN_TIMEOUT` (default: `10.0`):
   max seconds to wait for flush during shutdown.
 
-#### Recommended Presets
+#### Choose Settings by Process Lifecycle
 
 - `CLI / short-lived process`:
   prioritize fast flushing and longer shutdown timeout.
@@ -715,7 +710,7 @@ export DSPY_TELEMETRY_SHUTDOWN_TIMEOUT=10.0
   export DSPY_TELEMETRY_SHUTDOWN_TIMEOUT=10.0
   ```
 - `Background jobs`:
-  favor throughput and delivery reliability.
+  favor larger batches, then monitor queue drops, retries, and shutdown flushes.
   ```bash
   export DSPY_TELEMETRY_QUEUE_SIZE=5000
   export DSPY_TELEMETRY_EXPORT_INTERVAL=60.0
@@ -728,18 +723,18 @@ export DSPY_TELEMETRY_SHUTDOWN_TIMEOUT=10.0
   export DSPY_DISABLE_OBSERVABILITY=true
   ```
 
-### How It Works
+### Trace Environment-Driven Configuration
 
-When Langfuse environment variables are detected, DSPy automatically:
+When the required Langfuse environment variables are present, initialization:
 
 1. **Configures OpenTelemetry SDK** with OTLP exporter
 2. **Creates dual output**: Both structured logs AND OpenTelemetry spans
 3. **Exports to Langfuse** using proper authentication and endpoints
-4. **Falls back gracefully** if OpenTelemetry gems are missing or configuration fails
+4. **Logs initialization failures** when a dependency or exporter configuration is unavailable
 
-**Important**: Automatic configuration only occurs when required gems are available and environment variables are properly set. Always verify your setup in development before relying on it in production.
+Environment-driven configuration runs only when the required gems and variables are present. Verify received spans and shutdown behavior in a non-production environment before depending on the exporter.
 
-### Example Output
+### Inspect Emitted Output
 
 With Langfuse configured, your DSPy applications will send traces like this:
 
@@ -757,7 +752,7 @@ With Langfuse configured, your DSPy applications will send traces like this:
 }
 ```
 
-**In Langfuse** (automatically):
+**In Langfuse** (when export is configured):
 ```
 Trace: abc-123-def
 ├─ ChainOfThought.forward [2000ms]
@@ -827,9 +822,9 @@ Trace: react-trace-789
 │     └─ Tokens: 70 in / 20 out / 90 total
 ```
 
-### GenAI Semantic Conventions
+### Inspect GenAI Semantic Attributes
 
-DSPy automatically includes OpenTelemetry GenAI semantic conventions:
+Instrumented LM operations include OpenTelemetry GenAI semantic attributes:
 
 ```ruby
 # LLM operations automatically include:
@@ -843,7 +838,7 @@ DSPy automatically includes OpenTelemetry GenAI semantic conventions:
 }
 ```
 
-### Manual Configuration (Advanced)
+### Supply OpenTelemetry Configuration Directly
 
 For custom OpenTelemetry setups, you can disable auto-configuration and set up manually:
 
@@ -860,17 +855,17 @@ OpenTelemetry::SDK.configure do |config|
 end
 ```
 
-### Dependencies
+### Verify Export Dependencies
 
-The Langfuse integration requires these gems (automatically included):
+`dspy-o11y-langfuse` declares these export dependencies:
 - `opentelemetry-sdk` (~> 1.8)
 - `opentelemetry-exporter-otlp` (~> 0.30)
 
-If these gems are not available, DSPy gracefully falls back to logging-only mode.
+Without these gems, Langfuse span export is unavailable; DSPy logging remains separate.
 
 ### Troubleshooting Langfuse Integration
 
-**Spans not appearing in Langfuse:**
+**Missing Langfuse spans:**
 1. Verify environment variables are set correctly
 2. Check Langfuse host/region (EU vs US)
 3. Ensure network connectivity to Langfuse endpoints
@@ -890,14 +885,6 @@ If these gems are not available, DSPy gracefully falls back to logging-only mode
 
 Traces show what executed; they do not establish correctness. See [Score Reporting](/dspy.rb/production/score-reporting/) for the canonical `DSPy::Scores` types, evaluators, evaluation export, and bounded Langfuse exporter lifecycle.
 
-## Summary
-
-The DSPy.rb event system provides:
-
-1. **Event API**: Simple `DSPy.event()` for structured emission
-2. **Pluggable Listeners**: Subscribe to events with pattern matching
-3. **OpenTelemetry Integration**: Automatic span creation and Langfuse export
-4. **Type Safety**: Sorbet T::Struct event validation
-5. **Backward Compatibility**: Existing `DSPy.log()` calls enhanced automatically
+## Protect Exported Data
 
 See `examples/event_system_demo.rb` for event subscriptions and emitted attributes. Keep sensitive input and output data out of exported spans unless your retention and access policy permits it.

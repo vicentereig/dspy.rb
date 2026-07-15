@@ -9,7 +9,7 @@ last_modified_at: 2025-08-09 00:00:00 +0000
 
 The registry records versioned signature configurations and which version an environment has deployed. It can register optimization results, compare recorded scores, promote a version, and roll back the deployment pointer.
 
-## Overview
+## Define What the Registry Records
 
 The registry records:
 - **Signature Version Management**: Track different versions of signature configurations
@@ -18,15 +18,13 @@ The registry records:
 - **Optimization Integration**: Register optimization results through `RegistryManager`
 - **Rollback**: Move an environment's deployment pointer to an earlier version
 
-## Basic Usage
+## Register a Version
 
-### Setting Up the Registry
+### Create the Registry
 
 ```ruby
-# Create a registry with default configuration
 registry = DSPy::Registry::SignatureRegistry.new
 
-# Or with custom configuration
 config = DSPy::Registry::SignatureRegistry::RegistryConfig.new
 config.registry_path = "./my_dspy_registry"
 config.auto_version = true
@@ -38,19 +36,16 @@ registry = DSPy::Registry::SignatureRegistry.new(config: config)
 ### Registering Versions
 
 ```ruby
-# After optimization
 program = DSPy::Predict.new(ClassifyText)
 metric = proc { |example, prediction| prediction.sentiment == example.expected_sentiment }
 optimizer = DSPy::Teleprompt::MIPROv2.new(metric: metric)
 result = optimizer.compile(program, trainset: training_examples)
 
-# Extract configuration from optimized program
 configuration = {
   instruction: result.optimized_program.prompt.instruction,
   few_shot_examples_count: result.optimized_program.few_shot_examples.size
 }
 
-# Register the version
 version = registry.register_version(
   'text_classifier',
   configuration,
@@ -68,15 +63,12 @@ puts "Registered version: #{version.version}"
 ### Registering an Optimization Result with RegistryManager
 
 ```ruby
-# Create a registry manager and enable optimization registration
 manager = DSPy::Registry::RegistryManager.new
 
-# Configure automatic behaviors
 manager.integration_config.auto_register_optimizations = true
 manager.integration_config.auto_deploy_best_versions = true
 manager.integration_config.auto_deploy_threshold = 0.1  # 10% improvement
 
-# Register this result explicitly
 version = manager.register_optimization_result(
   result,
   signature_name: 'text_classifier',
@@ -89,7 +81,6 @@ version = manager.register_optimization_result(
 ### Listing Versions
 
 ```ruby
-# List all versions for a signature
 versions = registry.list_versions('text_classifier')
 
 versions.each do |v|
@@ -100,7 +91,6 @@ versions.each do |v|
   puts "---"
 end
 
-# List all signatures in registry
 signatures = registry.list_signatures
 puts "Registered signatures: #{signatures.join(', ')}"
 ```
@@ -108,14 +98,12 @@ puts "Registered signatures: #{signatures.join(', ')}"
 ### Updating Performance Scores
 
 ```ruby
-# After evaluation, update the performance score
 registry.update_performance_score(
   'text_classifier',
   'v20240115_143022',
   0.92  # New accuracy score
 )
 
-# Get performance history
 history = registry.get_performance_history('text_classifier')
 puts "Best score: #{history[:trends][:best_score]}"
 puts "Improvement trend: #{history[:trends][:improvement_trend]}%"
@@ -137,12 +125,11 @@ comparison[:comparison][:configuration_changes].each do |change|
 end
 ```
 
-## Deployment Management
+## Move the Deployment Pointer
 
-### Deploying Versions
+### Record a Deployed Version
 
 ```ruby
-# Deploy a specific version
 deployed = registry.deploy_version('text_classifier', 'v20240115_143022')
 
 if deployed
@@ -151,7 +138,6 @@ else
   puts "Deployment failed"
 end
 
-# Get currently deployed version
 current = registry.get_deployed_version('text_classifier')
 puts "Currently deployed: #{current.version}" if current
 ```
@@ -159,7 +145,6 @@ puts "Currently deployed: #{current.version}" if current
 ### Rollback
 
 ```ruby
-# Rollback to previous version
 rolled_back = registry.rollback('text_classifier')
 
 if rolled_back
@@ -214,7 +199,6 @@ This example calls the manager explicitly. For optimizer-triggered registration,
 manager.integration_config.rollback_on_performance_drop = true
 manager.integration_config.rollback_threshold = 0.05  # 5% drop triggers rollback
 
-# During production monitoring
 current_accuracy = evaluate_deployed_model()
 rolled_back = manager.monitor_and_rollback('text_classifier', current_accuracy)
 
@@ -223,9 +207,9 @@ if rolled_back
 end
 ```
 
-## Registry Management
+## Inspect and Maintain Registry State
 
-### Configuration
+### Configure File Storage
 
 The registry uses file-based storage with YAML files:
 
@@ -243,7 +227,6 @@ dspy_registry/
 ### Deployment Status
 
 ```ruby
-# Get deployment status
 status = manager.get_deployment_status('text_classifier')
 
 puts "Deployed: #{status[:deployed_version][:version]}" if status[:deployed_version]
@@ -257,7 +240,6 @@ end
 ### Deployment Planning
 
 ```ruby
-# Create a deployment plan before deploying
 plan = manager.create_deployment_plan('text_classifier', 'v20240115_143022')
 
 puts "Safe to deploy: #{plan[:deployment_safe]}"
@@ -271,7 +253,6 @@ plan[:recommendations].each { |rec| puts "  - #{rec}" }
 ### Cleanup
 
 ```ruby
-# Clean up old versions across all signatures
 cleanup_results = manager.cleanup_old_versions
 
 puts "Cleaned #{cleanup_results[:cleaned_versions]} versions"
@@ -317,7 +298,7 @@ The registry emits structured log events for monitoring:
 - `dspy.registry.export` - Registry exported
 - `dspy.registry.import` - Registry imported
 
-## Best Practices
+## Preserve Selection Evidence
 
 ### 1. Version Naming
 
@@ -366,7 +347,6 @@ metadata = {
 Always update performance scores after evaluation:
 
 ```ruby
-# After deployment and evaluation
 production_accuracy = evaluate_in_production()
 registry.update_performance_score(
   'text_classifier',
@@ -375,9 +355,9 @@ registry.update_performance_score(
 )
 ```
 
-### 4. Conservative Deployment
+### 4. Require a Promotion Threshold
 
-For production systems, use conservative deployment:
+Set a measured promotion threshold and keep rollback policy in the application deployment process:
 
 ```ruby
 # Only deploy if significantly better

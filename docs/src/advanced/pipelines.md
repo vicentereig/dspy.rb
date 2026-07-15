@@ -1,28 +1,27 @@
 ---
 layout: docs
 name: Multi-stage Pipelines
-description: Build complex workflows by composing DSPy modules
+description: Compose DSPy modules with explicit Ruby sequencing, branches, and failure handling
 date: 2025-07-10 00:00:00 +0000
 ---
 # Multi-stage Pipelines
 
 A pipeline composes DSPy modules with Ruby control flow. Use one when the application should determine the sequence, branches, and failure handling. Use an agent only when the model has a useful decision to make about the next action.
 
-## Overview
+## Decide What Ruby Owns
 
 Pipeline code provides:
 - **Module Composition**: Combine multiple DSPy::Module instances
 - **Sequential Processing**: Chain operations in order
 - **Data Flow**: Pass results between pipeline stages
 - **Error Handling**: Explicit failure and recovery paths
-- **Reusable Components**: Build modular, testable pipelines
+- **Reusable components**: Isolate stages so their inputs, outputs, and failures can be tested
 
-## Basic Pipeline Concepts
+## Compose Pipeline Stages
 
 ### Module-Based Architecture
 
 ```ruby
-# Individual modules for each stage
 class DocumentClassificationSignature < DSPy::Signature
   description "Classify document type"
   input { const :content, String }
@@ -69,13 +68,10 @@ class DocumentProcessor < DSPy::Module
   end
 
   def forward(content:)
-    # Stage 1: Classify document
     classification = @classifier.call(content: content)
     
-    # Stage 2: Generate summary
     summary = @summarizer.call(content: content)
     
-    # Return combined results
     {
       document_type: classification.document_type,
       summary: summary.summary,
@@ -85,7 +81,6 @@ class DocumentProcessor < DSPy::Module
   end
 end
 
-# Usage
 processor = DocumentProcessor.new
 result = processor.call(content: "Long document content...")
 
@@ -93,7 +88,7 @@ puts "Type: #{result[:document_type]}"
 puts "Summary: #{result[:summary]}"
 ```
 
-## Advanced Pipeline Patterns
+## Add Branches and Recovery
 
 ### Conditional Processing
 
@@ -108,11 +103,9 @@ class AdaptiveDocumentProcessor < DSPy::Module
   end
 
   def forward(content:)
-    # Stage 1: Classify
     classification = @classifier.call(content: content)
     doc_type = classification.document_type
     
-    # Stage 2: Conditional processing based on type
     case doc_type.downcase
     when 'technical'
       summary = @technical_summarizer.call(content: content)
@@ -125,7 +118,6 @@ class AdaptiveDocumentProcessor < DSPy::Module
       analysis = nil
     end
     
-    # Combine results
     result = {
       document_type: doc_type,
       summary: summary.summary
@@ -205,7 +197,6 @@ class EmailProcessor < DSPy::Module
       processing_steps: []
     }
     
-    # Stage 1: Spam detection
     spam_result = @spam_detector.call(content: email_content)
     pipeline_data[:is_spam] = spam_result.is_spam
     pipeline_data[:processing_steps] << "spam_detection"
@@ -213,12 +204,10 @@ class EmailProcessor < DSPy::Module
     # Skip further processing if spam
     return pipeline_data if pipeline_data[:is_spam]
     
-    # Stage 2: Sentiment analysis
     sentiment_result = @sentiment_analyzer.call(content: email_content)
     pipeline_data[:sentiment] = sentiment_result.sentiment
     pipeline_data[:processing_steps] << "sentiment_analysis"
     
-    # Stage 3: Priority classification
     priority_result = @priority_classifier.call(
       content: email_content,
       sentiment: pipeline_data[:sentiment]
@@ -226,7 +215,6 @@ class EmailProcessor < DSPy::Module
     pipeline_data[:priority] = priority_result.priority
     pipeline_data[:processing_steps] << "priority_classification"
     
-    # Stage 4: Generate response if high priority
     if priority_result.priority == "high"
       response_result = @response_generator.call(
         content: email_content,
@@ -241,7 +229,7 @@ class EmailProcessor < DSPy::Module
 end
 ```
 
-## Parallel Processing Simulation
+## Separate Parallelizable Stages
 
 ```ruby
 class ParallelAnalysisPipeline < DSPy::Module
@@ -288,7 +276,7 @@ class ParallelAnalysisPipeline < DSPy::Module
 end
 ```
 
-## Pipeline Optimization
+## Measure and Cache Pipeline Work
 
 ### Caching Pipeline Results
 
@@ -324,14 +312,11 @@ class CachedPipeline < DSPy::Module
   end
 end
 
-# Usage
 base_processor = DocumentProcessor.new
 cached_processor = CachedPipeline.new(base_processor)
 
-# First call processes normally
 result1 = cached_processor.call(content: document)
 
-# Second call with same content uses cache
 result2 = cached_processor.call(content: document)
 ```
 
@@ -356,7 +341,6 @@ class MonitoredPipeline < DSPy::Module
     begin
       result = @base_pipeline.call(**inputs)
       
-      # Add performance metadata
       duration = Time.now - start_time
       @metrics[:total_time] += duration
       
@@ -388,25 +372,21 @@ class MonitoredPipeline < DSPy::Module
   end
 end
 
-# Usage
 base_pipeline = DocumentProcessor.new
 monitored_pipeline = MonitoredPipeline.new(base_pipeline)
 
-# Process documents
 results = documents.map { |doc| monitored_pipeline.call(content: doc) }
 
-# Check performance
 puts "Pipeline stats: #{monitored_pipeline.stats}"
 ```
 
-## Complex Pipeline Example
+## Compose a Document-Analysis Pipeline
 
 ```ruby
 class ContentAnalysisPipeline < DSPy::Module
   def initialize
     super
     
-    # Initialize all pipeline stages
     @content_classifier = ContentClassifier.new
     @language_detector = LanguageDetector.new
     @sentiment_analyzer = SentimentAnalyzer.new
@@ -422,7 +402,6 @@ class ContentAnalysisPipeline < DSPy::Module
       processing_chain: []
     }
 
-    # Stage 1: Basic content analysis
     begin
       classification = @content_classifier.call(content: content)
       analysis[:content_type] = classification.content_type
@@ -432,7 +411,6 @@ class ContentAnalysisPipeline < DSPy::Module
       analysis[:errors] << { stage: :content_classification, error: e.message }
     end
 
-    # Stage 2: Language detection
     begin
       language = @language_detector.call(content: content)
       analysis[:language] = language.language
@@ -444,7 +422,6 @@ class ContentAnalysisPipeline < DSPy::Module
       analysis[:language] = 'unknown'
     end
 
-    # Stage 3: Sentiment analysis (only for certain content types)
     if ['article', 'review', 'social_post'].include?(analysis[:content_type])
       begin
         sentiment = @sentiment_analyzer.call(content: content)
@@ -457,7 +434,6 @@ class ContentAnalysisPipeline < DSPy::Module
       end
     end
 
-    # Stage 4: Topic extraction
     begin
       topics = @topic_extractor.call(content: content)
       analysis[:topics] = topics.topics
@@ -468,7 +444,6 @@ class ContentAnalysisPipeline < DSPy::Module
       analysis[:errors] << { stage: :topic_extraction, error: e.message }
     end
 
-    # Stage 5: Summarization (for long content)
     if content.length > 1000
       begin
         summary = @summarizer.call(content: content)
@@ -481,7 +456,6 @@ class ContentAnalysisPipeline < DSPy::Module
       end
     end
 
-    # Stage 6: Quality assessment
     begin
       quality = @quality_assessor.call(
         content: content,
@@ -496,7 +470,6 @@ class ContentAnalysisPipeline < DSPy::Module
       analysis[:errors] << { stage: :quality_assessment, error: e.message }
     end
 
-    # Add processing summary
     analysis[:processing_summary] = {
       total_stages: 6,
       completed_stages: analysis[:processing_chain].size,
@@ -508,10 +481,8 @@ class ContentAnalysisPipeline < DSPy::Module
   end
 end
 
-# Usage
 pipeline = ContentAnalysisPipeline.new
 
-# Process a single document
 result = pipeline.call(
   content: "Long article content...",
   metadata: { source: 'web', author: 'John Doe' }
@@ -523,7 +494,7 @@ puts "Topics: #{result[:topics]}"
 puts "Processing completed #{result[:processing_summary][:completed_stages]}/#{result[:processing_summary][:total_stages]} stages"
 ```
 
-## Best Practices
+## Keep Pipeline Boundaries Explicit
 
 ### 1. Modular Design
 
@@ -566,7 +537,6 @@ end
 ### 3. Pipeline Testing
 
 ```ruby
-# Test individual stages
 describe DocumentClassifier do
   it "classifies technical documents" do
     classifier = DocumentClassifier.new
@@ -575,7 +545,6 @@ describe DocumentClassifier do
   end
 end
 
-# Test full pipeline
 describe DocumentProcessor do
   it "processes documents end-to-end" do
     processor = DocumentProcessor.new
