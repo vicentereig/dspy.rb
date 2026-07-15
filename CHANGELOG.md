@@ -7,19 +7,51 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
-- **`DSPy::Reasoning` config abstraction & Anthropic `temperature`/`max_tokens` fix** (#256, ref #247) - Newer Anthropic models (Sonnet 5, Opus 4.7/4.8, Fable 5, Mythos 5) reject a non-default `temperature`; `DSPy::LM.new` for Anthropic now omits it automatically for those models, even without touching `reasoning:`.
-  - Added `DSPy::Reasoning` (`.low`/`.medium`/`.high`/`.xhigh`/`.max`/`.budget(n)`/`.adaptive`/`.disabled`), a typed value object passed via `reasoning:` to `DSPy::LM.new`. Anthropic-only for now; maps to `output_config.effort` and `thinking`.
-  - Added `temperature:` and `max_tokens:` as first-class `DSPy::LM.new` options for Anthropic (`temperature:` supports a three-state sentinel: not-passed / explicit value / explicit `nil`).
-  - Added an explicit, per-model-family capability registry (`DSPy::Anthropic::LM::ModelCapabilities`) that validates `reasoning:`/`temperature:` combinations at construction time and raises `DSPy::LM::ConfigurationError` for unsupported ones (e.g. `.xhigh` on a model that doesn't support it, or `.budget(n)` outside `[1024, max_tokens)`).
-  - See the new [Reasoning Effort & Temperature](docs/src/advanced/reasoning.md) guide and [ADR-019](adr/019-anthropic-reasoning-temperature-config.md).
+### `dspy`
 
-### Changed
-- **Anthropic structured outputs migrated off the deprecated Beta API** - `dspy-anthropic` now builds `output_config: { format:, effort: }` on the stable (non-beta) `client.messages.create`/`stream`, replacing the deprecated `output_format`/`betas` Beta API shape. This lets structured outputs and `reasoning:` compose under a single request shape instead of competing for separate ones.
+#### Added
+- **Typed reasoning configuration** (#256, #257, ref #247) - Added `DSPy::Reasoning` with `.low`, `.medium`, `.high`, `.xhigh`, `.max`, `.budget(n)`, `.adaptive`, and `.disabled`. Pass it to `DSPy::LM.new` with `reasoning:`. Only `dspy-anthropic` maps it to provider parameters in this release.
 
-### Fixed
-- **`claude-mythos-preview` sent an incompatible default `temperature`** (#256 follow-up, PR #257 review) - Its capability entry was registered with `fixed_sampling: false`, so `DSPy::LM.new("anthropic/claude-mythos-preview", ...)` still sent the implicit `temperature: 0.0` default, even though Anthropic documents this model as rejecting non-default `temperature`/`top_p`/`top_k` like Sonnet 5 and Opus 4.7/4.8. Corrected to `fixed_sampling: true`.
-- **Anthropic streaming (`raw_chat` with a block) always returned an empty response** (#259) - `AnthropicAdapter#chat` passed a block directly to `Anthropic::Resources::Messages#stream`, which never accepts or yields to one; Ruby silently discards the unused block, so the caller's streaming callback never fired and the accumulated content stayed `""` on every streaming call. Fixed by consuming the returned `MessageStream` via `stream.text.each`, which yields each streamed text fragment as a plain `String`, exactly once and in order.
+#### Changed
+- **Signature omission is now explicit** - A signature field without `default:` is required even when its type is `T.nilable`. Use `default: nil` when callers or model responses may omit the field. Generated signature structs, `Predict`, `ReAct`, and `CodeAct` now enforce the same rule. This may expose code that relied on omitted nilable fields becoming `nil` implicitly.
+
+#### Fixed
+- **ReAct finish actions** - `tool_input` now defaults to `nil` when the model selects `finish`, while non-object tool input remains invalid.
+- **Standalone Toolset loading** - Requiring `dspy/tools/toolset` now loads its base class directly instead of depending on a prior top-level require.
+- **Missing adapter diagnostics** - Adapter load failures now retain the package-specific installation message.
+- **Score data type signatures** - Marked `DSPy::Scores::DataType.deserialize` as the typed override it implements.
+
+### `dspy-anthropic`
+
+#### Added
+- **Reasoning effort, token, and sampling options** (#256, #257) - Added `reasoning:`, `temperature:`, and `max_tokens:` support to `DSPy::LM.new` for Anthropic. A model-family capability registry validates effort levels, thinking budgets, token bounds, and sampling combinations before the request is sent. Thanks to Lennart ([@paulp-aus](https://github.com/paulp-aus)) for the implementation.
+
+#### Changed
+- **Stable structured-output API** - Anthropic structured outputs now use `output_config: { format:, effort: }` with `client.messages.create` and `stream`, replacing the deprecated Beta `output_format`/`betas` path. Structured output and reasoning effort can now share one request.
+
+#### Fixed
+- **Unsupported implicit temperatures** (#256) - Newer fixed-sampling Claude families, including `claude-mythos-preview`, no longer receive DSPy.rb's implicit `temperature: 0.0`. Explicit unsupported reasoning and sampling combinations raise `DSPy::LM::ConfigurationError` during LM construction.
+- **Raw streaming returned empty text** (#259) - The adapter now consumes `MessageStream#text`, yields each fragment once, and returns the accumulated `String`.
+
+### `dspy-ruby_llm`
+
+#### Changed
+- **Gem metadata** - Shortened the gem summary to describe `dspy-ruby_llm` as the RubyLLM provider adapter. Runtime behavior is unchanged.
+
+### Documentation and CI
+
+#### Added
+- **Documentation quality gate** - Added one 22-step command covering the source corpus, navigation, redirects, stable anchors, package capabilities, economical writing, executable snippets, production rendering, internal links, and generated `llms.txt`/`llms-full.txt` references. CI and the Pages build use the same pinned Ruby and Bun toolchain.
+- **Task-oriented documentation structure** - Reorganized the site around getting started, building, operating, and improving agents; centralized navigation and redirects; split long guides by reader task; and published a package capability matrix.
+- **Field-description extraction guide** - Added a worked article on improving structured extraction with Sorbet field descriptions.
+
+#### Changed
+- **Agent-first language and site design** - Tightened the landing page and repository documentation around agents, models, typed contracts, and optimization. Removed generic AI aphorisms and refreshed the documentation site's editorial design and mobile navigation.
+- **Complete integration CI** - Added a full non-unit RSpec lane alongside the existing gem matrix and replaced repository-secret telemetry credentials with inert VCR test values.
+
+#### Fixed
+- **Documentation accuracy** (#262) - Corrected `raw_chat` examples to return a `String`, documented usage through `lm.tokens`, and aligned Gemini metadata guidance with the public instrumentation boundary.
+- **Signature and Toolset guidance** - Corrected nullable-versus-omittable semantics, consolidated the canonical Toolset example, and added deterministic executable coverage for both.
 
 ## [1.0.1] - 2026-06-12
 
