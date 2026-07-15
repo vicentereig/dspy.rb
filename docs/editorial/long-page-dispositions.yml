@@ -72,7 +72,7 @@ dispositions:
     discovery_review: [corpus, navigation, sitemap, llms.txt, llms-full.txt]
     risk_review: Preserve predictor taxonomy and #predictor-comparison; retain the old fragment as an obvious canonical handoff.
   - source: docs/src/core-concepts/multimodal.md
-    measured_tokens: 1797
+    measured_tokens: 1833
     outcome: keep
     audience: Developer adding typed media inputs.
     reason: Media construction, provider constraints, and typed signature use share one runnable setup.
