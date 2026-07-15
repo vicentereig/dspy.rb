@@ -1,7 +1,7 @@
 # Editorial inventory of the existing public documentation corpus. Rules are
 # path-based so a new tracked Markdown/ERB source cannot silently enter scope.
 version: 1
-journey: [Start, Build, Understand, Evaluate / Optimize, Operate, Extend]
+journey: [Start, Understand, Build, Evaluate / Optimize, Operate, Extend]
 # Logical site routes are root-relative and intentionally exclude the
 # deployment base path (`/dspy.rb`). Repository routes use `repository:`.
 
@@ -27,6 +27,16 @@ rules:
     lifecycle: keep
     target_section: Start
     route: /
+    url_disposition: keep-site-url
+  - id: build-index
+    kind: public
+    path: docs/src/build/index.md
+    audience: Ruby developer choosing how to compose a program or agent
+    outcome: Select a composition, retrieval, multimodal, Toolset, or stateful-agent guide.
+    canonical_owner: docs/src/build/index.md
+    lifecycle: keep
+    target_section: Build
+    route: /build/
     url_disposition: keep-site-url
 
   # Getting Started has one executable canonical owner. These are future

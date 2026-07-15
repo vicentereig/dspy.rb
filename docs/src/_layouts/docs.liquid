@@ -8,8 +8,9 @@
     <nav class="mx-auto flex h-16 items-center px-4 sm:px-6 lg:px-8" aria-label="Global">
       <button type="button" id="mobile-menu-button" class="relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500 lg:hidden" aria-label="Open navigation menu" aria-controls="mobile-menu" aria-expanded="false"><span aria-hidden="true">☰</span></button>
       <div class="flex flex-shrink-0 items-center"><a href="{{ '/' | relative_url }}" class="flex items-center gap-2"><span class="text-xl font-serif font-semibold text-gray-900">DSPy.rb</span></a></div>
+      {% assign current_nav_item = nil %}{% for item in docs_nav.items %}{% if item.status == "published" and current_doc_url == item.url %}{% assign current_nav_item = item %}{% endif %}{% endfor %}
       <div class="hidden lg:ml-10 lg:flex lg:gap-x-8" data-doc-top-nav>
-        {% for section in docs_nav.sections %}<a href="{{ section.url | relative_url }}" data-doc-section="{{ section.id }}" class="text-sm font-medium text-gray-700 hover:text-gray-900">{{ section.label }}</a>{% endfor %}
+        {% for section in docs_nav.sections %}<a href="{{ section.url | relative_url }}" data-doc-section="{{ section.id }}"{% if current_nav_item.section == section.id %} aria-current="location"{% endif %} class="text-sm font-medium text-gray-700 hover:text-gray-900">{{ section.label }}</a>{% endfor %}
         <a href="{{ '/blog/' | relative_url }}" class="text-sm font-medium text-gray-700 hover:text-gray-900">Blog</a>
       </div>
       <div class="ml-auto flex items-center gap-x-4"><a href="https://github.com/vicentereig/dspy.rb" rel="noopener noreferrer" class="text-sm text-gray-500 hover:text-gray-700">GitHub</a></div>
@@ -18,17 +19,17 @@
 
   <div class="flex h-full overflow-x-hidden">
     <aside class="hidden lg:fixed lg:inset-y-16 lg:z-30 lg:flex lg:w-72 lg:flex-col">
-      <div class="flex grow flex-col overflow-y-auto border-r border-gray-200 bg-white px-6 pb-4 scrollbar-thin">{% render "documentation_sidebar", menu_prefix: "desktop", docs_nav: docs_nav, current_url: current_doc_url %}</div>
+      <div class="flex grow flex-col overflow-y-auto border-r border-gray-200 bg-white px-6 pb-4 scrollbar-thin">{% render "documentation_sidebar", menu_prefix: "desktop", docs_nav: docs_nav, current_url: current_doc_url, current_section_id: current_nav_item.section %}</div>
     </aside>
 
-    <div class="relative z-50 hidden" id="mobile-menu" role="dialog" aria-modal="true">
+    <div class="relative z-50 hidden" id="mobile-menu" role="dialog" aria-modal="true" aria-label="Documentation navigation">
       <div class="fixed inset-0 bg-gray-900/80" id="mobile-menu-backdrop"></div>
       <div class="fixed inset-0 flex">
         <div class="relative mr-16 flex w-full max-w-xs flex-1">
           <div class="absolute left-full top-0 flex w-16 justify-center pt-5"><button type="button" class="p-2.5" id="mobile-menu-close"><span class="sr-only">Close sidebar</span><span class="text-white" aria-hidden="true">×</span></button></div>
           <div class="flex grow flex-col overflow-y-auto bg-white px-6 pb-4">
             <div class="flex h-16 shrink-0 items-center"><a href="{{ '/' | relative_url }}" class="text-xl font-serif font-semibold text-gray-900">DSPy.rb</a></div>
-            {% render "documentation_sidebar", menu_prefix: "mobile", docs_nav: docs_nav, current_url: current_doc_url %}
+            {% render "documentation_sidebar", menu_prefix: "mobile", docs_nav: docs_nav, current_url: current_doc_url, current_section_id: current_nav_item.section %}
           </div>
         </div>
       </div>
@@ -38,6 +39,7 @@
       <div class="mx-auto max-w-4xl min-w-0 px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
         {% render "documentation_breadcrumb", docs_nav: docs_nav, current_url: current_doc_url %}
         <article class="prose prose-gray max-w-none prose-headings:font-serif prose-headings:break-words prose-code:break-words prose-pre:overflow-x-auto">{{ content }}</article>
+        {% render "documentation_context_exits", docs_nav: docs_nav, current_url: current_doc_url %}
         {% render "documentation_prev_next", docs_nav: docs_nav, current_url: current_doc_url %}
       </div>
     </main>

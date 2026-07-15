@@ -10,7 +10,7 @@ last_modified_at: 2025-10-07 00:00:00 +0000
 
 `DSPy::Module` is the reusable execution boundary in DSPy.rb. `Predict`, `ChainOfThought`, and `ReAct` are modules; applications can subclass `DSPy::Module` to compose them with Ruby.
 
-## Overview
+## Choose a Module Boundary
 
 Modules provide:
 - **Execution strategies** through built-in or custom modules
@@ -94,7 +94,7 @@ puts result.reasoning
 
 ## Runtime Context Guidance
 
-See [Module Runtime Context](/dspy.rb/core-concepts/module-runtime-context/) for fiber-local language model overrides and lifecycle callbacks.
+See [Module Runtime Context](/dspy.rb/advanced/module-runtime-context/) for fiber-local language model overrides and lifecycle callbacks.
 
 
 ## Manual Module Composition

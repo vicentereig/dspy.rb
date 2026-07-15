@@ -1,5 +1,6 @@
 ---
 layout: docs
+published: false
 name: Core Concepts
 description: Understand the fundamental building blocks of DSPy.rb
 date: 2025-07-10 00:00:00 +0000

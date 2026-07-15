@@ -37,13 +37,12 @@ redirects:
         compose-modules: /core-concepts/modules/
         add-tools: /core-concepts/toolsets/
   - id: getting-started-concepts-merge
-    state: planned
+    state: active
     corpus_id: getting-started-core-concepts
     source: docs/src/getting-started/core-concepts.md
     from: /getting-started/core-concepts/
     to: /core-concepts/
     target_source: docs/src/core-concepts/index.md
-    activation_requires: Preserve the linked concept definitions and update every inbound article fragment before suppressing the source.
     fragments:
       mappings:
         core-concepts: /core-concepts/

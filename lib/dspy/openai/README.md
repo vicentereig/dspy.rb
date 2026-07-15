@@ -2,6 +2,8 @@
 
 See the [DSPy.rb package and capability matrix](https://oss.vicente.services/dspy.rb/getting-started/packages/) for canonical package status and model/SDK boundaries.
 
+Use [Installation and Provider Setup](https://oss.vicente.services/dspy.rb/getting-started/installation/) for application-level provider selection. After the adapter is configured, the [Extend guides](https://oss.vicente.services/dspy.rb/advanced/) lead to integration and runtime extension points.
+
 `dspy-openai` packages the OpenAI-compatible adapters for DSPy.rb so we can keep the core `dspy` gem lean while still talking to GPT models (and any OpenAI-compatible endpoint). Install it whenever your project needs to invoke `openai/*`, `openrouter/*`, or `ollama/*` models through DSPy.
 
 ## When you need it

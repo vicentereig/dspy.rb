@@ -1,0 +1,10 @@
+{% assign current_item = nil %}
+{% for item in docs_nav.items %}{% if item.status == "published" and current_url == item.url %}{% assign current_item = item %}{% endif %}{% endfor %}
+{% if current_item.exits %}
+<nav class="mt-10 rounded-lg border border-gray-200 bg-white p-5" aria-label="Continue by task" data-doc-context-exits>
+  <h2 class="mt-0 text-base font-semibold text-gray-900">Continue by task</h2>
+  <ul class="mb-0 mt-3 grid gap-2 sm:grid-cols-2">
+    {% for exit in current_item.exits %}<li class="my-0"><a href="{% if exit.url contains '://' %}{{ exit.url }}{% else %}{{ exit.url | relative_url }}{% endif %}" data-doc-exit="{{ exit.url }}"{% if exit.url contains '://' %} rel="noopener noreferrer"{% endif %}>{{ exit.label }}</a></li>{% endfor %}
+  </ul>
+</nav>
+{% endif %}

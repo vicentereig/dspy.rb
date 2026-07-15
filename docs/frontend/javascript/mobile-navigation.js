@@ -7,6 +7,8 @@ document.addEventListener('DOMContentLoaded', function() {
   const backdrop = document.getElementById('mobile-menu-backdrop');
   const menuPanel = mobileMenu?.querySelector('.relative.mr-16');
   const focusableSelector = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
+  const focusableElements = () => Array.from(mobileMenu.querySelectorAll(focusableSelector))
+    .filter(element => !element.closest('[hidden], .hidden') && element.getAttribute('aria-hidden') !== 'true');
   let returnFocus = null;
   
   if (!menuButton || !mobileMenu) return;
@@ -25,7 +27,7 @@ document.addEventListener('DOMContentLoaded', function() {
         mobileMenu.classList.add('menu-open');
         if (backdrop) backdrop.classList.add('backdrop-visible');
         if (menuPanel) menuPanel.classList.add('panel-visible');
-        const firstFocusable = closeButton || mobileMenu.querySelector(focusableSelector);
+        const firstFocusable = closeButton || focusableElements()[0];
         firstFocusable?.focus();
       });
     } else {
@@ -64,7 +66,7 @@ document.addEventListener('DOMContentLoaded', function() {
       e.preventDefault();
       toggleMenu(false);
     } else if (e.key === 'Tab') {
-      const focusable = Array.from(mobileMenu.querySelectorAll(focusableSelector));
+      const focusable = focusableElements();
       if (focusable.length === 0) {
         e.preventDefault();
         return;

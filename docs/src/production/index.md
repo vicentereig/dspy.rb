@@ -11,6 +11,18 @@ Production applications need explicit ownership of artifacts, telemetry, failure
 
 ## Production Topics
 
+### [Events](/dspy.rb/core-concepts/events/)
+Subscribe to typed runtime events for application integrations.
+
+### [Module Runtime Context](/dspy.rb/advanced/module-runtime-context/)
+Scope language-model selection and lifecycle callbacks across module calls.
+
+### [Interception and Monkey-Patching](/dspy.rb/advanced/observability-interception/)
+Prefer supported event interception and identify the narrow cases where a monkey patch remains necessary.
+
+### [Rails](/dspy.rb/advanced/rails-integration/)
+Place DSPy.rb configuration and calls within Rails services, jobs, caching, and instrumentation.
+
 ### [Storage](./storage/)
 Persist optimized programs and their metadata with the storage API.
 

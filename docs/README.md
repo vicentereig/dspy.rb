@@ -85,17 +85,20 @@ description: Brief description for SEO
 ---
 ```
 
-The navigation manifest is the only source for sidebar labels, breadcrumbs,
-and previous/next order. Each entry has `section`, `label`, normalized `url`,
-repository-relative `source`, and `status`. Use `published` for rendered pages,
+The navigation manifest is the only source for task buckets, sidebar labels,
+breadcrumbs, contextual exits, and previous/next traversal. Each entry has
+`section`, `label`, normalized `url`, repository-relative `source`, `status`,
+and `traversal`. Use `published` for rendered pages,
 `unpublished` or `draft` for existing pages excluded from navigation, and
-`planned` for a page without a source file yet. Never add `breadcrumb`, `nav`,
+`planned` for a page without a source file yet. Use `none` when a direct-entry
+or multi-audience page should remain in navigation without joining a pager.
+Never add `breadcrumb`, `nav`,
 `prev`, `next`, `nav_order`, `order`, or `parent` to page frontmatter.
 
 Run `rbenv exec ruby scripts/validate_documentation_navigation.rb` from `docs/`
 after a navigation change. Pass `--output output` after a production build to
-check the desktop sidebar, mobile sidebar, breadcrumbs, and first/middle/last
-boundaries.
+check the desktop sidebar, mobile sidebar, breadcrumbs, contextual exits, and
+each traversal's boundaries.
 
 ## 🐛 Troubleshooting
 

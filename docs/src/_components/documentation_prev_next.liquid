@@ -1,6 +1,7 @@
+{% assign current_item = nil %}{% for item in docs_nav.items %}{% if item.status == "published" and current_url == item.url %}{% assign current_item = item %}{% endif %}{% endfor %}
 {% assign previous_item = nil %}{% assign next_item = nil %}{% assign found_current = false %}
 {% for item in docs_nav.items %}
-  {% if item.status == "published" %}
+  {% if item.status == "published" and current_item.traversal != "none" and item.traversal == current_item.traversal %}
     {% if found_current %}{% assign next_item = item %}{% break %}
     {% elsif current_url == item.url %}{% assign found_current = true %}
     {% else %}{% assign previous_item = item %}{% endif %}

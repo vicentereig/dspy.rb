@@ -7,52 +7,31 @@ last_modified_at: 2025-08-13 00:00:00 +0000
 ---
 # Core Concepts
 
-Start with a signature, then choose a module. Compose modules with Ruby when the control flow is known. Use `ReAct` when the model should choose among typed tools.
+Start with a signature, choose a predictor, then wrap calls in a module when the program needs reusable Ruby composition. Use `ReAct` later, when the model should choose among typed tools.
 
 ## The Programming Model
 
 ### [Signatures](./signatures/)
 Define what your LLM operations should do - the inputs and outputs. Think of them as type-safe contracts for AI operations.
 
+### [Predictors](./predictors/)
+Execute a signature with `Predict`, `ChainOfThought`, or a bounded `ReAct` tool loop.
+
 ### [Modules](./modules/)
-Choose how to execute a signature. Compose modules with ordinary Ruby control flow to build a program.
-
-### [Module Runtime Context](./module-runtime-context/)
-Control language-model resolution and lifecycle callbacks for module calls.
-
-### [Event System](./events/)
-Emit structured telemetry with `DSPy.event`, add global listeners, and scope subscriptions directly to the modules that care.
+Encapsulate predictor calls and compose them with ordinary Ruby control flow.
 
 ### Application State
 Keep conversation history, user preferences, checkpoints, and other durable state in application-owned storage. Pass the state a module needs through typed inputs.
 
-### [Toolsets](./toolsets/)
-Group related typed operations for a `ReAct` agent. Toolsets expose capabilities; application code remains responsible for permissions and side effects.
-
-### [Predictors](./predictors/)
-Connect your modules to language models with different strategies like chain-of-thought reasoning or tool use.
-
-### [CodeAct](./codeact/) _(requires the `dspy-code_act` gem)_
-Run a bounded Think-Code-Observe agent. The host application supplies the executor, isolation policy, permissions, and limits.
-
-### [Multimodal](./multimodal/)
-Work with text and image inputs to build vision-capable AI applications using multimodal language models.
-
-### [Examples](./examples/)
-Learn from real-world use cases and patterns that demonstrate best practices for common scenarios.
+Once those three abstractions are clear, use the [Build selector](/dspy.rb/build/) for examples, pipelines, retrieval, multimodal inputs, Toolsets, and stateful agents. Runtime context, events, interception, Rails, storage, observability, and troubleshooting live under [Operate](/dspy.rb/production/).
 
 ## Start Learning
 
 We recommend reading through these concepts in order:
 
-1. Start with [Signatures](./signatures/) to understand input/output contracts
-2. Move to [Modules](./modules/) to choose execution strategies and compose programs
-3. Dive into [Module Runtime Context](./module-runtime-context/) to wire models, callbacks, and runtime safeguards
-4. Understand the [Event System](./events/) so you can observe and hook into runtime behavior
-5. Explore [Toolsets](./toolsets/) for typed agent capabilities
-6. Study [Predictors](./predictors/) for different reasoning strategies
-7. Learn about [CodeAct](./codeact/) for dynamic code generation (install the `dspy-code_act` gem)
-8. Explore [Multimodal](./multimodal/) for text and image workflows
-9. Study [Examples](./examples/) to see everything in action
+1. Define an input/output contract with [Signatures](./signatures/).
+2. Execute it with [Predictors](./predictors/).
+3. Encapsulate and compose calls with [Modules](./modules/).
+4. Continue to [Examples](/dspy.rb/core-concepts/examples/) and [Toolsets](/dspy.rb/core-concepts/toolsets/) when you are ready to build.
 
 Evaluation defines acceptable behavior. Optimizers use examples, metrics, and feedback to search supported program parameters.

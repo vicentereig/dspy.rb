@@ -1,67 +1,179 @@
-version: 1
+version: 2
 base_path: /dspy.rb
 label_policy: Navigation labels are canonical UI copy and may be shorter than page titles.
-first: /getting-started/
-last: /production/troubleshooting/
+
+traversals:
+  - { id: novice, label: Learn the programming model }
+  - { id: evaluate, label: Measure and improve }
+  - { id: operate, label: Run in production }
+  - { id: extend, label: Extend DSPy.rb }
+
+resources:
+  - id: coffee-shop-agent
+    label: Coffee Shop agent
+    url: https://github.com/vicentereig/dspy.rb/tree/main/examples/coffee-shop-agent
+    source: examples/coffee-shop-agent/README.md
+    exits:
+      - { label: Extend a Toolset, url: /advanced/custom-toolsets/ }
+  - id: openai-adapter-guide
+    label: OpenAI adapter guide
+    url: https://github.com/vicentereig/dspy.rb/blob/main/lib/dspy/openai/README.md
+    source: lib/dspy/openai/README.md
+    exits:
+      - { label: Install and choose a provider, url: /getting-started/installation/ }
 
 sections:
-  - id: getting-started
-    label: Getting Started
-    url: /getting-started/
-  - id: core-concepts
-    label: Core Concepts
-    url: /core-concepts/
-  - id: optimization
-    label: Optimization
-    url: /optimization/
-  - id: advanced
-    label: Advanced Topics
-    url: /advanced/
-  - id: production
-    label: Production
-    url: /production/
+  - { id: start, label: Start, url: /getting-started/ }
+  - { id: understand, label: Understand, url: /core-concepts/ }
+  - { id: build, label: Build, url: /build/ }
+  - { id: evaluate-optimize, label: Evaluate / Optimize, url: /optimization/ }
+  - { id: operate, label: Operate, url: /production/ }
+  - { id: extend, label: Extend, url: /advanced/ }
 
 items:
-  - { section: getting-started, label: Overview, url: /getting-started/, source: docs/src/getting-started/index.md, status: published }
-  - { section: getting-started, label: Installation, url: /getting-started/installation/, source: docs/src/getting-started/installation.md, status: published }
-  - { section: getting-started, label: Packages, url: /getting-started/packages/, source: docs/src/getting-started/packages.md, status: published }
-  - { section: getting-started, label: Quick Start, url: /getting-started/quick-start/, source: docs/src/getting-started/quick-start.md, status: published }
-  - { section: getting-started, label: First Program, url: /getting-started/first-program/, source: docs/src/getting-started/first-program.md, status: unpublished }
-  - { section: getting-started, label: Core Concepts, url: /getting-started/core-concepts/, source: docs/src/getting-started/core-concepts.md, status: published }
+  - section: start
+    label: Overview
+    url: /getting-started/
+    source: docs/src/getting-started/index.md
+    status: published
+    traversal: novice
+  - section: start
+    label: Installation
+    url: /getting-started/installation/
+    source: docs/src/getting-started/installation.md
+    status: published
+    traversal: novice
+    exits:
+      - { label: Extend DSPy.rb, url: /advanced/ }
+  - { section: start, label: Packages, url: /getting-started/packages/, source: docs/src/getting-started/packages.md, status: published, traversal: none }
+  - section: start
+    label: Quick Start
+    url: /getting-started/quick-start/
+    source: docs/src/getting-started/quick-start.md
+    status: published
+    traversal: novice
+    exits:
+      - { label: Understand signatures and predictors, url: /core-concepts/ }
+      - { label: Evaluate program behavior, url: /optimization/evaluation/ }
+  - { section: start, label: First Program, url: /getting-started/first-program/, source: docs/src/getting-started/first-program.md, status: unpublished, traversal: none }
+  - { section: start, label: Core Concepts, url: /getting-started/core-concepts/, source: docs/src/getting-started/core-concepts.md, status: unpublished, traversal: none }
+  - { section: start, label: Framework Comparison, url: /advanced/dspy-vs-langchain/, source: docs/src/advanced/dspy-vs-langchain.md, status: published, traversal: none }
+  - { section: start, label: Python Comparison, url: /advanced/python-comparison/, source: docs/src/advanced/python-comparison.md, status: published, traversal: none }
 
-  - { section: core-concepts, label: Overview, url: /core-concepts/, source: docs/src/core-concepts/index.md, status: published }
-  - { section: core-concepts, label: Signatures, url: /core-concepts/signatures/, source: docs/src/core-concepts/signatures.md, status: published }
-  - { section: core-concepts, label: Modules, url: /core-concepts/modules/, source: docs/src/core-concepts/modules.md, status: published }
-  - { section: core-concepts, label: Module Runtime Context, url: /advanced/module-runtime-context/, source: docs/src/core-concepts/module-runtime-context.md, status: published }
-  - { section: core-concepts, label: Event System, url: /core-concepts/events/, source: docs/src/core-concepts/events.md, status: published }
-  - { section: core-concepts, label: Toolsets, url: /core-concepts/toolsets/, source: docs/src/core-concepts/toolsets.md, status: published }
-  - { section: core-concepts, label: Toolsets Guide, url: /core-concepts/toolsets-guide/, source: docs/src/core-concepts/toolsets-guide.md, status: unpublished }
-  - { section: core-concepts, label: Predictors, url: /core-concepts/predictors/, source: docs/src/core-concepts/predictors.md, status: published }
-  - { section: core-concepts, label: CodeAct, url: /core-concepts/codeact/, source: docs/src/core-concepts/codeact.md, status: unpublished }
-  - { section: core-concepts, label: Multimodal, url: /core-concepts/multimodal/, source: docs/src/core-concepts/multimodal.md, status: published }
-  - { section: core-concepts, label: Examples, url: /core-concepts/examples/, source: docs/src/core-concepts/examples.md, status: published }
+  - section: understand
+    label: Overview
+    url: /core-concepts/
+    source: docs/src/core-concepts/index.md
+    status: published
+    traversal: novice
+    exits:
+      - { label: Build with DSPy.rb, url: /build/ }
+  - { section: understand, label: Signatures, url: /core-concepts/signatures/, source: docs/src/core-concepts/signatures.md, status: published, traversal: novice }
+  - { section: understand, label: Predictors, url: /core-concepts/predictors/, source: docs/src/core-concepts/predictors.md, status: published, traversal: novice }
+  - { section: understand, label: Modules, url: /core-concepts/modules/, source: docs/src/core-concepts/modules.md, status: published, traversal: novice }
 
-  - { section: optimization, label: Overview, url: /optimization/, source: docs/src/optimization/index.md, status: published }
-  - { section: optimization, label: Prompt Optimization, url: /optimization/prompt-optimization/, source: docs/src/optimization/prompt-optimization.md, status: published }
-  - { section: optimization, label: GEPA Optimizer, url: /optimization/gepa/, source: docs/src/optimization/gepa.md, status: published }
-  - { section: optimization, label: MIPROv2, url: /optimization/miprov2/, source: docs/src/optimization/miprov2.md, status: published }
-  - { section: optimization, label: Evaluation, url: /optimization/evaluation/, source: docs/src/optimization/evaluation.md, status: published }
-  - { section: optimization, label: Benchmarking Raw Prompts, url: /optimization/benchmarking-raw-prompts/, source: docs/src/optimization/benchmarking-raw-prompts.md, status: published }
+  - section: build
+    label: Overview
+    url: /build/
+    source: docs/src/build/index.md
+    status: published
+    traversal: none
+    exits:
+      - { label: Compose with examples, url: /core-concepts/examples/ }
+      - { label: Add agent capabilities, url: /core-concepts/toolsets/ }
+  - { section: build, label: Examples, url: /core-concepts/examples/, source: docs/src/core-concepts/examples.md, status: published, traversal: novice }
+  - { section: build, label: Pipelines, url: /advanced/pipelines/, source: docs/src/advanced/pipelines.md, status: published, traversal: none }
+  - { section: build, label: RAG, url: /advanced/rag/, source: docs/src/advanced/rag.md, status: published, traversal: none }
+  - { section: build, label: Multimodal Inputs, url: /core-concepts/multimodal/, source: docs/src/core-concepts/multimodal.md, status: published, traversal: none }
+  - section: build
+    label: Toolsets
+    url: /core-concepts/toolsets/
+    source: docs/src/core-concepts/toolsets.md
+    status: published
+    traversal: novice
+    exits:
+      - { label: Coffee Shop agent, url: https://github.com/vicentereig/dspy.rb/tree/main/examples/coffee-shop-agent }
+      - { label: Extend a Toolset, url: /advanced/custom-toolsets/ }
+  - { section: build, label: Stateful Agents, url: /advanced/stateful-agents/, source: docs/src/advanced/stateful-agents.md, status: published, traversal: novice }
+  - { section: build, label: Toolsets Guide, url: /core-concepts/toolsets-guide/, source: docs/src/core-concepts/toolsets-guide.md, status: unpublished, traversal: none }
 
-  - { section: advanced, label: Overview, url: /advanced/, source: docs/src/advanced/index.md, status: published }
-  - { section: advanced, label: Stateful Agents, url: /advanced/stateful-agents/, source: docs/src/advanced/stateful-agents.md, status: published }
-  - { section: advanced, label: Event System vs Monkey-Patching, url: /advanced/observability-interception/, source: docs/src/advanced/observability-interception.md, status: published }
-  - { section: advanced, label: Custom Toolsets, url: /advanced/custom-toolsets/, source: docs/src/advanced/custom-toolsets.md, status: published }
-  - { section: advanced, label: Pipelines, url: /advanced/pipelines/, source: docs/src/advanced/pipelines.md, status: published }
-  - { section: advanced, label: RAG, url: /advanced/rag/, source: docs/src/advanced/rag.md, status: published }
-  - { section: advanced, label: Rich Types, url: /advanced/complex-types/, source: docs/src/advanced/complex-types.md, status: published }
-  - { section: advanced, label: Rails Integration, url: /advanced/rails-integration/, source: docs/src/advanced/rails-integration.md, status: published }
-  - { section: advanced, label: Custom Metrics, url: /advanced/custom-metrics/, source: docs/src/advanced/custom-metrics.md, status: published }
-  - { section: advanced, label: Framework Comparison, url: /advanced/dspy-vs-langchain/, source: docs/src/advanced/dspy-vs-langchain.md, status: published }
-  - { section: advanced, label: Python Comparison, url: /advanced/python-comparison/, source: docs/src/advanced/python-comparison.md, status: published }
+  - section: evaluate-optimize
+    label: Overview
+    url: /optimization/
+    source: docs/src/optimization/index.md
+    status: published
+    traversal: none
+    exits:
+      - { label: Define an evaluation, url: /optimization/evaluation/ }
+      - { label: Benchmark a raw prompt, url: /optimization/benchmarking-raw-prompts/ }
+      - { label: Choose GEPA, url: /optimization/gepa/ }
+      - { label: Choose MIPROv2, url: /optimization/miprov2/ }
+  - section: evaluate-optimize
+    label: Evaluation
+    url: /optimization/evaluation/
+    source: docs/src/optimization/evaluation.md
+    status: published
+    traversal: evaluate
+    exits:
+      - { label: Benchmark a raw prompt, url: /optimization/benchmarking-raw-prompts/ }
+  - { section: evaluate-optimize, label: Benchmarking Raw Prompts, url: /optimization/benchmarking-raw-prompts/, source: docs/src/optimization/benchmarking-raw-prompts.md, status: published, traversal: evaluate }
+  - section: evaluate-optimize
+    label: Choose an Optimizer
+    url: /optimization/prompt-optimization/
+    source: docs/src/optimization/prompt-optimization.md
+    status: published
+    traversal: evaluate
+    exits:
+      - { label: Use GEPA, url: /optimization/gepa/ }
+      - { label: Use MIPROv2, url: /optimization/miprov2/ }
+  - { section: evaluate-optimize, label: GEPA, url: /optimization/gepa/, source: docs/src/optimization/gepa.md, status: published, traversal: none }
+  - { section: evaluate-optimize, label: MIPROv2, url: /optimization/miprov2/, source: docs/src/optimization/miprov2.md, status: published, traversal: none }
+  - { section: evaluate-optimize, label: Custom Metrics, url: /advanced/custom-metrics/, source: docs/src/advanced/custom-metrics.md, status: published, traversal: none }
 
-  - { section: production, label: Overview, url: /production/, source: docs/src/production/index.md, status: published }
-  - { section: production, label: Storage, url: /production/storage/, source: docs/src/production/storage.md, status: published }
-  - { section: production, label: Registry, url: /production/registry/, source: docs/src/production/registry.md, status: published }
-  - { section: production, label: Observability, url: /production/observability/, source: docs/src/production/observability.md, status: published }
-  - { section: production, label: Troubleshooting, url: /production/troubleshooting/, source: docs/src/production/troubleshooting.md, status: published }
+  - section: operate
+    label: Overview
+    url: /production/
+    source: docs/src/production/index.md
+    status: published
+    traversal: operate
+    exits:
+      - { label: Consume runtime events, url: /core-concepts/events/ }
+      - { label: Scope runtime context, url: /advanced/module-runtime-context/ }
+      - { label: Add observability, url: /production/observability/ }
+      - { label: Troubleshoot failures, url: /production/troubleshooting/ }
+  - { section: operate, label: Events, url: /core-concepts/events/, source: docs/src/core-concepts/events.md, status: published, traversal: operate }
+  - section: operate
+    label: Module Runtime Context
+    url: /advanced/module-runtime-context/
+    source: docs/src/core-concepts/module-runtime-context.md
+    status: published
+    traversal: operate
+    exits:
+      - { label: Open the complete LLM reference, url: /llms-full.txt }
+  - { section: operate, label: Interception and Monkey-Patching, url: /advanced/observability-interception/, source: docs/src/advanced/observability-interception.md, status: published, traversal: operate }
+  - { section: operate, label: Rails, url: /advanced/rails-integration/, source: docs/src/advanced/rails-integration.md, status: published, traversal: operate }
+  - { section: operate, label: Storage, url: /production/storage/, source: docs/src/production/storage.md, status: published, traversal: operate }
+  - { section: operate, label: Registry, url: /production/registry/, source: docs/src/production/registry.md, status: published, traversal: operate }
+  - { section: operate, label: Observability, url: /production/observability/, source: docs/src/production/observability.md, status: published, traversal: operate }
+  - { section: operate, label: Troubleshooting, url: /production/troubleshooting/, source: docs/src/production/troubleshooting.md, status: published, traversal: operate }
+
+  - section: extend
+    label: Overview
+    url: /advanced/
+    source: docs/src/advanced/index.md
+    status: published
+    traversal: extend
+    exits:
+      - { label: Model rich types, url: /advanced/complex-types/ }
+      - { label: Extend Toolsets, url: /advanced/custom-toolsets/ }
+      - { label: Control runtime context, url: /advanced/module-runtime-context/ }
+  - { section: extend, label: Rich Types, url: /advanced/complex-types/, source: docs/src/advanced/complex-types.md, status: published, traversal: extend }
+  - section: extend
+    label: Custom Toolsets
+    url: /advanced/custom-toolsets/
+    source: docs/src/advanced/custom-toolsets.md
+    status: published
+    traversal: extend
+    exits:
+      - { label: Operate with observability, url: /production/observability/ }
+  - { section: extend, label: CodeAct Package Guide, url: /core-concepts/codeact/, source: docs/src/core-concepts/codeact.md, status: unpublished, traversal: none }

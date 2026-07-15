@@ -23,7 +23,7 @@ This example demonstrates DSPy.rb's single-field union types feature, showing ho
    ruby coffee_shop_agent.rb
    ```
 
-## How it Works
+## Route a Customer Request
 
 The agent demonstrates single-field union types by:
 
@@ -67,6 +67,7 @@ Urgency: high
 
 ## Learn More
 
+- [Extend the example with a custom Toolset](https://oss.vicente.services/dspy.rb/advanced/custom-toolsets/)
 - [Blog post about union types](https://dspy-rb.vicente.io/blog/union-types-agentic-workflows/)
 - [Complex types documentation](https://dspy-rb.vicente.io/advanced/complex-types/)
 - [DSPy.rb repository](https://github.com/vicentereig/dspy.rb)

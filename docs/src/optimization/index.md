@@ -13,20 +13,23 @@ Optimization does not define quality for you. Build and inspect the metric first
 
 ## Optimization Guides
 
-### [Program Optimization](./prompt-optimization/)
-Revise instructions and examples immutably, measure a baseline, and compile a program against a metric.
-
-### [MIPROv2](./miprov2/)
-Use Bayesian search to select instructions and demonstrations for single- or multi-predictor programs.
-
 ### [Evaluation](./evaluation/)
 Build metrics and evaluation frameworks to measure and improve your modules systematically.
 
 ### [Benchmarking Raw Prompts](./benchmarking-raw-prompts/)
 Compare an existing prompt with a DSPy module under the same models, examples, and measurements.
 
-## Getting Started
+### [Choose an Optimizer](./prompt-optimization/)
+Revise instructions and examples immutably, measure a baseline, and choose an optimizer from the measured failure and feedback shape.
+
+### [GEPA](./gepa/)
+Use reflective feedback to evolve supported program parameters after establishing an evaluation baseline.
+
+### [MIPROv2](./miprov2/)
+Use Bayesian search to select instructions and demonstrations for single- or multi-predictor programs.
+
+## Establish Evidence Before Optimizing
 
 1. Define and test an [evaluation metric](./evaluation/).
-2. Read the [program optimization](./prompt-optimization/) guide.
-3. Choose [MIPROv2](./miprov2/) or [GEPA](./gepa/) based on the feedback your metric can provide.
+2. Compare against a [raw-prompt baseline](./benchmarking-raw-prompts/) when replacing an existing prompt.
+3. Read [Choose an Optimizer](./prompt-optimization/), then select [GEPA](./gepa/) or [MIPROv2](./miprov2/) from the evidence each requires.

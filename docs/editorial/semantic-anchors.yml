@@ -357,6 +357,7 @@ corpus_consideration:
   - {id: docs-home, path: docs/src/index.md, result: duplicate-reviewed, anchors: [readme-product-promise]}
   - {id: getting-started, glob: docs/src/getting-started/*.md, result: anchors-recorded, anchors: [ruby-versus-agent-ownership, agent-side-effect-boundary, validation-not-correctness]}
   - {id: core-concepts, glob: docs/src/core-concepts/*.md, result: anchors-recorded, anchors: [predictor-taxonomy]}
+  - {id: build, path: docs/src/build/index.md, result: journey-selector-reviewed, anchors: []}
   - {id: advanced, glob: docs/src/advanced/*.md, result: anchors-recorded, anchors: [feature-parity-non-goal, application-state-ownership]}
   - {id: optimization, glob: docs/src/optimization/*.md, result: anchors-recorded, anchors: [evaluation-limits, anti-overfitting, optimizer-evidence-boundary]}
   - {id: production, glob: docs/src/production/*.md, result: anchors-recorded, anchors: [troubleshooting-decision-rule, application-state-ownership, provider-capability-boundary, trace-not-correctness]}

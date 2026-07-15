@@ -1,10 +1,10 @@
 <!-- Mobile Menu Component -->
-<div class="lg:hidden hidden" role="dialog" aria-modal="true" id="mobile-menu">
+<div class="lg:hidden hidden" role="dialog" aria-modal="true" aria-label="Site navigation" id="mobile-menu">
   <div class="fixed inset-0 z-50" id="mobile-menu-backdrop"></div>
   <div class="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
     <div class="flex items-center justify-between">
       <a href="{{ '/' | relative_url }}" class="-m-1.5 p-1.5 flex items-center gap-2">
-        <span class="text-xl font-serif font-semibold text-gray-900"><a href="https://github.com/vicentereig/dspy.rb" rel="noopener noreferrer">DSPy.rb</a></span>
+        <span class="text-xl font-serif font-semibold text-gray-900">DSPy.rb</span>
       </a>
       <button type="button" class="-m-2.5 rounded-md p-2.5 text-gray-700" id="mobile-menu-close">
         <span class="sr-only">Close menu</span>

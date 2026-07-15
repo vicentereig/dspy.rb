@@ -424,7 +424,7 @@ end
 
 Callbacks target `forward` automatically, so you typically register hooks with just `before :hydrate_context` or `around :with_context`—no `target: :call` required. This keeps instrumentation, memory management, and persistence glued to the typed `forward` path that already emits observability spans.
 
-See [`docs/src/core-concepts/module-runtime-context.md`](/core-concepts/module-runtime-context/) for more patterns, including fiber-local LM overrides.
+See [Module Runtime Context](/advanced/module-runtime-context/) for more patterns, including fiber-local LM overrides.
 
 ### Per-Instance LM Configuration
 

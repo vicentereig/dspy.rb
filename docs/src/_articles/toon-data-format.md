@@ -9,7 +9,7 @@ image: /images/og/toon-data-format.png
 reading_time: "4 min read"
 ---
 
-[DSPy signatures](https://oss.vicente.services/dspy.rb/getting-started/core-concepts/#signatures-as-the-contract) describe inputs and outputs once. DSPy.rb can render that description in JSON Schema, BAML, or TOON-oriented guidance. It can also render prompt payloads as JSON or [Token-Oriented Object Notation](https://github.com/toon-format/toon).
+[DSPy signatures](https://oss.vicente.services/dspy.rb/core-concepts/signatures/) describe inputs and outputs once. DSPy.rb can render that description in JSON Schema, BAML, or TOON-oriented guidance. It can also render prompt payloads as JSON or [Token-Oriented Object Notation](https://github.com/toon-format/toon).
 
 Those are separate choices:
 
@@ -41,7 +41,7 @@ result = predictor.call(
 )
 ```
 
-[Predict](https://oss.vicente.services/dspy.rb/getting-started/core-concepts/#predictors-basic-llm-operations), [ChainOfThought](https://oss.vicente.services/dspy.rb/core-concepts/modules/#chain-of-thought), and [ReAct](https://oss.vicente.services/dspy.rb/blog/articles/react-agent-tutorial/) can carry the configured format through their prompts. ReAct also renders its history and observations through the configured data format.
+[Predict](https://oss.vicente.services/dspy.rb/core-concepts/predictors/), [ChainOfThought](https://oss.vicente.services/dspy.rb/core-concepts/modules/#chain-of-thought), and [ReAct](https://oss.vicente.services/dspy.rb/blog/articles/react-agent-tutorial/) can carry the configured format through their prompts. ReAct also renders its history and observations through the configured data format.
 
 ## What the Benchmark Measured
 

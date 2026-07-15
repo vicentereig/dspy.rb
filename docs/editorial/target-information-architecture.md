@@ -12,8 +12,8 @@ corpus or local Markdown/ERB sources.
 | Section | Reader question | Canonical material |
 | --- | --- | --- |
 | Start | What is DSPy.rb and can I run it? | Root README, site home, one executable Quick Start |
-| Build | How do I make a program or agent do work? | First-program material, examples, Toolsets primary guide |
 | Understand | What do signatures, modules, and predictors mean? | Core Concepts |
+| Build | How do I make a program or agent do work? | Build selector, examples, Toolsets primary guide |
 | Evaluate / Optimize | How do I measure and improve the program? | Evaluation, benchmarking, GEPA, MIPROv2 |
 | Operate | How do I observe, persist, register, and troubleshoot it? | Production |
 | Extend | How do I change the system or add integrations? | Advanced guides and package READMEs |
