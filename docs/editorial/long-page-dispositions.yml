@@ -60,7 +60,7 @@ dispositions:
     discovery_review: [corpus, navigation, sitemap]
     risk_review: Preserve the validation-not-correctness semantic anchor.
   - source: docs/src/core-concepts/predictors.md
-    measured_tokens: 1488
+    measured_tokens: 1513
     outcome: split
     audience: Developer choosing and invoking a predictor.
     reason: Concurrent scheduling is application control flow independently sought after predictor selection.
@@ -168,7 +168,7 @@ dispositions:
     discovery_review: [corpus, navigation, sitemap]
     risk_review: Keep schema conversion distinct from authorization, isolation, resource limits, and subprocess cancellation.
   - source: docs/src/index.md
-    measured_tokens: 2693
+    measured_tokens: 2695
     outcome: keep
     audience: Documentation visitor selecting a task path.
     reason: This is a selector and orientation surface, not a linear guide; sections serve distinct entry audiences without duplicating task definitions.

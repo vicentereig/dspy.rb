@@ -4,9 +4,9 @@ layout: none
 ---
 # DSPy.rb - Comprehensive Reference
 
-> Build LLM apps like you build software. Type-safe, modular, testable.
+> Program typed LLM systems in Ruby with signatures, modules, bounded agents, and explicit evaluation.
 
-DSPy.rb brings software engineering best practices to LLM development. Instead of tweaking prompts, you define what you want with Ruby types and let DSPy handle the rest.
+DSPy.rb turns typed task contracts into provider requests and validates returned structure. Ruby code still owns composition, side effects, failure policy, and evaluation.
 
 ## Table of Contents
 
@@ -33,16 +33,16 @@ DSPy.rb is a Ruby framework for building language model applications with progra
 
 - **Type-safe signatures** - Define inputs/outputs with Sorbet types
 - **Modular components** - Compose and reuse LLM logic
-- **Automatic optimization** - Use data to improve prompts, not guesswork
-- **Production-ready** - Built-in observability, testing, and error handling
+- **Explicit optimization** - Run an optimizer against examples, a metric, and an execution budget
+- **Operational controls** - Add observability, tests, and application-owned error handling
 
 ### Key Features
 
 - **Type Safety**: Sorbet integration throughout
 - **Composable Modules**: Chain, compose, and reuse
 - **Agent Systems**: ReAct (core), CodeAct (`dspy-code_act`), and custom agents
-- **Memory & State**: Persistent memory for stateful applications
-- **Observability**: Automatic APM integration, token tracking, performance monitoring
+- **Memory & State**: Pass application-owned state through typed module and agent calls
+- **Observability**: Emit runtime events and export traces through configured integrations
 
 ### Provider boundary
 
@@ -1279,9 +1279,9 @@ The text `grep` and `ripgrep` helpers use shell command strings and temporary fi
 
 Tool schemas describe and coerce arguments. They do not grant authorization, sanitize shell or query input, sandbox side effects, impose timeouts, or control retries. A ReAct `max_iterations` value limits model-directed steps but does not cancel a running subprocess, request, or tool method.
 
-### Automatic Type Conversion
+### Tool Argument Conversion
 
-DSPy.rb provides seamless automatic conversion from JSON parameters to Ruby types in tools:
+DSPy.rb converts JSON tool arguments for the supported declared types. Provider output must still match the tool schema, and union members must be distinguishable:
 
 ```ruby
 # When agents call tools, JSON strings are automatically converted
@@ -1324,14 +1324,14 @@ class ComplexTool < DSPy::Tools::Base
   end
 end
 
-# Conversion works for all Sorbet types:
-# - T::Enum → Automatic string-to-enum conversion
-# - T::Struct → Recursive hash-to-struct conversion
+# Supported conversion examples:
+# - T::Enum → String-to-enum conversion
+# - T::Struct → Hash-to-struct conversion
 # - T::Array[Type] → Array element conversion
 # - T::Hash[String, Type] → Hash value conversion
-# - T.nilable(Type) → Handles null/nil values
-# - T.any(Type1, Type2) → Union type resolution
-# - Nested combinations → Deep conversion at any level
+# - T.nilable(Type) → Null/nil handling
+# - T.any(StructA, StructB) → Resolution when members are distinguishable
+# - Nested combinations of supported types → Recursive conversion
 ```
 
 ## Optimization
@@ -1548,40 +1548,17 @@ export LANGFUSE_SECRET_KEY=sk_your_secret_key
 export LANGFUSE_HOST=https://your-langfuse-instance.com
 ```
 
-**Basic Setup:**
+**Load the installed integrations:**
 
 ```ruby
-# Enable structured logging
-DSPy.configure do |c|
-  c.logger = Dry.Logger(:dspy, formatter: :json)
-end
-
-# Observability automatically activates when Langfuse env vars are present
-# Span tracking emitted for:
-# - llm.generate
-# - dspy.predict
-# - module.forward
-# - tool.execute
+require 'dspy'
+require 'dspy/o11y'
+require 'dspy/o11y/langfuse'
 ```
 
-### OpenTelemetry Integration
+Environment-driven initialization can configure the exporter only when the optional packages, compatible OpenTelemetry dependencies, valid credentials, and network access are present. Verify trace delivery and configure shutdown flushing; environment variables alone do not establish delivery.
 
-```ruby
-require 'opentelemetry/sdk'
-
-# Configure OTEL
-OpenTelemetry::SDK.configure do |c|
-  c.service_name = 'my-dspy-app'
-  c.use 'OpenTelemetry::Instrumentation::Net::HTTP'
-end
-
-# DSPy logs can be forwarded to OTEL
-DSPy.configure do |c|
-  c.logger = Dry.Logger(:dspy, formatter: :json) do |logger|
-    logger.add_backend(stream: "/var/log/dspy/traces.json")
-  end
-end
-```
+The canonical [Observability guide](https://oss.vicente.services/dspy.rb/production/observability/) owns OpenTelemetry setup, queue limits, export failure behavior, and Langfuse lifecycle details.
 
 ### Error Handling
 
@@ -1596,19 +1573,20 @@ rescue DSPy::LM::Error => e
 end
 ```
 
-### Token Usage Tracking
+### Inspect Token Usage Events
 
 ```ruby
-# Automatic tracking with log processing
-File.foreach("log/dspy.log") do |line|
-  event = JSON.parse(line)
-  if event["event"] == "llm.generate"
-    puts "Input tokens: #{event["gen_ai.usage.prompt_tokens"]}"
-    puts "Output tokens: #{event["gen_ai.usage.completion_tokens"]}"
-    puts "Model: #{event["gen_ai.request.model"]}"
-  end
+subscription_id = DSPy.events.subscribe("lm.tokens") do |_name, attributes|
+  puts "Input tokens: #{attributes[:input_tokens]}"
+  puts "Output tokens: #{attributes[:output_tokens]}"
+  puts "Model: #{attributes['gen_ai.request.model']}"
 end
+
+# Run the measured predictor or raw_chat call here.
+DSPy.events.unsubscribe(subscription_id)
 ```
+
+The event is emitted only when the provider response includes usage data. A subscription does not persist metrics or export traces by itself.
 
 ### Event System
 
@@ -1821,18 +1799,6 @@ end
 DSPy.configure do |c|
   c.lm                              # Language model
   c.logger                          # Structured logger
-  c.strategy                        # Extraction strategy
-end
-```
-
-### Strategy Selection (v0.9.0+)
-
-```ruby
-# Automatic provider optimization
-DSPy.configure do |c|
-  c.strategy = DSPy::Strategy::Strict  # Provider-optimized
-  # or
-  c.strategy = DSPy::Strategy::Compatible  # Works everywhere
 end
 ```
 
@@ -2110,20 +2076,6 @@ end
 ```
 
 ## Advanced Patterns
-
-### Custom Strategy Implementation
-
-```ruby
-class CustomJSONStrategy < DSPy::StrategyInterface
-  def extract_json(signature, lm_response)
-    # Custom extraction logic
-    parsed = JSON.parse(lm_response)
-    signature.output_struct.new(parsed)
-  rescue JSON::ParserError
-    # Fallback logic
-  end
-end
-```
 
 ### Dynamic Module Configuration
 

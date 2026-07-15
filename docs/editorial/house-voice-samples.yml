@@ -135,7 +135,8 @@ samples:
   - id: production-ready-reference
     source: docs/src/llms.txt.erb
     excerpt: "- **Production-ready** - Built-in observability, testing, and error handling"
-    status: present
+    status: resolved
+    resolution_reference: "dspy.rb-2ey.18 removes the readiness guarantee from both generated-reference templates."
     edge: unbounded-qualifier
     requires_exception: false
     reviewer_a: EDIT
@@ -158,7 +159,8 @@ samples:
   - id: automatic-optimization
     source: docs/src/llms-full.txt.erb
     excerpt: "- **Automatic optimization** - Use data to improve prompts, not guesswork"
-    status: present
+    status: resolved
+    resolution_reference: "dspy.rb-2ey.18 replaces the qualifier with an optimizer, examples, metric, and execution budget."
     edge: unbounded-qualifier
     requires_exception: false
     reviewer_a: EDIT
@@ -169,7 +171,8 @@ samples:
   - id: self-improving-tagline
     source: docs/src/_data/site_metadata.yml
     excerpt: "tagline: The Ruby Framework for Self-Improving Language Model Programs"
-    status: present
+    status: resolved
+    resolution_reference: "dspy.rb-2ey.18 removes autonomous self-improvement from site metadata."
     edge: stale-brand-claim
     requires_exception: false
     reviewer_a: EDIT
@@ -180,7 +183,8 @@ samples:
   - id: stanford-port-description
     source: docs/src/_data/site_metadata.yml
     excerpt: "description: Build self-improving AI systems with DSPy.rb - a Ruby implementation of Stanford's DSPy framework for programming with language models."
-    status: present
+    status: resolved
+    resolution_reference: "dspy.rb-2ey.18 applies the approved Ruby-native DSPy programming-model description."
     edge: stale-brand-claim
     requires_exception: false
     reviewer_a: EDIT

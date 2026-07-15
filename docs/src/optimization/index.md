@@ -3,7 +3,7 @@ layout: docs
 title: Optimization
 description: Evaluate DSPy.rb programs and compile instructions and examples against a metric
 date: 2025-07-10 00:00:00 +0000
-last_modified_at: 2025-07-23 00:00:00 +0000
+last_modified_at: 2026-07-15 00:00:00 +0000
 ---
 # Optimization
 

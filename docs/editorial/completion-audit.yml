@@ -1,0 +1,405 @@
+version: 1
+audit_id: dspy.rb-2ey.18
+reviewed_on: "2026-07-15"
+taxonomy: [factual, structural, ordinary-copy, voice]
+
+# The validator derives this denominator from every public/history source in
+# public-doc-corpus.yml. Each source is listed once so a new tracked page cannot
+# inherit a group-level approval.
+source_audits:
+  - {path: CHANGELOG.md, kind: history, dimensions: [factual, structural, ordinary-copy, voice], metadata: not-applicable, finding_ids: [changelog-mvc-title-candidate, changelog-generic-headings-candidate]}
+  - {path: README.md, kind: public, dimensions: [factual, structural, ordinary-copy, voice], metadata: not-applicable, finding_ids: []}
+  - {path: docs/src/_articles/ai-needs-its-mvc-moment.md, kind: history, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: [mvc-title-rhetorical-exception]}
+  - {path: docs/src/_articles/async-telemetry-optimization.md, kind: history, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: []}
+  - {path: docs/src/_articles/baml-schema-format.md, kind: history, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: []}
+  - {path: docs/src/_articles/codeact-dynamic-code-generation.md, kind: history, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: []}
+  - {path: docs/src/_articles/codeact-research-agent.md, kind: history, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: [codeact-title-rhetorical-exception]}
+  - {path: docs/src/_articles/concurrent-llm-processing-performance-gains.md, kind: history, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: []}
+  - {path: docs/src/_articles/does-chain-of-thought-improve-summaries.md, kind: history, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: []}
+  - {path: docs/src/_articles/dspy-async-sidekiq-integration.md, kind: history, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: []}
+  - {path: docs/src/_articles/dspy-rb-0-20-0-release-announcement.md, kind: history, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: []}
+  - {path: docs/src/_articles/dspy-rb-1-0-0-release.md, kind: history, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: []}
+  - {path: docs/src/_articles/dspy-rb-concurrent-architecture-deep-dive.md, kind: history, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: []}
+  - {path: docs/src/_articles/evaluating-llm-applications.md, kind: history, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: []}
+  - {path: docs/src/_articles/evaluating-sentiment-classifiers.md, kind: history, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: [sentiment-contrast-candidate]}
+  - {path: docs/src/_articles/evaluator_loop_in_ruby.md, kind: history, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: []}
+  - {path: docs/src/_articles/fiber-local-lm-contexts.md, kind: history, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: []}
+  - {path: docs/src/_articles/introducing-google-gemini-support.md, kind: history, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: []}
+  - {path: docs/src/_articles/json-modes-comparison.md, kind: history, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: []}
+  - {path: docs/src/_articles/json-parsing-reliability.md, kind: history, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: []}
+  - {path: docs/src/_articles/llm-as-judge-ai-sdr-evaluation.md, kind: history, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: []}
+  - {path: docs/src/_articles/making-structured-extraction-more-reliable-with-field-descriptions.md, kind: history, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: []}
+  - {path: docs/src/_articles/miprov2-paper-implementation.md, kind: history, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: []}
+  - {path: docs/src/_articles/observability-in-action-langfuse.md, kind: history, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: [observability-contrast-candidate]}
+  - {path: docs/src/_articles/program-of-thought-deep-dive.md, kind: history, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: []}
+  - {path: docs/src/_articles/program-persistence-and-serialization.md, kind: history, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: []}
+  - {path: docs/src/_articles/raw-chat-api.md, kind: history, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: []}
+  - {path: docs/src/_articles/react-agent-tutorial.md, kind: history, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: []}
+  - {path: docs/src/_articles/ruby-idiomatic-apis.md, kind: history, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: []}
+  - {path: docs/src/_articles/run-llms-locally-with-ollama-and-type-safe-ruby.md, kind: history, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: []}
+  - {path: docs/src/_articles/toon-data-format.md, kind: history, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: []}
+  - {path: docs/src/_articles/toon-vs-csv-nested-relationships.md, kind: history, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: []}
+  - {path: docs/src/_articles/type-safe-prediction-objects.md, kind: history, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: []}
+  - {path: docs/src/_articles/under-the-hood-json-extraction.md, kind: history, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: []}
+  - {path: docs/src/_articles/union-types-agentic-workflows.md, kind: history, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: []}
+  - {path: docs/src/_articles/workflow-routing-with-dspy.rb.md, kind: history, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: []}
+  - {path: docs/src/advanced/complex-types.md, kind: public, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: []}
+  - {path: docs/src/advanced/concurrent-predictions.md, kind: public, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: []}
+  - {path: docs/src/advanced/custom-metrics.md, kind: public, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: []}
+  - {path: docs/src/advanced/custom-toolsets.md, kind: public, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: []}
+  - {path: docs/src/advanced/dspy-vs-langchain.md, kind: public, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: []}
+  - {path: docs/src/advanced/index.md, kind: public, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: [stale-last-modified-metadata]}
+  - {path: docs/src/advanced/module-lifecycle-callbacks.md, kind: public, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: []}
+  - {path: docs/src/advanced/observability-interception.md, kind: public, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: []}
+  - {path: docs/src/advanced/pipelines.md, kind: public, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: []}
+  - {path: docs/src/advanced/python-comparison.md, kind: public, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: []}
+  - {path: docs/src/advanced/rag.md, kind: public, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: []}
+  - {path: docs/src/advanced/rails-integration.md, kind: public, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: []}
+  - {path: docs/src/advanced/stateful-agents.md, kind: public, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: []}
+  - {path: docs/src/blog/index.md, kind: history, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: [blog-layout-positioning]}
+  - {path: docs/src/build/index.md, kind: public, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: []}
+  - {path: docs/src/core-concepts/codeact.md, kind: public, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: []}
+  - {path: docs/src/core-concepts/events.md, kind: public, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: []}
+  - {path: docs/src/core-concepts/examples.md, kind: public, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: []}
+  - {path: docs/src/core-concepts/index.md, kind: public, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: []}
+  - {path: docs/src/core-concepts/module-runtime-context.md, kind: public, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: []}
+  - {path: docs/src/core-concepts/modules.md, kind: public, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: []}
+  - {path: docs/src/core-concepts/multimodal.md, kind: public, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: []}
+  - {path: docs/src/core-concepts/predictors.md, kind: public, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: [stale-last-modified-metadata, predictor-observability-boundary]}
+  - {path: docs/src/core-concepts/signatures.md, kind: public, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: []}
+  - {path: docs/src/core-concepts/toolsets-guide.md, kind: public, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: [toolsets-redirect-heading-candidate]}
+  - {path: docs/src/core-concepts/toolsets.md, kind: public, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: []}
+  - {path: docs/src/getting-started/core-concepts.md, kind: public, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: [concepts-redirect-heading-candidate]}
+  - {path: docs/src/getting-started/first-program.md, kind: public, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: []}
+  - {path: docs/src/getting-started/index.md, kind: public, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: []}
+  - {path: docs/src/getting-started/installation.md, kind: public, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: []}
+  - {path: docs/src/getting-started/packages.md, kind: public, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: []}
+  - {path: docs/src/getting-started/quick-start.md, kind: public, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: []}
+  - {path: docs/src/index.md, kind: public, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: [home-product-owner-alignment, stale-last-modified-metadata, home-layout-overclaims]}
+  - {path: docs/src/llms-full.txt.erb, kind: public, dimensions: [factual, structural, ordinary-copy, voice], metadata: not-applicable, finding_ids: [llms-product-simile, llms-unbounded-optimization, llms-production-readiness, llms-state-observability-boundaries, llms-observability-boundary, llms-nonexistent-strategy-api, llms-type-conversion-boundary]}
+  - {path: docs/src/llms.txt.erb, kind: public, dimensions: [factual, structural, ordinary-copy, voice], metadata: not-applicable, finding_ids: [llms-product-simile, llms-unbounded-optimization, llms-production-readiness, llms-type-conversion-boundary]}
+  - {path: docs/src/optimization/benchmarking-raw-prompts.md, kind: public, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: [stale-last-modified-metadata, benchmark-event-capture-example]}
+  - {path: docs/src/optimization/evaluation.md, kind: public, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: []}
+  - {path: docs/src/optimization/gepa.md, kind: public, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: []}
+  - {path: docs/src/optimization/index.md, kind: public, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: [stale-last-modified-metadata]}
+  - {path: docs/src/optimization/miprov2.md, kind: public, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: []}
+  - {path: docs/src/optimization/prompt-optimization.md, kind: public, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: []}
+  - {path: docs/src/production/index.md, kind: public, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: [stale-last-modified-metadata]}
+  - {path: docs/src/production/observability.md, kind: public, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: []}
+  - {path: docs/src/production/registry.md, kind: public, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: []}
+  - {path: docs/src/production/score-reporting.md, kind: public, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: []}
+  - {path: docs/src/production/storage.md, kind: public, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: []}
+  - {path: docs/src/production/troubleshooting.md, kind: public, dimensions: [factual, structural, ordinary-copy, voice], metadata: reviewed, finding_ids: []}
+  - {path: examples/README.md, kind: public, dimensions: [factual, structural, ordinary-copy, voice], metadata: not-applicable, finding_ids: []}
+  - {path: examples/ade_optimizer_gepa/README.md, kind: public, dimensions: [factual, structural, ordinary-copy, voice], metadata: not-applicable, finding_ids: []}
+  - {path: examples/ade_optimizer_miprov2/README.md, kind: public, dimensions: [factual, structural, ordinary-copy, voice], metadata: not-applicable, finding_ids: []}
+  - {path: examples/coffee-shop-agent/README.md, kind: public, dimensions: [factual, structural, ordinary-copy, voice], metadata: not-applicable, finding_ids: []}
+  - {path: examples/deep_research_cli/README.md, kind: public, dimensions: [factual, structural, ordinary-copy, voice], metadata: not-applicable, finding_ids: []}
+  - {path: examples/github-assistant/README.md, kind: public, dimensions: [factual, structural, ordinary-copy, voice], metadata: not-applicable, finding_ids: []}
+  - {path: examples/html_to_markdown/README.md, kind: public, dimensions: [factual, structural, ordinary-copy, voice], metadata: not-applicable, finding_ids: []}
+  - {path: examples/sentiment-evaluation/README.md, kind: public, dimensions: [factual, structural, ordinary-copy, voice], metadata: not-applicable, finding_ids: []}
+  - {path: lib/dspy/anthropic/README.md, kind: public, dimensions: [factual, structural, ordinary-copy, voice], metadata: not-applicable, finding_ids: []}
+  - {path: lib/dspy/code_act/README.md, kind: public, dimensions: [factual, structural, ordinary-copy, voice], metadata: not-applicable, finding_ids: []}
+  - {path: lib/dspy/deep_research/README.md, kind: public, dimensions: [factual, structural, ordinary-copy, voice], metadata: not-applicable, finding_ids: []}
+  - {path: lib/dspy/deep_search/README.md, kind: public, dimensions: [factual, structural, ordinary-copy, voice], metadata: not-applicable, finding_ids: []}
+  - {path: lib/dspy/gemini/README.md, kind: public, dimensions: [factual, structural, ordinary-copy, voice], metadata: not-applicable, finding_ids: []}
+  - {path: lib/dspy/openai/README.md, kind: public, dimensions: [factual, structural, ordinary-copy, voice], metadata: not-applicable, finding_ids: []}
+  - {path: lib/dspy/ruby_llm/README.md, kind: public, dimensions: [factual, structural, ordinary-copy, voice], metadata: not-applicable, finding_ids: []}
+  - {path: lib/sorbet/toon/README.md, kind: public, dimensions: [factual, structural, ordinary-copy, voice], metadata: not-applicable, finding_ids: []}
+
+category_results:
+  - category: factual
+    finding_ids: [llms-unbounded-optimization, llms-production-readiness, llms-state-observability-boundaries, site-metadata-self-improvement, site-metadata-port-positioning, benchmark-event-capture-example, predictor-observability-boundary, llms-observability-boundary, llms-nonexistent-strategy-api, llms-type-conversion-boundary]
+  - category: structural
+    finding_ids: [stale-last-modified-metadata]
+  - category: ordinary-copy
+    finding_ids: [changelog-mvc-title-candidate, changelog-generic-headings-candidate, sentiment-contrast-candidate, observability-contrast-candidate, toolsets-redirect-heading-candidate, concepts-redirect-heading-candidate]
+  - category: voice
+    finding_ids: [home-product-owner-alignment, llms-product-simile, mvc-title-rhetorical-exception, codeact-title-rhetorical-exception, home-layout-overclaims, blog-layout-positioning]
+
+findings:
+  - id: home-product-owner-alignment
+    category: voice
+    status: resolved
+    reason: The home-page headline narrowed the README's typed-system product category to agents.
+    verification:
+      - {path: docs/src/index.md, absent: "Reliable agents in Ruby", present: "Program typed LLM systems in Ruby"}
+  - id: llms-product-simile
+    category: voice
+    status: resolved
+    reason: The portable software simile hid validation and application-owned runtime boundaries.
+    verification:
+      - {path: docs/src/llms.txt.erb, absent: "Build LLM apps like you build software", present: "Program typed LLM systems in Ruby"}
+      - {path: docs/src/llms-full.txt.erb, absent: "Build LLM apps like you build software", present: "Program typed LLM systems in Ruby"}
+  - id: llms-unbounded-optimization
+    category: factual
+    status: resolved
+    reason: Optimization requires an optimizer, examples, a metric, and an execution budget.
+    verification:
+      - {path: docs/src/llms.txt.erb, absent: "Automatic optimization", present: "Explicit optimization"}
+      - {path: docs/src/llms-full.txt.erb, absent: "Automatic optimization", present: "Explicit optimization"}
+  - id: llms-production-readiness
+    category: factual
+    status: resolved
+    reason: Available observability, testing, and error APIs do not establish deployment readiness.
+    verification:
+      - {path: docs/src/llms.txt.erb, absent: "Production-ready", present: "Operational controls"}
+      - {path: docs/src/llms-full.txt.erb, absent: "Production-ready", present: "Operational controls"}
+  - id: llms-state-observability-boundaries
+    category: factual
+    status: resolved
+    reason: Applications own durable state, and telemetry export requires configured integrations.
+    verification:
+      - {path: docs/src/llms-full.txt.erb, absent: "Persistent memory for stateful applications", present: "Pass application-owned state"}
+      - {path: docs/src/llms-full.txt.erb, absent: "Automatic APM integration", present: "export traces through configured integrations"}
+  - id: site-metadata-self-improvement
+    category: factual
+    status: resolved
+    reason: The framework does not autonomously improve every program.
+    verification:
+      - {path: docs/src/_data/site_metadata.yml, absent: "Self-Improving Language Model Programs", present: "Typed LLM Programs and Agents for Ruby"}
+  - id: site-metadata-port-positioning
+    category: factual
+    status: resolved
+    reason: Current positioning is an independent Ruby-native implementation of DSPy's programming model.
+    verification:
+      - {path: docs/src/_data/site_metadata.yml, absent: "Build self-improving AI systems", present: "Ruby-native implementation of DSPy's programming model"}
+  - id: stale-last-modified-metadata
+    category: structural
+    status: resolved
+    reason: Pages changed by the July 2026 editorial work retained 2025 modification dates.
+    verification:
+      - {path: docs/src/index.md, present: "last_modified_at: 2026-07-15 00:00:00 +0000"}
+      - {path: docs/src/core-concepts/predictors.md, present: "last_modified_at: 2026-07-15 00:00:00 +0000"}
+      - {path: docs/src/advanced/index.md, present: "last_modified_at: 2026-07-15 00:00:00 +0000"}
+      - {path: docs/src/optimization/index.md, present: "last_modified_at: 2026-07-15 00:00:00 +0000"}
+      - {path: docs/src/production/index.md, present: "last_modified_at: 2026-07-15 00:00:00 +0000"}
+      - {path: docs/src/optimization/benchmarking-raw-prompts.md, present: "last_modified_at: 2026-07-15 00:00:00 +0000"}
+  - id: benchmark-event-capture-example
+    category: factual
+    status: resolved
+    reason: The example mixed log hashes and event objects, leaked local scope, and read a cleared event buffer.
+    verification:
+      - {path: docs/src/optimization/benchmarking-raw-prompts.md, absent: "captured_events", present: "DSPy.events.subscribe(\"lm.tokens\")"}
+      - {path: docs/src/optimization/benchmarking-raw-prompts.md, absent: "log_file.truncate", present: "attributes[:total_tokens]"}
+      - {path: docs/src/optimization/benchmarking-raw-prompts.md, present: "generator.configure { |config| config.lm = lm }"}
+  - id: predictor-observability-boundary
+    category: factual
+    status: resolved
+    reason: Core event subscription is distinct from optional trace export and provider usage availability.
+    verification:
+      - {path: docs/src/core-concepts/predictors.md, absent: "Observability is automatic", present: "The core event subscription is in-process"}
+      - {path: docs/src/core-concepts/predictors.md, absent: "# - dspy.predict", present: "DSPy.events.subscribe(\"lm.tokens\")"}
+      - {path: docs/src/core-concepts/predictors.md, absent: "@predictor.call(input)", present: "@predictor.call(**input)"}
+      - {path: docs/src/core-concepts/predictors.md, absent: "@primary.call(input)", present: "@primary.call(**input)"}
+      - {path: docs/src/core-concepts/predictors.md, absent: "@fallback.call(input)", present: "@fallback.call(**input)"}
+  - id: llms-observability-boundary
+    category: factual
+    status: resolved
+    reason: Langfuse export needs optional packages, dependencies, credentials, network access, verification, and shutdown handling.
+    verification:
+      - {path: docs/src/llms-full.txt.erb, absent: "Observability automatically activates when Langfuse env vars are present", present: "environment variables alone do not establish delivery"}
+      - {path: docs/src/llms-full.txt.erb, absent: "# Automatic tracking with log processing", present: "DSPy.events.subscribe(\"lm.tokens\")"}
+  - id: llms-nonexistent-strategy-api
+    category: factual
+    status: resolved
+    reason: The complete reference documented configuration constants and an extension interface that do not exist in the library.
+    verification:
+      - {path: docs/src/llms-full.txt.erb, absent: "c.strategy", present: "c.lm"}
+      - {path: docs/src/llms-full.txt.erb, absent: "DSPy::Strategy::Strict", present: "#### DSPy.configure"}
+      - {path: docs/src/llms-full.txt.erb, absent: "DSPy::StrategyInterface", present: "### Dynamic Module Configuration"}
+  - id: llms-type-conversion-boundary
+    category: factual
+    status: resolved
+    reason: Tool argument conversion covers declared supported types; unions require distinguishable members and do not make every Sorbet type unambiguous.
+    verification:
+      - {path: docs/src/llms.txt.erb, absent: "T.any() types automatically disambiguated", present: "when their members are distinguishable"}
+      - {path: docs/src/llms.txt.erb, absent: "automatically convert JSON strings to proper Ruby types", present: "Toolsets coerce supported JSON values"}
+      - {path: docs/src/llms-full.txt.erb, absent: "seamless automatic conversion", present: "supported declared types"}
+      - {path: docs/src/llms-full.txt.erb, absent: "Conversion works for all Sorbet types", present: "when members are distinguishable"}
+      - {path: docs/src/llms-full.txt.erb, absent: "Deep conversion at any level", present: "Nested combinations of supported types"}
+  - id: home-layout-overclaims
+    category: voice
+    status: resolved
+    reason: The high-traffic layout promised working agents and certain improvement without a metric or application boundary.
+    verification:
+      - {path: docs/src/_layouts/home.liquid, absent: "Build with confidence", present: "Build against explicit boundaries"}
+      - {path: docs/src/_layouts/home.liquid, absent: "Everything you need to ship agents that work", present: "Build typed programs and bounded agents"}
+      - {path: docs/src/_layouts/home.liquid, absent: "Know whether a change improves output", present: "Compare program behavior against chosen examples and metrics"}
+      - {path: docs/src/_layouts/home.liquid, absent: "Ready to ship agents that work?", present: "Build your first typed program"}
+      - {path: docs/src/index.md, absent: "Everything you love about Ruby", present: "Ruby types and control flow for LLM programs and agents"}
+  - id: blog-layout-positioning
+    category: voice
+    status: resolved
+    reason: The blog layout used an unbounded reliability title and generic actually-works copy.
+    verification:
+      - {path: docs/src/_layouts/blog_home.liquid, absent: "Build Reliable LLM Applications", present: "Typed LLM Systems in Ruby"}
+      - {path: docs/src/_layouts/blog_home.liquid, absent: "tutorials that actually work", present: "Engineering notes on typed LLM programs"}
+  - id: changelog-mvc-title-candidate
+    category: ordinary-copy
+    status: retained
+    reason: The scanner hit is a dated article title inside release history, not a current portable product maxim.
+    verification:
+      - {path: CHANGELOG.md, present: '"AI Needs Its MVC Moment"'}
+  - id: changelog-generic-headings-candidate
+    category: ordinary-copy
+    status: retained
+    reason: Examples and Features are stable release-note taxonomy, not task-navigation headings.
+    verification:
+      - {path: CHANGELOG.md, present: "### Examples"}
+      - {path: CHANGELOG.md, present: "### Features"}
+  - id: sentiment-contrast-candidate
+    category: ordinary-copy
+    status: retained
+    reason: The sentence names the synthetic-data boundary and the specific omitted distributions.
+    verification:
+      - {path: docs/src/_articles/evaluating-sentiment-classifiers.md, present: "They make the tutorial reproducible, but they do not represent the ambiguity"}
+  - id: observability-contrast-candidate
+    category: ordinary-copy
+    status: retained
+    reason: The sentence distinguishes call-path latency from process cost and flush loss.
+    verification:
+      - {path: docs/src/_articles/observability-in-action-langfuse.md, present: "It does not make export free"}
+  - id: toolsets-redirect-heading-candidate
+    category: ordinary-copy
+    status: retained
+    reason: The source now emits an active redirect; its legacy body heading is not published as the canonical guide.
+    verification:
+      - {path: docs/src/core-concepts/toolsets-guide.md, present: "## How It Works"}
+  - id: concepts-redirect-heading-candidate
+    category: ordinary-copy
+    status: retained
+    reason: The source now emits an active redirect; its legacy body heading is not published as the canonical guide.
+    verification:
+      - {path: docs/src/getting-started/core-concepts.md, present: "## Next Steps"}
+  - id: mvc-title-rhetorical-exception
+    category: voice
+    status: retained
+    reason: The title-only exception is bounded by adjacent contracts, tests, traces, and evaluation evidence.
+    verification:
+      - {path: docs/src/_articles/ai-needs-its-mvc-moment.md, present: 'title: "AI Needs Its MVC Moment"'}
+  - id: codeact-title-rhetorical-exception
+    category: voice
+    status: retained
+    reason: The title-only exception is bounded to generated Ruby and adjacent process-isolation evidence.
+    verification:
+      - {path: docs/src/_articles/codeact-research-agent.md, present: 'title: "Let the Model Write Your Tools"'}
+
+anchor_audits:
+  - {id: readme-product-promise, verdict: preserved, path: README.md, locator: "# DSPy.rb", reason: The canonical product category remains explicit.}
+  - {id: readme-three-beat-contrast, verdict: preserved, path: README.md, locator: "# DSPy.rb", reason: The revised contrast retains the typed-path and validation boundary.}
+  - {id: readme-mental-model, verdict: preserved, path: README.md, locator: "# DSPy.rb", reason: The prerequisite mental model remains at the primary entry point.}
+  - {id: predictor-taxonomy, verdict: preserved, path: docs/src/core-concepts/predictors.md, locator: "## Predictor Comparison", reason: Predictor choice remains owned by the comparison section.}
+  - {id: validation-not-correctness, verdict: preserved, path: docs/src/optimization/evaluation.md, locator: "# Evaluation Framework", reason: Evaluation remains the correctness owner.}
+  - {id: ruby-versus-agent-ownership, verdict: preserved, path: docs/src/getting-started/quick-start.md, locator: "### Modules and Agents", reason: Ruby and model control-flow ownership remain distinct.}
+  - {id: feature-parity-non-goal, verdict: preserved, path: docs/src/advanced/python-comparison.md, locator: "## Porting a Program", reason: The porting guide still rejects mechanical feature parity.}
+  - {id: evaluation-limits, verdict: preserved, path: docs/src/optimization/evaluation.md, locator: "# Evaluation Framework", reason: Dataset and metric limits remain explicit.}
+  - {id: anti-overfitting, verdict: preserved, path: docs/src/optimization/evaluation.md, locator: "## Evaluate an Optimized Program", reason: Held-out final evaluation remains required.}
+  - {id: agent-side-effect-boundary, verdict: preserved, path: docs/src/getting-started/quick-start.md, locator: "### Give an Agent a Typed Tool", reason: Applications still own permissions and side effects.}
+  - {id: toolset-schema-safety-boundary, verdict: preserved, path: docs/src/core-concepts/toolsets.md, locator: "## Runtime Boundaries {#runtime-boundaries}", reason: Schema coercion remains separate from runtime safety.}
+  - {id: troubleshooting-decision-rule, verdict: preserved, path: docs/src/production/troubleshooting.md, locator: "## Performance Issues", reason: Diagnosis still verifies the owning layer before correction.}
+  - {id: optimizer-evidence-boundary, verdict: preserved, path: docs/src/optimization/prompt-optimization.md, locator: "## Operational Limits", reason: Optimizer claims remain bounded by evidence and budget.}
+  - {id: application-state-ownership, verdict: preserved, path: docs/src/production/troubleshooting.md, locator: "## Application State Issues", reason: Durable state remains application-owned.}
+  - {id: trace-not-correctness, verdict: preserved, path: docs/src/production/observability.md, locator: "# Observability", reason: Traces and evaluation scores remain distinct evidence.}
+  - {id: codeact-isolation, verdict: preserved, path: lib/dspy/code_act/README.md, locator: "## Safety Checklist", reason: In-process evaluation is not presented as a sandbox.}
+  - {id: provider-capability-boundary, verdict: preserved, path: docs/src/production/troubleshooting.md, locator: "## JSON Parsing Issues", reason: Capability remains model- and SDK-specific.}
+
+duplicate_decisions:
+  - {anchor: readme-product-promise, source: docs/src/index.md, disposition: align-to-owner, action_verification: aligned-copy, distinction: The home page is a discovery surface and repeats the owner category without narrowing the product to agents.}
+  - {anchor: readme-product-promise, source: docs/src/llms.txt.erb, disposition: derive-or-link, action_verification: aligned-copy, distinction: The concise tool-facing reference summarizes the owner and states application-owned limits; derivation remains planned.}
+  - {anchor: readme-three-beat-contrast, source: docs/src/llms.txt.erb, disposition: align-to-owner, action_verification: aligned-copy, distinction: The feature list names the typed mechanism while README owns the rhetorical contrast.}
+  - {anchor: readme-mental-model, source: docs/src/advanced/python-comparison.md, disposition: link-and-specialize, action_verification: retained-distinction, distinction: The comparison translates concepts for Python DSPy readers instead of reteaching onboarding.}
+  - {anchor: readme-mental-model, source: docs/src/getting-started/quick-start.md, disposition: expand-owner-model, action_verification: retained-distinction, distinction: The Quick Start expands the mental model beside its executable program.}
+  - {anchor: predictor-taxonomy, source: README.md, disposition: summarize-and-link, action_verification: aligned-copy, distinction: README names ReAct briefly and links to the predictor owner.}
+  - {anchor: predictor-taxonomy, source: docs/src/getting-started/quick-start.md, disposition: summarize-and-link, action_verification: aligned-copy, distinction: The Quick Start distinguishes modules and agents only as required by the runnable path.}
+  - {anchor: validation-not-correctness, source: docs/src/getting-started/quick-start.md, disposition: preserve-through-merge, action_verification: preserved-boundary, distinction: Onboarding keeps the validation warning while evaluation owns behavioral correctness.}
+  - {anchor: validation-not-correctness, source: docs/src/_articles/run-llms-locally-with-ollama-and-type-safe-ruby.md, disposition: retain-historical, action_verification: retained-distinction, distinction: The dated local-model tutorial preserves the boundary in its original execution context.}
+  - {anchor: ruby-versus-agent-ownership, source: docs/src/_articles/react-agent-tutorial.md, disposition: retain-historical-detail, action_verification: retained-distinction, distinction: The article gives historical ReAct-versus-workflow detail beyond onboarding.}
+  - {anchor: feature-parity-non-goal, source: README.md, disposition: align-positioning, action_verification: aligned-copy, distinction: README states lineage; the comparison guide owns compatibility and parity detail.}
+  - {anchor: evaluation-limits, source: docs/src/optimization/prompt-optimization.md, disposition: specialize-for-optimization, action_verification: retained-distinction, distinction: The optimization guide applies evaluation limits to candidate search and budgets.}
+  - {anchor: anti-overfitting, source: docs/src/optimization/gepa.md, disposition: retain-optimizer-specific, action_verification: retained-distinction, distinction: GEPA retains held-out-set instructions for its own compile workflow.}
+  - {anchor: anti-overfitting, source: docs/src/optimization/miprov2.md, disposition: retain-optimizer-specific, action_verification: retained-distinction, distinction: MIPROv2 retains held-out-set instructions for its own search workflow.}
+  - {anchor: agent-side-effect-boundary, source: docs/src/_articles/codeact-research-agent.md, disposition: retain-stronger-codeact-boundary, action_verification: retained-distinction, distinction: Generated code needs a stronger process-isolation boundary than registered ReAct tools.}
+  - {anchor: codeact-isolation, source: docs/src/_articles/codeact-dynamic-code-generation.md, disposition: redirect-and-retire-copy, action_verification: redirect-notice, distinction: The historical article retains a move notice while the package README owns the safety contract.}
+
+rhetorical_exceptions:
+  - sample_id: mvc-headline
+    evidence: The opening and Discipline sections name contracts, tests, traces, and repeatable evaluation.
+    evidence_locator: "docs/src/_articles/ai-needs-its-mvc-moment.md: opening and The Discipline We Already Know"
+    scope: This historical article title only; do not reuse it as product positioning.
+    editor: Vicente Reig Rincón de Arellano
+    reviewed_on: "2026-07-14"
+    action_verification: excerpt-present
+  - sample_id: model-writes-tools-headline
+    evidence: The deck and isolation section bound generation to Ruby code in a loop and warn about process isolation.
+    evidence_locator: "docs/src/_articles/codeact-research-agent.md: frontmatter description and Isolation is part of the harness"
+    scope: This article title only; do not describe arbitrary tool registration or framework behavior with it.
+    editor: Vicente Reig Rincón de Arellano
+    reviewed_on: "2026-07-14"
+    action_verification: excerpt-present
+
+focus_sources:
+  - {path: docs/src/build/index.md, reason: new journey selector}
+  - {path: docs/src/getting-started/packages.md, reason: new package matrix page}
+  - {path: docs/src/advanced/concurrent-predictions.md, reason: new long-page split}
+  - {path: docs/src/advanced/module-lifecycle-callbacks.md, reason: new long-page split}
+  - {path: docs/src/production/score-reporting.md, reason: new long-page split}
+  - {path: docs/src/getting-started/first-program.md, reason: merged source and redirect}
+  - {path: docs/src/getting-started/core-concepts.md, reason: merged source and redirect}
+  - {path: docs/src/core-concepts/toolsets-guide.md, reason: merged source and redirect}
+  - {path: docs/src/core-concepts/codeact.md, reason: moved source and redirect}
+  - {path: docs/src/core-concepts/module-runtime-context.md, reason: moved route}
+  - {path: lib/dspy/code_act/README.md, reason: CodeAct move destination}
+  - {path: docs/src/llms.txt.erb, reason: manually maintained concise aggregate}
+  - {path: docs/src/llms-full.txt.erb, reason: manually maintained complete aggregate}
+
+aggregate_provenance:
+  status: planned
+  templates: [docs/src/llms.txt.erb, docs/src/llms-full.txt.erb]
+  conclusion: The templates remain manually maintained sources with build-time ERB data; corpus derivation is planned, not complete.
+
+blind_review:
+  editor: Mina Shaw
+  role: blind_corpus_editor
+  independent_from: Primary structural and economical-writing edits
+  blinded_to: Author self-checks and prior candidate dispositions until each sampled verdict was recorded
+  denominator: 99
+  minimum_percent: 15
+  minimum_sample: 15
+  sample_method: SHA-256 normalized-path ranking; one minimum per public stratum, lowest unused public ranks to 10, two history representatives, then next unused ranks to a conservative 15.
+  overlap_count: 3
+  total_distinct_reviewed: 29
+  high_traffic:
+    - README.md
+    - docs/src/index.md
+    - docs/src/getting-started/index.md
+    - docs/src/getting-started/installation.md
+    - docs/src/getting-started/packages.md
+    - docs/src/getting-started/quick-start.md
+    - docs/src/core-concepts/index.md
+    - docs/src/core-concepts/predictors.md
+    - docs/src/core-concepts/toolsets.md
+    - docs/src/build/index.md
+    - docs/src/advanced/index.md
+    - docs/src/optimization/index.md
+    - docs/src/production/index.md
+    - examples/README.md
+    - docs/src/blog/index.md
+    - docs/src/llms.txt.erb
+    - docs/src/llms-full.txt.erb
+  sample:
+    - docs/src/build/index.md
+    - docs/src/core-concepts/events.md
+    - docs/src/core-concepts/signatures.md
+    - docs/src/advanced/module-lifecycle-callbacks.md
+    - docs/src/advanced/complex-types.md
+    - docs/src/optimization/evaluation.md
+    - docs/src/production/registry.md
+    - examples/ade_optimizer_miprov2/README.md
+    - lib/dspy/ruby_llm/README.md
+    - docs/src/core-concepts/module-runtime-context.md
+    - docs/src/_articles/react-agent-tutorial.md
+    - docs/src/_articles/json-parsing-reliability.md
+    - docs/src/_articles/does-chain-of-thought-improve-summaries.md
+    - docs/src/production/index.md
+    - docs/src/getting-started/index.md

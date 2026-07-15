@@ -3,7 +3,7 @@ layout: docs
 title: Advanced Topics
 description: Select a DSPy.rb extension task after mastering the core programming model
 date: 2025-07-10 00:00:00 +0000
-last_modified_at: 2025-07-11 00:00:00 +0000
+last_modified_at: 2026-07-15 00:00:00 +0000
 ---
 # Advanced Topics
 

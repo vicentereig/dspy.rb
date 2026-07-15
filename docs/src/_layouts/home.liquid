@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" class="h-full">
-{% render "head", title_suffix: "DSPy.rb - Build Reliable LLM Applications in Ruby" %}
+{% render "head", title_suffix: "DSPy.rb - Typed LLM Systems in Ruby" %}
 <body class="h-full font-sans overflow-x-hidden">
   <div class="bg-white">
     {% assign docs_nav = site.data.documentation_navigation %}
@@ -16,9 +16,9 @@
   <div class="bg-white py-12 sm:py-24">
     <div class="mx-auto max-w-7xl px-6 lg:px-8">
       <div class="mx-auto max-w-2xl lg:text-center">
-        <h2 class="text-base font-semibold leading-7 text-dspy-coral">Build with confidence</h2>
-        <p class="mt-2 text-3xl font-bold font-serif tracking-tight text-gray-900 sm:text-4xl">Everything you need to ship agents that work</p>
-        <p class="mt-6 text-lg leading-8 text-gray-600"><a href="https://github.com/vicentereig/dspy.rb" rel="noopener noreferrer">DSPy.rb</a> brings software engineering discipline to agent development: typed contracts, composable modules, evaluation, and prompt optimization.</p>
+        <h2 class="text-base font-semibold leading-7 text-dspy-coral">Build against explicit boundaries</h2>
+        <p class="mt-2 text-3xl font-bold font-serif tracking-tight text-gray-900 sm:text-4xl">Build typed programs and bounded agents</p>
+        <p class="mt-6 text-lg leading-8 text-gray-600"><a href="https://github.com/vicentereig/dspy.rb" rel="noopener noreferrer">DSPy.rb</a> combines typed contracts, composable modules, evaluation, and explicit prompt optimization.</p>
       </div>
       <div class="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-4xl">
         <dl class="grid max-w-xl grid-cols-1 gap-x-8 gap-y-10 lg:max-w-none lg:grid-cols-2 lg:gap-y-16">
@@ -53,7 +53,7 @@
               </div>
               Evaluation
             </dt>
-            <dd class="mt-2 text-base leading-7 text-gray-600">Measure agent quality with metrics and evaluation sets. Know whether a change improves output before it ships.</dd>
+            <dd class="mt-2 text-base leading-7 text-gray-600">Compare program behavior against chosen examples and metrics before a change ships.</dd>
           </div>
           <div class="relative pl-16">
             <dt class="text-base font-semibold leading-7 text-gray-900">
@@ -75,8 +75,8 @@
   <div class="border-t border-gray-200 bg-gray-50">
     <div class="px-6 py-12 sm:px-6 sm:py-24 lg:px-8">
       <div class="mx-auto max-w-2xl text-center">
-        <h2 class="text-3xl font-bold font-serif tracking-tight text-gray-900 sm:text-4xl">Ready to ship agents that work?</h2>
-        <p class="mx-auto mt-6 max-w-xl text-lg leading-8 text-gray-600">Stop tuning prompts by hand. Define the contract, evaluate the output, and let the optimizer find what works.</p>
+        <h2 class="text-3xl font-bold font-serif tracking-tight text-gray-900 sm:text-4xl">Build your first typed program</h2>
+        <p class="mx-auto mt-6 max-w-xl text-lg leading-8 text-gray-600">Define the contract, evaluate the output, and run an optimizer when examples, a metric, and a budget are ready.</p>
         <div class="mt-10 flex items-center justify-center gap-x-6">
           <a href="{{ '/getting-started/' | relative_url }}" class="rounded-md bg-dspy-coral px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[#e05d3d] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dspy-coral">Get started</a>
           <a href="https://github.com/vicentereig/dspy.rb" rel="noopener noreferrer" class="text-sm font-semibold leading-6 text-gray-900 hover:text-dspy-link">View on GitHub <span aria-hidden="true">&rarr;</span></a>

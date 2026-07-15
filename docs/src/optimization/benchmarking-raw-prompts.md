@@ -3,7 +3,7 @@ layout: docs
 title: Benchmarking Raw Prompts
 description: Compare monolithic prompts against modular DSPy implementations
 date: 2025-07-23 00:00:00 +0000
-last_modified_at: 2025-08-09 00:00:00 +0000
+last_modified_at: 2026-07-15 00:00:00 +0000
 ---
 # Benchmarking Raw Prompts
 
@@ -46,44 +46,26 @@ puts result # => "# Changelog\n\n## Features\n- Add user authentication..."
 
 ## Capturing Observability Data
 
-Both `raw_chat` and DSPy modules emit log events and spans that can feed the same comparison:
+Both `raw_chat` and DSPy modules emit `lm.tokens` events. Subscribe around one call so each measurement owns its event buffer and elapsed time:
 
 ```ruby
-# Capture events for analysis by processing logs
-require 'tempfile'
-
-log_file = Tempfile.new('dspy_benchmark')
-DSPy.configure do |config|
-  config.logger = Dry.Logger(:dspy, formatter: :json) do |logger|
-    logger.add_backend(stream: log_file)
+def measure_call
+  token_events = []
+  subscription_id = DSPy.events.subscribe("lm.tokens") do |_name, attributes|
+    token_events << attributes
   end
+
+  started = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+  value = yield
+  elapsed = Process.clock_gettime(Process::CLOCK_MONOTONIC) - started
+  total_tokens = token_events.sum do |attributes|
+    attributes[:total_tokens] || attributes["total_tokens"] || 0
+  end
+
+  { value: value, seconds: elapsed, total_tokens: total_tokens }
+ensure
+  DSPy.events.unsubscribe(subscription_id) if subscription_id
 end
-
-monolithic_result = lm.raw_chat do |m|
-  m.system MONOLITHIC_CHANGELOG_PROMPT
-  m.user commit_data
-end
-
-log_file.rewind
-events = log_file.readlines.map { |line| JSON.parse(line) }
-monolithic_tokens = events
-  .select { |e| e["event"] == 'llm.generate' }
-  .last
-
-log_file.truncate(0)
-log_file.rewind
-
-changelog_generator = DSPy::ChainOfThought.new(ChangelogSignature)
-modular_result = changelog_generator.forward(commits: commit_data)
-
-modular_tokens = captured_events
-  .select { |e| e.id == 'lm.tokens' }
-  .last
-  .payload
-
-puts "Monolithic: #{monolithic_tokens[:total_tokens]} tokens"
-puts "Modular: #{modular_tokens[:total_tokens]} tokens"
-puts "Savings: #{((1 - modular_tokens[:total_tokens].to_f / monolithic_tokens[:total_tokens]) * 100).round(2)}%"
 ```
 
 ## Run a Changelog Benchmark
@@ -122,48 +104,24 @@ end
 # Benchmark function
 def benchmark_approaches(commits_data)
   lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV['OPENAI_API_KEY'])
-  
-  results = {}
-  
-  start_time = Time.now
-  
-  log_file.truncate(0)
-  log_file.rewind
-  
-  monolithic_result = lm.raw_chat do |m|
-    m.system MONOLITHIC_PROMPT
-    m.user commits_data.join("\n")
+
+  monolithic = measure_call do
+    lm.raw_chat do |m|
+      m.system MONOLITHIC_PROMPT
+      m.user commits_data.join("\n")
+    end
   end
-  
-  monolithic_time = Time.now - start_time
-  
-  log_file.rewind
-  events = log_file.readlines.map { |line| JSON.parse(line) }
-  monolithic_tokens = events.find { |e| e["event"] == 'llm.generate' }
-  
-  results[:monolithic] = {
-    time: monolithic_time,
-    tokens: monolithic_tokens,
-    result: monolithic_result
-  }
-  
-  events.clear
-  
-  start_time = Time.now
-  
+
   generator = DSPy::ChainOfThought.new(ChangelogSignature)
-  modular_result = generator.forward(commits: commits_data)
-  
-  modular_time = Time.now - start_time
-  modular_tokens = events.find { |e| e.id == 'lm.tokens' }&.payload
-  
-  results[:modular] = {
-    time: modular_time,
-    tokens: modular_tokens,
-    result: modular_result.changelog
+  generator.configure { |config| config.lm = lm }
+  modular = measure_call do
+    generator.call(commits: commits_data)
+  end
+
+  {
+    monolithic: monolithic,
+    modular: modular.merge(value: modular[:value].changelog)
   }
-  
-  results
 end
 
 commits = [
@@ -178,17 +136,15 @@ results = benchmark_approaches(commits)
 
 puts "=== Benchmark Results ==="
 puts "\nMonolithic Approach:"
-puts "  Time: #{results[:monolithic][:time].round(3)}s"
-puts "  Tokens: #{results[:monolithic][:tokens][:total_tokens]}"
-puts "  Cost: $#{(results[:monolithic][:tokens][:total_tokens] * 0.00015 / 1000).round(4)}"
+puts "  Time: #{results[:monolithic][:seconds].round(3)}s"
+puts "  Tokens: #{results[:monolithic][:total_tokens]}"
 
 puts "\nModular Approach:"
-puts "  Time: #{results[:modular][:time].round(3)}s"
-puts "  Tokens: #{results[:modular][:tokens][:total_tokens]}"
-puts "  Cost: $#{(results[:modular][:tokens][:total_tokens] * 0.00015 / 1000).round(4)}"
+puts "  Time: #{results[:modular][:seconds].round(3)}s"
+puts "  Tokens: #{results[:modular][:total_tokens]}"
 
-token_reduction = ((1 - results[:modular][:tokens][:total_tokens].to_f / 
-                       results[:monolithic][:tokens][:total_tokens]) * 100).round(2)
+token_reduction = ((1 - results[:modular][:total_tokens].to_f /
+                       results[:monolithic][:total_tokens]) * 100).round(2)
 
 puts "\nImprovements:"
 puts "  Token reduction: #{token_reduction}%"
@@ -210,23 +166,7 @@ def benchmark_providers(prompt_messages)
   
   providers.each do |provider|
     lm = DSPy::LM.new(provider[:id], api_key: provider[:key])
-    
-    log_file.truncate(0)
-    log_file.rewind
-    
-    start_time = Time.now
-    result = lm.raw_chat(prompt_messages)
-    elapsed = Time.now - start_time
-    
-    log_file.rewind
-    events = log_file.readlines.map { |line| JSON.parse(line) }
-    token_event = events.find { |e| e["event"] == 'llm.generate' }
-    
-    results[provider[:id]] = {
-      response: result,
-      time: elapsed,
-      tokens: token_event
-    }
+    results[provider[:id]] = measure_call { lm.raw_chat(prompt_messages) }
   end
   
   results

@@ -4,7 +4,7 @@ title: "DSPy Predictors: Predict, ChainOfThought, and ReAct"
 name: Predictors
 description: "Choose Predict for one typed call, ChainOfThought for an added reasoning field, or ReAct for bounded tool use."
 date: 2025-07-10 00:00:00 +0000
-last_modified_at: 2025-08-09 00:00:00 +0000
+last_modified_at: 2026-07-15 00:00:00 +0000
 ---
 # Predictors
 
@@ -319,11 +319,11 @@ class RobustPredictor
     @fallback = DSPy::Predict.new(signature)
   end
   
-  def call(input)
-    @primary.call(input)
+  def call(**input)
+    @primary.call(**input)
   rescue StandardError => e
     puts "Primary predictor failed: #{e.message}"
-    @fallback.call(input)
+    @fallback.call(**input)
   end
 end
 ```
@@ -342,7 +342,7 @@ class ValidatedPredictor
     @signature.input_struct_class.new(**input)
     
     # Call predictor
-    @predictor.call(input)
+    @predictor.call(**input)
   rescue ArgumentError => e
     raise DSPy::PredictionInvalidError.new({ input: e.message })
   end
@@ -455,8 +455,8 @@ research_agent = DSPy::ReAct.new(ResearchTask, tools: [SearchTool.new])
 
 ```ruby
 class ProductionPredictor
-  def call(input)
-    @predictor.call(input)
+  def call(**input)
+    @predictor.call(**input)
   rescue DSPy::PredictionInvalidError => e
     handle_validation_error(e)
   rescue StandardError => e
@@ -465,20 +465,20 @@ class ProductionPredictor
 end
 ```
 
-### 3. Use Built-in Observability
+### 3. Inspect Predictor Events
 
 ```ruby
-# Observability is automatic - configure logging to see events
-# Span tracking is emitted for:
-# - dspy.predict
-# - dspy.chain_of_thought  
-# - dspy.react
-# - dspy.codeact (includes code_execution events)
+token_events = []
+subscription_id = DSPy.events.subscribe("lm.tokens") do |_name, attributes|
+  token_events << attributes
+end
 
-# Enable logging to see events
-DSPy.configure do |config|
-  config.logger = Dry.Logger(:dspy)
+begin
+  result = @predictor.call(**input)
+  puts token_events.sum { |event| event[:total_tokens] || 0 }
+ensure
+  DSPy.events.unsubscribe(subscription_id) if subscription_id
 end
 ```
 
-Predictors validate declared result types and emit module events. Evaluate task correctness separately with examples and a metric.
+The core event subscription is in-process and reports usage only when the provider returns it. Trace export requires the optional observability packages, exporter configuration, credentials, and network access described in [Observability](/dspy.rb/production/observability/). Predictors validate declared result types; evaluate task correctness separately with examples and a metric.

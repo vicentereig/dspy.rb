@@ -16,8 +16,8 @@ anchors:
     successor_contract: Name typed LLM programs and Ruby without implying autonomous improvement or upstream compatibility.
     evidence: [{path: docs/editorial/dspy-port-positioning.md, locator: "## Verdict"}]
     duplicates:
-      - {path: docs/src/index.md, locator: "Reliable agents in Ruby", disposition: align-to-owner}
-      - {path: docs/src/llms.txt.erb, locator: "Build LLM apps like you build software", disposition: derive-or-link}
+      - {path: docs/src/index.md, locator: '<h1 class="text-4xl font-bold font-serif tracking-tight text-gray-900 sm:text-6xl">Program typed LLM systems in Ruby</h1>', disposition: align-to-owner}
+      - {path: docs/src/llms.txt.erb, locator: "Program typed LLM systems in Ruby", disposition: derive-or-link}
 
   - id: readme-three-beat-contrast
     acceptance_anchor: README three-beat contrast
@@ -252,10 +252,10 @@ voice_dispositions:
   - {sample_id: model-writes-tools-headline, lifecycle: active, disposition: retain, reason: Durable title-only exception is bounded by generated Ruby and isolation evidence.}
   - {sample_id: types-and-descriptions, lifecycle: active, disposition: retain, reason: Adjacent examples earn the schema-versus-semantics compression.}
   - {sample_id: readme-three-part-contrast, lifecycle: active, disposition: rewrite, reason: Preserve the rhythm while scoping absolutes and naming validation.}
-  - {sample_id: production-ready-reference, lifecycle: active, disposition: delete, reason: Three features do not establish application production readiness.}
+  - {sample_id: production-ready-reference, lifecycle: retired, disposition: delete, reason: Three features do not establish application production readiness.}
   - {sample_id: zero-config-langfuse, lifecycle: active, disposition: rewrite, reason: Name environment-driven auto-configuration and its dependency and network preconditions.}
   - {sample_id: automatic-optimization, lifecycle: active, disposition: rewrite, reason: Name optimizer examples metric and execution budget.}
-  - {sample_id: self-improving-tagline, lifecycle: active, disposition: delete, reason: General self-improvement is not a current product behavior.}
+  - {sample_id: self-improving-tagline, lifecycle: retired, disposition: delete, reason: General self-improvement is not a current product behavior.}
   - {sample_id: stanford-port-description, lifecycle: active, disposition: rewrite, reason: Preserve DSPy lineage with the approved independent Ruby-native positioning.}
 
 # Candidates found during the corpus anchor pass that are not calibration rows.
@@ -285,14 +285,16 @@ copy_occurrences:
   - id: llms-index-build-like-software
     source: docs/src/llms.txt.erb
     locator: "> Build LLM apps like you build software. Type-safe, modular, testable."
-    status: present
+    status: resolved
+    resolution_reference: "dspy.rb-2ey.18 aligns the concise reference with the typed-system product owner and application-owned boundaries."
     lifecycle: active
     disposition: rewrite
     reason: Replace the generic software simile with the scoped typed-program product promise and its validation boundary.
   - id: llms-full-build-like-software
     source: docs/src/llms-full.txt.erb
     locator: "> Build LLM apps like you build software. Type-safe, modular, testable."
-    status: present
+    status: resolved
+    resolution_reference: "dspy.rb-2ey.18 aligns the complete reference with the typed-system product owner and application-owned boundaries."
     lifecycle: active
     disposition: rewrite
     reason: Keep the full reference aligned with the concise reference and canonical README promise.
@@ -300,23 +302,26 @@ copy_occurrences:
     source: docs/src/llms.txt.erb
     locator: "- **Production-ready** - Built-in observability, testing, and error handling"
     voice_sample: production-ready-reference
-    status: present
-    lifecycle: active
+    status: resolved
+    resolution_reference: "dspy.rb-2ey.18 removes the readiness guarantee and names operational controls without claiming deployment readiness."
+    lifecycle: retired
     disposition: delete
     reason: Available features do not establish application production readiness.
   - id: llms-full-production-ready
     source: docs/src/llms-full.txt.erb
     locator: "- **Production-ready** - Built-in observability, testing, and error handling"
     voice_sample: production-ready-reference
-    status: present
-    lifecycle: active
+    status: resolved
+    resolution_reference: "dspy.rb-2ey.18 removes the twin readiness guarantee from the complete reference."
+    lifecycle: retired
     disposition: delete
     reason: Delete the twin guarantee from the complete reference as well.
   - id: llms-index-automatic-optimization
     source: docs/src/llms.txt.erb
     locator: "- **Automatic optimization** - Use data to improve prompts, not guesswork"
     voice_sample: automatic-optimization
-    status: present
+    status: resolved
+    resolution_reference: "dspy.rb-2ey.18 names the optimizer inputs and execution budget in the concise reference."
     lifecycle: active
     disposition: rewrite
     reason: Name the optimizer, examples, metric, and execution budget.
@@ -324,7 +329,8 @@ copy_occurrences:
     source: docs/src/llms-full.txt.erb
     locator: "- **Automatic optimization** - Use data to improve prompts, not guesswork"
     voice_sample: automatic-optimization
-    status: present
+    status: resolved
+    resolution_reference: "dspy.rb-2ey.18 names the optimizer inputs and execution budget in the complete reference."
     lifecycle: active
     disposition: rewrite
     reason: Rewrite the twin occurrence with the same mechanism and boundary.
@@ -339,13 +345,15 @@ public_copy_sources:
     claims:
       - locator: "tagline: The Ruby Framework for Self-Improving Language Model Programs"
         voice_sample: self-improving-tagline
-        status: present
-        lifecycle: active
+        status: resolved
+        resolution_reference: "dspy.rb-2ey.18 replaces the autonomous-improvement claim with a typed-program and agent category line."
+        lifecycle: retired
         disposition: delete
         reason: General self-improvement is not a current framework behavior.
       - locator: "description: Build self-improving AI systems with DSPy.rb - a Ruby implementation of Stanford's DSPy framework for programming with language models."
         voice_sample: stanford-port-description
-        status: present
+        status: resolved
+        resolution_reference: "dspy.rb-2ey.18 applies the approved Ruby-native DSPy programming-model positioning."
         lifecycle: active
         disposition: rewrite
         reason: Preserve project description and DSPy lineage with the approved Ruby-native programming-model wording.

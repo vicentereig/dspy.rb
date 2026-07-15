@@ -50,6 +50,7 @@ module DocumentationQuality
         ["Source navigation", [ruby, scripts.join("validate_documentation_navigation.rb").to_s]],
         ["Source redirects, chains, loops, and fragments", [ruby, scripts.join("validate_url_redirects.rb").to_s]],
         ["Semantic anchor ledger", [ruby, scripts.join("validate_semantic_anchors.rb").to_s]],
+        ["Corpus completion audit", [ruby, scripts.join("validate_completion_audit.rb").to_s]],
         ["Long-page dispositions", [ruby, scripts.join("validate_long_page_dispositions.rb").to_s]],
         ["Source package capability matrix", [ruby, scripts.join("validate_package_capabilities.rb").to_s, "--source-only"]],
         ["House voice structural calibration", [ruby, scripts.join("validate_house_voice_charter.rb").to_s]],

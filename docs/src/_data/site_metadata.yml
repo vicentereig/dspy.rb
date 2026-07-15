@@ -1,7 +1,7 @@
 # Site metadata for SEO and social sharing
 title: DSPy.rb
-tagline: The Ruby Framework for Self-Improving Language Model Programs
-description: Build self-improving AI systems with DSPy.rb - a Ruby implementation of Stanford's DSPy framework for programming with language models.
+tagline: Typed LLM Programs and Agents for Ruby
+description: DSPy.rb is a Ruby-native implementation of DSPy's programming model for typed LLM programs and agents.
 author: Vicente Reig Rincon de Arellano
 # Use host-only URL so canonical tags don't duplicate the base_path.
 url: "https://oss.vicente.services"

@@ -6,6 +6,7 @@ require "pathname"
 require "rbconfig"
 require "tmpdir"
 require "yaml"
+require_relative "../../docs/scripts/validate_completion_audit"
 require_relative "../../docs/scripts/validate_executable_snippets"
 require_relative "../../docs/scripts/validate_internal_links"
 require_relative "../../docs/scripts/validate_llms_references"
@@ -41,6 +42,38 @@ RSpec.describe "documentation quality validators" do
 
   def replace_in(path, before, after)
     path.write(path.read(encoding: "UTF-8").sub(before, after), encoding: "UTF-8")
+  end
+
+  def completion_audit_errors
+    document = YAML.safe_load_file(QUALITY_ROOT.join("docs/editorial/completion-audit.yml"))
+    yield document if block_given?
+    Dir.mktmpdir("completion-audit") do |directory|
+      audit = Pathname(directory).join("completion-audit.yml")
+      write(audit, document.to_yaml)
+      return DocumentationQuality::CompletionAudit.new(root: QUALITY_ROOT, audit: audit).errors
+    end
+  end
+
+  it "accepts the complete corpus audit" do
+    expect(completion_audit_errors).to be_empty
+  end
+
+  it "rejects omitted corpus, anchor, duplicate, exception, taxonomy, blind-review, and llms evidence" do
+    mutations = [
+      [->(doc) { doc.fetch("source_audits").reject! { _1["path"] == "docs/src/advanced/module-lifecycle-callbacks.md" } }, "source audits missing"],
+      [->(doc) { row = doc.fetch("anchor_audits").first; row["verdict"] = "blocked"; row.delete("owner") }, "blocked anchor needs owner"],
+      [->(doc) { doc.fetch("duplicate_decisions").first["distinction"] = "" }, "duplicate distinction is missing"],
+      [->(doc) { doc.fetch("rhetorical_exceptions").first["editor"] = "" }, "exception editor is missing or drifted"],
+      [->(doc) { doc.fetch("category_results").reject! { _1["category"] == "voice" } }, "four finding categories exactly"],
+      [->(doc) { doc.fetch("blind_review").fetch("sample").pop }, "recorded deterministic sample"],
+      [->(doc) { doc.fetch("blind_review").fetch("high_traffic").delete("docs/src/core-concepts/toolsets.md") }, "all required entry points"],
+      [->(doc) { doc.fetch("focus_sources").reject! { %w[docs/src/llms.txt.erb docs/src/llms-full.txt.erb].include?(_1["path"]) } }, "omits new, moved, or llms sources"]
+    ]
+
+    mutations.each do |mutation, diagnostic|
+      errors = completion_audit_errors { mutation.call(_1) }
+      expect(errors.join("\n")).to include(diagnostic)
+    end
   end
 
   it "resolves encoded fragments and assets without fetching external URLs" do
@@ -206,7 +239,7 @@ RSpec.describe "documentation quality validators" do
     steps = pipeline.send(:steps)
     safety = steps.select { _1.command.include?("scripts/test_url_redirect_safety.rb") }
 
-    expect(steps.length).to eq(21)
+    expect(steps.length).to eq(22)
     expect(safety.length).to eq(1)
     expect(safety.first.chdir).to eq(QUALITY_ROOT.join("docs").to_s)
     expect(safety.first.command).to include("bundle", "exec", "ruby")

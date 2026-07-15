@@ -1,9 +1,9 @@
 ---
 layout: home
-title: "DSPy.rb | Reliable Agents and Tasks in Ruby"
-description: "Build reliable agents and typed tasks in Ruby with contracts, tools, evaluation, and prompt optimization."
+title: "DSPy.rb | Typed LLM Systems in Ruby"
+description: "Program typed LLM systems in Ruby with contracts, modules, bounded agents, evaluation, and prompt optimization."
 date: 2025-06-28 00:00:00 +0000
-last_modified_at: 2025-09-01 00:00:00 +0000
+last_modified_at: 2026-07-15 00:00:00 +0000
 ---
 <div class="mx-auto max-w-2xl py-8 sm:py-16 lg:py-32">
   <div class="mb-6 flex justify-center sm:mb-8">
@@ -13,7 +13,7 @@ last_modified_at: 2025-09-01 00:00:00 +0000
   </div>
   <div class="text-center">
     <p class="text-sm font-medium text-dspy-coral mb-4">A Ruby-native implementation of <a href="https://dspy.ai" rel="noopener noreferrer" class="underline hover:text-[#e05d3d]">DSPy's programming model</a></p>
-    <h1 class="text-4xl font-bold font-serif tracking-tight text-gray-900 sm:text-6xl">Reliable agents in Ruby</h1>
+    <h1 class="text-4xl font-bold font-serif tracking-tight text-gray-900 sm:text-6xl">Program typed LLM systems in Ruby</h1>
     <p class="mt-6 text-lg leading-8 text-gray-600">Define typed task contracts. Give agents tools. Evaluate outputs against metrics and optimize the prompts that work.</p>
     <div class="mt-6 flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-gray-500">
       <span class="flex items-center gap-x-1.5"><svg class="h-4 w-4 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" /></svg>Typed contracts with Sorbet</span>
@@ -144,7 +144,7 @@ irb> classification.category = "invalid"  # This would raise an error!
 <div class="mx-auto max-w-7xl px-6 lg:px-8 py-16">
   <div class="mx-auto max-w-2xl lg:text-center mb-16">
     <h2 class="text-3xl font-bold font-serif tracking-tight text-gray-900 sm:text-4xl">Built for Ruby developers</h2>
-    <p class="mt-4 text-lg text-gray-600">Everything you love about Ruby, now for agents and tasks.</p>
+    <p class="mt-4 text-lg text-gray-600">Ruby types and control flow for LLM programs and agents.</p>
   </div>
 
   <div class="mx-auto grid max-w-2xl grid-cols-1 gap-8 lg:mx-0 lg:max-w-none lg:grid-cols-3">
