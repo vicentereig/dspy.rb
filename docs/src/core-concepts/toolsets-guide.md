@@ -3,7 +3,9 @@ layout: docs
 name: Toolsets Guide
 description: Build toolsets that expose related typed Ruby operations to ReAct agents
 date: 2025-07-11 00:00:00 +0000
-last_modified_at: 2025-08-13 00:00:00 +0000
+last_modified_at: 2026-07-15 00:00:00 +0000
+published: false
+sitemap: false
 ---
 # Toolsets
 

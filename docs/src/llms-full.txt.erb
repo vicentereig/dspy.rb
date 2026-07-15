@@ -1204,6 +1204,9 @@ end
 Toolsets group related tools together with comprehensive type support:
 
 ```ruby
+require "dspy"
+require "date"
+
 class WeatherToolset < DSPy::Tools::Toolset
   toolset_name "weather"
 
@@ -1283,118 +1286,38 @@ class WeatherToolset < DSPy::Tools::Toolset
   end
 end
 
-# Advanced database toolset with complex operations
-class DatabaseToolset < DSPy::Tools::Toolset
-  toolset_name "database"
-
-  class QueryType < T::Enum
-    enums do
-      Select = new('select')
-      Insert = new('insert')
-      Update = new('update')
-      Delete = new('delete')
-      Join = new('join')
-      Aggregate = new('aggregate')
-    end
-  end
-
-  class Column < T::Struct
-    const :name, String
-    const :type, String
-    const :nullable, T::Boolean, default: true
-    const :default_value, T.nilable(String)
-  end
-
-  class QueryConfig < T::Struct
-    const :limit, T.nilable(Integer)
-    const :offset, T.nilable(Integer), default: 0
-    const :order_by, T.nilable(String)
-    const :include_count, T::Boolean, default: false
-  end
-
-  class QueryResult < T::Struct
-    const :success, T::Boolean
-    const :data, T::Array[T::Hash[String, T.untyped]]
-    const :row_count, Integer
-    const :execution_time_ms, Float
-    const :query_type, QueryType
-  end
-
-  tool :execute_query, description: "Execute database query with type safety"
-  tool :describe_table, description: "Get table schema information"
-  tool :optimize_query, description: "Analyze and optimize query performance"
-
-  sig { params(
-    sql: String,
-    query_type: QueryType,
-    config: T.nilable(QueryConfig)
-  ).returns(QueryResult) }
-  def execute_query(sql:, query_type:, config: nil)
-    config ||= QueryConfig.new
-
-    # Simulate query execution
-    mock_data = [
-      { "id" => 1, "name" => "Alice", "email" => "alice@example.com" },
-      { "id" => 2, "name" => "Bob", "email" => "bob@example.com" }
-    ]
-
-    QueryResult.new(
-      success: true,
-      data: mock_data,
-      row_count: mock_data.length,
-      execution_time_ms: 45.2,
-      query_type: query_type
-    )
-  end
-
-  sig { params(table_name: String).returns(T::Array[Column]) }
-  def describe_table(table_name:)
-    # Simulate table description
-    [
-      Column.new(name: "id", type: "INTEGER", nullable: false),
-      Column.new(name: "name", type: "VARCHAR(255)", nullable: false),
-      Column.new(name: "email", type: "VARCHAR(320)", nullable: true, default_value: "NULL")
-    ]
-  end
-
-  sig { params(sql: String).returns(T::Hash[String, T.any(String, Integer, Float, T::Array[String])]) }
-  def optimize_query(sql:)
-    # Simulate query optimization analysis
-    {
-      original_query: sql,
-      estimated_cost: 125,
-      execution_plan: ["Index Scan", "Hash Join", "Sort"],
-      optimization_suggestions: [
-        "Consider adding index on user_id column",
-        "Use LIMIT to reduce result set size",
-        "Consider query rewriting for better performance"
-      ],
-      performance_rating: 7.5
-    }
-  end
-end
-
-# Convert to tool instances for agents
+# Export the declared methods as proxies; applications still select the subset an agent receives.
 weather_tools = WeatherToolset.to_tools
-database_tools = DatabaseToolset.to_tools
-
-# Use with ReAct agent
-agent = DSPy::ReAct.new(
-  WeatherSignature,
-  tools: weather_tools + database_tools,
-  max_iterations: 15
-)
 ```
+
+Do not expose free-form SQL or mutation enums as a model-facing "type-safe" database tool. Map a small allowlist of application-owned statement identifiers to parameterized, read-only queries; enforce tenant authorization, row and time limits, and result redaction outside the schema. See the [Toolsets runtime boundaries](https://oss.vicente.services/dspy.rb/core-concepts/toolsets/#runtime-boundaries).
+
+`.to_tools` calls `new` with no arguments once and shares that fresh instance among the returned proxies. A Toolset exported this way must have a zero-argument constructor; calling `configured_instance.class.to_tools` does not preserve the configured instance.
 
 ### Built-in Toolsets
 
 ```ruby
-# Text processing toolset
-text_tools = DSPy::Tools::TextProcessingToolset.to_tools
+require "dspy/tools/text_processing_toolset"
 
-# GitHub CLI toolset
-github_tools = DSPy::Tools::GithubCliToolset.to_tools
+toolset = DSPy::Tools::TextProcessingToolset.new
+text_tools = DSPy::Tools::TextProcessingToolset.to_tools
+text_tools.map(&:name)
+# => ["text_grep", "text_wc", "text_rg", "text_extract_lines",
+#     "text_filter_lines", "text_unique_lines", "text_sort_lines",
+#     "text_summarize_text"]
+
+word_count = text_tools.to_h { |tool| [tool.name, tool] }.fetch("text_wc")
+word_count.call(text: "one two\nthree")
+# => "Lines: 2, Words: 3, Characters: 13"
+
+require "dspy/tools/github_cli_toolset"
+
+github_tools = DSPy::Tools::GitHubCLIToolset.to_tools
 ```
+
+The text `grep` and `ripgrep` helpers use shell command strings and temporary files. Quotes and option-like patterns can change command interpretation; command stderr is suppressed, and the current implementation provides no elapsed-time or output cap. Use those helpers only with trusted patterns in a controlled runtime, and enforce cleanup, operation timeouts, resource caps, and isolation in the application.
+
+Tool schemas describe and coerce arguments. They do not grant authorization, sanitize shell or query input, sandbox side effects, impose timeouts, or control retries. A ReAct `max_iterations` value limits model-directed steps but does not cancel a running subprocess, request, or tool method.
 
 ### Automatic Type Conversion
 

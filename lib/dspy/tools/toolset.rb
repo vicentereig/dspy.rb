@@ -2,6 +2,7 @@
 
 require 'sorbet-runtime'
 require 'json'
+require_relative 'base'
 require_relative '../type_system/sorbet_json_schema'
 require_relative '../mixins/type_coercion'
 

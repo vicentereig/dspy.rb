@@ -71,13 +71,12 @@ redirects:
         conditional-routing: /core-concepts/modules/
         error-recovery: /production/troubleshooting/
   - id: toolsets-guide-merge
-    state: planned
+    state: active
     corpus_id: toolsets-guide-duplicate
     source: docs/src/core-concepts/toolsets-guide.md
     from: /core-concepts/toolsets-guide/
     to: /core-concepts/toolsets/#using-toolsets
     target_source: docs/src/core-concepts/toolsets.md
-    activation_requires: Preserve the application-owned authorization, side-effect, timeout, failure, and agent-loop boundary before suppressing the source.
     fragments:
       mappings:
         toolsets: /core-concepts/toolsets/

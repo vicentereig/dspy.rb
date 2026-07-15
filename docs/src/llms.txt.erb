@@ -145,6 +145,26 @@ class DataToolset < DSPy::Tools::Toolset
 end
 ```
 
+`Toolset.to_tools` calls `new` with no arguments and returns one proxy per declared method, so exported Toolsets need a zero-argument constructor. A schema describes and converts call arguments; it does not authorize an operation, sanitize input, sandbox side effects, impose a timeout, or bound an agent loop.
+
+The core gem's text-processing feature is loaded explicitly and exports stable names:
+
+```ruby
+require "dspy/tools/text_processing_toolset"
+
+tools = DSPy::Tools::TextProcessingToolset.to_tools
+tools.map(&:name)
+# => ["text_grep", "text_wc", "text_rg", "text_extract_lines",
+#     "text_filter_lines", "text_unique_lines", "text_sort_lines",
+#     "text_summarize_text"]
+
+word_count = tools.to_h { |tool| [tool.name, tool] }.fetch("text_wc")
+word_count.call(text: "one two\nthree")
+# => "Lines: 2, Words: 3, Characters: 13"
+```
+
+`text_grep` and `text_rg` use shell commands and temporary files. Their current implementation has no elapsed-time or output cap, suppresses command stderr, and is intended only for trusted patterns in a controlled runtime. `max_iterations` limits model-directed steps; it does not cancel a running tool.
+
 ### 4. Type System & Discriminators
 DSPy.rb uses sophisticated type discrimination for complex data structures:
 

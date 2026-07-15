@@ -148,6 +148,21 @@ anchors:
     duplicates:
       - {path: docs/src/_articles/codeact-research-agent.md, locator: "## Isolation is part of the harness", disposition: retain-stronger-codeact-boundary}
 
+  - id: toolset-schema-safety-boundary
+    acceptance_anchor: Toolset schema safety boundary
+    lifecycle: active
+    source: {path: docs/src/core-concepts/toolsets.md, locator: "## Runtime Boundaries {#runtime-boundaries}", status: present}
+    semantic_job: Separate Toolset schema and coercion from authorization, input safety, sandboxing, timeouts, side-effect isolation, and loop control.
+    preservation: semantic-required
+    factual_owner: {path: docs/src/core-concepts/toolsets.md, locator: "## Runtime Boundaries {#runtime-boundaries}"}
+    canonical_destination: {path: docs/src/core-concepts/toolsets.md, locator: "## Runtime Boundaries {#runtime-boundaries}"}
+    successor_contract: State that the application owns permissions, input policy, operation timeouts and resource caps, side-effect and retry behavior, and bounded agent execution.
+    evidence:
+      - {path: lib/dspy/tools/toolset.rb, locator: "class ToolProxy < Base"}
+      - {path: lib/dspy/tools/text_processing_toolset.rb, locator: "class TextProcessingToolset < Toolset"}
+      - {path: lib/dspy/re_act.rb, locator: "class ReAct < Predict"}
+    duplicates: []
+
   - id: troubleshooting-decision-rule
     acceptance_anchor: troubleshooting decision rule
     lifecycle: active

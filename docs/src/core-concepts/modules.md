@@ -202,11 +202,15 @@ puts result.reasoning  # => "The document mentions APIs and code examples..."
 ### Module Using ReAct for Tool Integration
 
 ```ruby
+require "dspy"
+require "dspy/tools/text_processing_toolset"
+
 class ResearchSignature < DSPy::Signature
-  description "Research assistant"
+  description "Answer a question about supplied text"
   
   input do
-    const :query, String
+    const :text, String
+    const :question, String
   end
   
   output do
@@ -215,29 +219,39 @@ class ResearchSignature < DSPy::Signature
 end
 
 class ResearchAssistant < DSPy::Module
+  MAX_TEXT_BYTES = 100_000
+  TOOL_NAMES = %w[text_wc text_extract_lines].freeze
+
   def initialize
     super
 
-    # Use a toolset (multiple tools from one class)
-    text_tools = DSPy::Tools::TextProcessingToolset.to_tools
+    text_tools = DSPy::Tools::TextProcessingToolset.to_tools.select do |tool|
+      TOOL_NAMES.include?(tool.name)
+    end
 
-    # You can also create custom tools with Sorbet signatures
-    # See the ReAct Agent Tutorial for custom tool examples
-
-    @predictor = DSPy::ReAct.new(ResearchSignature, tools: text_tools)
+    @predictor = DSPy::ReAct.new(
+      ResearchSignature,
+      tools: text_tools,
+      max_iterations: 5
+    )
   end
 
-  def forward(query:)
-    @predictor.call(query: query)
+  def forward(text:, question:)
+    raise ArgumentError, "text exceeds 100,000 bytes" if text.bytesize > MAX_TEXT_BYTES
+
+    @predictor.call(text: text, question: question)
   end
 end
 ```
 
 ### Complete Example: Code Analysis Agent
 
-This `ReAct` module lets the model choose among text-processing tools while a bounded loop controls execution:
+This `ReAct` module exposes only the portable count and line-range operations. It caps application input and bounds model-directed steps:
 
 ```ruby
+require "dspy"
+require "dspy/tools/text_processing_toolset"
+
 class CodeAnalysisSignature < DSPy::Signature
   description "Analyze source code and answer questions about it"
 
@@ -253,19 +267,26 @@ class CodeAnalysisSignature < DSPy::Signature
 end
 
 class CodeAnalyzer < DSPy::Module
+  MAX_SOURCE_BYTES = 100_000
+  TOOL_NAMES = %w[text_wc text_extract_lines].freeze
+
   def initialize
     super
 
-    # Text processing tools for code analysis
-    text_tools = DSPy::Tools::TextProcessingToolset.to_tools
+    text_tools = DSPy::Tools::TextProcessingToolset.to_tools.select do |tool|
+      TOOL_NAMES.include?(tool.name)
+    end
 
     @agent = DSPy::ReAct.new(
       CodeAnalysisSignature,
-      tools: text_tools
+      tools: text_tools,
+      max_iterations: 5
     )
   end
 
   def forward(source_code:, question:)
+    raise ArgumentError, "source exceeds 100,000 bytes" if source_code.bytesize > MAX_SOURCE_BYTES
+
     @agent.call(source_code: source_code, question: question)
   end
 end
@@ -281,45 +302,11 @@ puts result.answer
 puts result.relevant_lines
 ```
 
+These examples deliberately exclude `text_grep`, `text_rg`, and `text_filter_lines`: those helpers accept command or regular-expression patterns and do not provide process deadlines or input/output caps. Tool arguments remain untrusted even when the module input was validated, so use an application-owned wrapper when provider output limits do not satisfy the same byte budget. `max_iterations` limits agent steps; it does not cancel a running tool.
+
 ### Building a GitHub Issue Triage Agent
 
-```ruby
-class TriageSignature < DSPy::Signature
-  description "Triage GitHub issues by analyzing their content"
-
-  input do
-    const :repo, String
-  end
-
-  output do
-    const :summary, String
-    const :urgent_count, Integer
-  end
-end
-
-class IssueTriage < DSPy::Module
-  def initialize
-    super
-
-    # GitHub CLI tools for issue management
-    gh_tools = DSPy::Tools::GithubCliToolset.to_tools
-
-    @agent = DSPy::ReAct.new(
-      TriageSignature,
-      tools: gh_tools
-    )
-  end
-
-  def forward(repo:)
-    @agent.call(repo: repo)
-  end
-end
-
-# Usage
-triage = IssueTriage.new
-result = triage.call(repo: "vicentereig/dspy.rb")
-puts result.summary
-```
+The core feature is `DSPy::Tools::GitHubCLIToolset`, loaded with `require "dspy/tools/github_cli_toolset"`. Do not pass its entire authenticated proxy set to a triage agent: that would expose broader repository and arbitrary GET API access than issue listing requires. Wrap only the required read operation with an application-owned repository allowlist, credential scope, command timeout, output cap, and failure redaction before giving it to `ReAct`.
 
 For more details on creating tools and toolsets, see the [Toolsets documentation](../toolsets).
 

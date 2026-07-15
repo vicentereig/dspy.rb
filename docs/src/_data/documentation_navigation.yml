@@ -35,7 +35,7 @@ items:
   - { section: core-concepts, label: Module Runtime Context, url: /advanced/module-runtime-context/, source: docs/src/core-concepts/module-runtime-context.md, status: published }
   - { section: core-concepts, label: Event System, url: /core-concepts/events/, source: docs/src/core-concepts/events.md, status: published }
   - { section: core-concepts, label: Toolsets, url: /core-concepts/toolsets/, source: docs/src/core-concepts/toolsets.md, status: published }
-  - { section: core-concepts, label: Toolsets Guide, url: /core-concepts/toolsets-guide/, source: docs/src/core-concepts/toolsets-guide.md, status: published }
+  - { section: core-concepts, label: Toolsets Guide, url: /core-concepts/toolsets-guide/, source: docs/src/core-concepts/toolsets-guide.md, status: unpublished }
   - { section: core-concepts, label: Predictors, url: /core-concepts/predictors/, source: docs/src/core-concepts/predictors.md, status: published }
   - { section: core-concepts, label: CodeAct, url: /core-concepts/codeact/, source: docs/src/core-concepts/codeact.md, status: unpublished }
   - { section: core-concepts, label: Multimodal, url: /core-concepts/multimodal/, source: docs/src/core-concepts/multimodal.md, status: published }

@@ -1,409 +1,280 @@
 ---
 layout: docs
 name: Toolsets
-description: Group related typed Ruby operations for ReAct agents
+description: Define, export, and operate related typed Ruby tools
 date: 2025-07-11 00:00:00 +0000
+last_modified_at: 2026-07-15 00:00:00 +0000
 ---
 # Toolsets
 
-`DSPy::Tools::Toolset` groups related Ruby methods and exposes selected methods as individual tools.
+`DSPy::Tools::Toolset` groups related Ruby methods and exports selected methods as individual tools. Use this page for the supported DSL, export behavior, built-in names, and runtime boundaries. For an application-focused extension recipe, see [Custom Toolsets](/dspy.rb/advanced/custom-toolsets/).
 
 ## When to Use Toolsets
 
-Use toolsets when you have related operations that share state or logic:
+Use a toolset when several operations belong to one capability and should share naming or implementation logic. A standalone `DSPy::Tools::Base` subclass is simpler for one operation.
 
-- **Memory operations** - store, retrieve, search, delete
-- **File operations** - read, write, list, delete
-- **API clients** - get, post, put, delete
-- **Database operations** - query, insert, update, delete
+Export only operations that an agent may call. A tool declaration is an interface, not permission to perform the operation.
 
 ## Basic Usage {#using-toolsets}
 
+Direct-require the Toolset feature when a file does not otherwise load `dspy`:
+
 ```ruby
-class MyToolset < DSPy::Tools::Toolset
+require "dspy/tools/toolset"
+
+class TextStatsToolset < DSPy::Tools::Toolset
   extend T::Sig
 
-  toolset_name "my_tools"
+  toolset_name "stats"
 
-  tool :operation_one, description: "Does something"
-  tool :operation_two, description: "Does something else"
+  tool :word_count, description: "Count whitespace-separated words"
+  tool :line_count, description: "Count lines"
 
-  sig { params(input: String).returns(String) }
-  def operation_one(input:)
-    # Implementation
+  sig { params(text: String).returns(Integer) }
+  def word_count(text:)
+    text.split(/\s+/).reject(&:empty?).length
   end
 
-  sig { params(value: String, optional: T.nilable(String)).returns(String) }
-  def operation_two(value:, optional: nil)
-    # Implementation
+  sig { params(text: String).returns(Integer) }
+  def line_count(text:)
+    text.lines.length
   end
 end
 
-# Use with ReAct agent
-toolset = MyToolset.new
+toolset = TextStatsToolset.new
+puts toolset.word_count(text: "one two")
+
+tools = TextStatsToolset.to_tools
+puts tools.map(&:name)
+```
+
+`to_tools` is a class method. It calls `new` with no arguments once, then gives every exported `ToolProxy` that same instance. Current Toolsets intended for `to_tools` therefore need a zero-argument constructor. Do not create a configured instance and expect `instance.class.to_tools` to preserve that instance or its constructor arguments.
+
+Pass the returned proxies to a `DSPy::ReAct` agent with an explicit loop bound:
+
+```ruby
 agent = DSPy::ReAct.new(
-  MySignature,
-  tools: toolset.class.to_tools
+  AnalyzeText,
+  tools: TextStatsToolset.to_tools,
+  max_iterations: 5
 )
 ```
 
-Sorbet signatures (`sig { ... }`) let [DSPy.rb](https://github.com/vicentereig/dspy.rb) generate the JSON schemas presented to the model. They provide:
-- Providing precise parameter types and descriptions
-- Indicating which parameters are required vs optional
-- Supporting rich types (enums, structs, arrays, unions)
-- Runtime coercion and validation at the tool boundary
-
 ## Text Processing Toolset Example
 
-The included `TextProcessingToolset` shows how to implement a working toolset:
+The core gem ships `DSPy::Tools::TextProcessingToolset`, but `require "dspy"` does not load that optional feature constant. This complete example uses only its portable Ruby word-count operation; it needs no API key, network access, or external search binary.
 
+<!-- toolsets-text-processing-example -->
 ```ruby
-# Define a signature for text analysis
-class AnalyzeText < DSPy::Signature
-  description "Analyze text content using available text processing tools"
+require "dspy/tools/text_processing_toolset"
 
-  input do
-    const :text, String
-    const :question, String
-  end
+toolset = DSPy::Tools::TextProcessingToolset.new
+tools = toolset.class.to_tools
 
-  output do
-    const :answer, String
-  end
-end
+puts tools.map(&:name).join(",")
 
-# The LLM sees these individual tools:
-# - text_processing_grep
-# - text_wc
-# - text_rg
-# - text_processing_extract_lines
-# - text_processing_filter_lines
-# - text_processing_unique_lines
-# - text_processing_sort_lines
-# - text_processing_summarize_text
+word_count = tools.to_h { |tool| [tool.name, tool] }.fetch("text_wc")
+puts word_count.call(text: "one two\nthree")
+```
 
-# Create ReAct agent with toolset
-agent = DSPy::ReAct.new(
-  AnalyzeText,
-  tools: DSPy::Tools::TextProcessingToolset.to_tools
-)
+The output begins with the eight exported names listed under [Text Processing Operations](#text-processing-operations), followed by:
+
+```text
+Lines: 2, Words: 3, Characters: 13
 ```
 
 ## How It Works
 
-1. **Toolset class** defines methods and exposes them as tools
-2. **ToolProxy** wraps each method to act like a standard tool
-3. **Schema generation** uses Sorbet signatures to create JSON schemas
-4. **ReAct integration** presents the generated tools to the agent loop
+1. The `tool` DSL records an exposed Ruby method, generated name, and description.
+2. `.to_tools` constructs one zero-argument Toolset instance.
+3. Each `ToolProxy` delegates to one exposed method on that shared instance.
+4. Sorbet method signatures provide the parameter schema and runtime coercion used by `dynamic_call`.
+5. `DSPy::ReAct` presents the proxies to the model and controls the model-directed loop.
 
 ## DSL Methods
 
 ### `toolset_name(name)`
 
-Sets the prefix for generated tool names:
+Sets the prefix for names generated by `tool`:
 
 ```ruby
 class DatabaseToolset < DSPy::Tools::Toolset
   toolset_name "db"
-  
-  tool :query  # Creates tool named "db_query"
+  tool :query # exported as "db_query"
+
+  def query
+    "ok"
+  end
 end
 ```
+
+Without an explicit name, DSPy.rb removes the `Toolset` suffix from the class name and lowercases the remainder.
 
 ### `tool(method_name, options)`
 
-Exposes a method as a tool:
+Exposes one instance method. `tool_name:` overrides the generated `<toolset_name>_<method_name>` name.
 
 ```ruby
-tool :search, 
-  tool_name: "custom_search",  # Override default name
-  description: "Search for items"
+tool :search,
+  tool_name: "catalog_lookup",
+  description: "Look up an item in the product catalog"
 ```
+
+Descriptions should state the operation and its relevant scope. They do not enforce that scope.
 
 ## Type Safety
 
-Toolsets support these Sorbet types for JSON Schema generation and runtime coercion:
-
-### Basic Types
-
-```ruby
-sig { params(
-  text: String,
-  count: Integer,
-  score: Float,
-  enabled: T::Boolean,
-  threshold: Numeric
-).returns(String) }
-def analyze(text:, count:, score:, enabled:, threshold:)
-  # All basic types are fully supported
-end
-```
-
-### Enums
-
-Define and use enums directly in tool signatures:
+Sorbet signatures drive JSON Schema generation and conversion for proxy calls. Whether a keyword is required comes from the Ruby method signature: `T.nilable` permits `nil`, while a Ruby default permits omission.
 
 ```ruby
 class Priority < T::Enum
   enums do
-    Low = new('low')
-    Medium = new('medium')
-    High = new('high')
-    Critical = new('critical')
+    Low = new("low")
+    High = new("high")
   end
 end
 
-class Status < T::Enum
-  enums do
-    Pending = new('pending')
-    InProgress = new('in-progress')
-    Completed = new('completed')
+class TaskToolset < DSPy::Tools::Toolset
+  extend T::Sig
+
+  toolset_name "task"
+  tool :assign, description: "Assign a task priority"
+
+  sig do
+    params(
+      task_id: String,
+      priority: Priority,
+      note: T.nilable(String)
+    ).returns(String)
+  end
+  def assign(task_id:, priority:, note: nil)
+    "#{task_id}: #{priority.serialize}#{": #{note}" if note}"
   end
 end
-
-sig { params(priority: Priority, status: Status).returns(String) }
-def update_task(priority:, status:)
-  "Updated to #{priority.serialize} priority with #{status.serialize} status"
-end
 ```
 
-LLM calls get converted automatically:
-```json
-{
-  "action": "update_task",
-  "action_input": {
-    "priority": "critical",
-    "status": "in-progress"
-  }
-}
-```
+### Basic Types
+
+Toolset schemas support `String`, `Integer`, `Float`, `Numeric`, and `T::Boolean`.
+
+### Enums
+
+`T::Enum` values are represented as their serialized strings and converted back to enum instances at the tool boundary.
 
 ### Structs
 
-Use T::Struct for complex data structures:
-
-```ruby
-class TaskMetadata < T::Struct
-  prop :id, String
-  prop :priority, Priority
-  prop :tags, T::Array[String]
-  prop :estimated_hours, T.nilable(Float), default: nil
-end
-
-class TaskRequest < T::Struct
-  prop :title, String
-  prop :description, String
-  prop :status, Status
-  prop :metadata, TaskMetadata
-  prop :assignees, T::Array[String]
-end
-
-sig { params(task: TaskRequest).returns(String) }
-def create_task(task:)
-  "Created: #{task.title} (#{task.status.serialize})"
-end
-```
+`T::Struct` parameters become object schemas and are converted to struct instances before the method runs.
 
 ### Collections
 
-Arrays and hashes with typed elements:
-
-```ruby
-sig { params(
-  tags: T::Array[String],
-  priorities: T::Array[Priority],
-  config: T::Hash[String, T.any(String, Integer, Float)],
-  mappings: T::Hash[String, Priority]
-).returns(String) }
-def configure(tags:, priorities:, config:, mappings:)
-  # Typed collections with automatic validation
-end
-```
+Typed arrays and hashes preserve their declared element or value types during schema generation and conversion.
 
 ### Nullable and Optional Parameters
 
-In Ruby tool methods, `T.nilable()` allows `nil`; the method's default value makes a keyword optional:
-
-```ruby
-sig { params(
-  required_field: String,
-  optional_field: T.nilable(String),
-  optional_enum: T.nilable(Priority),
-  optional_array: T.nilable(T::Array[String])
-).returns(String) }
-def process(required_field:, optional_field: nil, optional_enum: nil, optional_array: nil)
-  # Only required_field is mandatory in the JSON schema
-end
-```
+`T.nilable(String)` allows a string or `nil`. A method default such as `note: nil` makes the keyword omittable. These are separate properties.
 
 ### Union Types
 
-Multiple type options with `T.any()`:
-
-```ruby
-sig { params(
-  value: T.any(String, Integer, Float),
-  action: T.any(Priority, Status)
-).returns(String) }
-def handle_flexible(value:, action:)
-  # Accepts multiple types with automatic coercion
-end
-```
+`T.any(...)` becomes a schema union. Prefer unions whose variants can be distinguished reliably from their JSON representation.
 
 ## Supported Sorbet Types Reference
 
-| Sorbet Type | JSON Schema | Auto Conversion | Notes |
-|-------------|-------------|-----------------|-------|
-| `String` | `{"type": "string"}` | ✅ | Basic string values |
-| `Integer` | `{"type": "integer"}` | ✅ | Whole numbers |
-| `Float` | `{"type": "number"}` | ✅ | Decimal numbers |
-| `Numeric` | `{"type": "number"}` | ✅ | Integer or Float |
-| `T::Boolean` | `{"type": "boolean"}` | ✅ | true/false values |
-| `T::Enum` | `{"type": "string", "enum": [...]}` | ✅ | Automatic deserialization |
-| `T::Struct` | `{"type": "object", "properties": {...}}` | ✅ | Nested object conversion |
-| `T::Array[Type]` | `{"type": "array", "items": {...}}` | ✅ | Typed array elements |
-| `T::Hash[K,V]` | `{"type": "object", "additionalProperties": {...}}` | ✅ | Key-value constraints |
-| `T.nilable(Type)` | `{"type": [original, "null"]}` | ✅ | Null allowed; a Ruby default controls omission |
-| `T.any(T1, T2)` | `{"oneOf": [{...}, {...}]}` | ✅ | Union type handling |
-| `T.class_of(Class)` | `{"type": "string"}` | ✅ | Class name strings |
+| Sorbet type | Schema shape | Runtime conversion |
+| --- | --- | --- |
+| `String` | string | yes |
+| `Integer` | integer | yes |
+| `Float`, `Numeric` | number | yes |
+| `T::Boolean` | boolean | yes |
+| `T::Enum` | string enum | yes |
+| `T::Struct` | object | yes |
+| `T::Array[Type]` | array | element-wise |
+| `T::Hash[K, V]` | object | key/value conversion |
+| `T.nilable(Type)` | type or null | yes |
+| `T.any(T1, T2)` | union | yes, when distinguishable |
 
 ## Schema Generation Examples
 
-Basic enum tool generates:
-```json
-{
-  "type": "function", 
-  "function": {
-    "name": "update_task",
-    "parameters": {
-      "type": "object",
-      "properties": {
-        "priority": {
-          "type": "string",
-          "enum": ["low", "medium", "high", "critical"],
-          "description": "Parameter priority"
-        },
-        "status": {
-          "type": "string", 
-          "enum": ["pending", "in-progress", "completed"],
-          "description": "Parameter status"
-        }
-      },
-      "required": ["priority", "status"]
-    }
-  }
-}
+Inspect a proxy's schema rather than maintaining a second hand-written schema:
+
+```ruby
+assign = TaskToolset.to_tools.to_h { |tool| [tool.name, tool] }.fetch("task_assign")
+puts assign.schema
 ```
 
-Complex struct tool generates:
-```json
-{
-  "type": "function",
-  "function": {
-    "name": "create_task", 
-    "parameters": {
-      "type": "object",
-      "properties": {
-        "task": {
-          "type": "object",
-          "properties": {
-            "_type": {"type": "string", "const": "TaskRequest"},
-            "title": {"type": "string"},
-            "description": {"type": "string"},
-            "status": {
-              "type": "string",
-              "enum": ["pending", "in-progress", "completed"]
-            },
-            "metadata": {
-              "type": "object",
-              "properties": {
-                "_type": {"type": "string", "const": "TaskMetadata"},
-                "id": {"type": "string"},
-                "priority": {
-                  "type": "string", 
-                  "enum": ["low", "medium", "high", "critical"]
-                },
-                "tags": {"type": "array", "items": {"type": "string"}},
-                "estimated_hours": {"type": ["number", "null"]}
-              }
-            }
-          }
-        }
-      },
-      "required": ["task"]
-    }
-  }
-}
-```
+The schema describes the callable name, description, and parameters. It does not describe authorization, sandboxing, input trust, timeouts, or transaction behavior.
 
 ## Text Processing Operations
 
-The `TextProcessingToolset` provides these operations:
+`DSPy::Tools::TextProcessingToolset` exports exactly these names:
 
-- `grep(text:, pattern:, ignore_case: true, count_only: false)` - Search for patterns in text
-- `word_count(text:, lines_only: false, words_only: false, chars_only: false)` - Count lines, words, characters
-- `ripgrep(text:, pattern:, context: 0)` - Fast text search with context
-- `extract_lines(text:, start_line:, end_line: nil)` - Extract specific line ranges
-- `filter_lines(text:, pattern:, invert: false)` - Filter lines by pattern
-- `unique_lines(text:, preserve_order: true)` - Get unique lines
-- `sort_lines(text:, reverse: false, numeric: false)` - Sort lines
-- `summarize_text(text:)` - Generate statistical summary
+| Exported tool | Ruby method | Notes |
+| --- | --- | --- |
+| `text_grep` | `grep` | invokes the system `grep` command through a temporary file |
+| `text_wc` | `word_count` | pure Ruby line, word, and character counts |
+| `text_rg` | `ripgrep` | invokes the external `rg` command through a temporary file |
+| `text_extract_lines` | `extract_lines` | selects a line or line range |
+| `text_filter_lines` | `filter_lines` | applies a Ruby regular expression |
+| `text_unique_lines` | `unique_lines` | removes duplicate lines |
+| `text_sort_lines` | `sort_lines` | sorts lexically or numerically |
+| `text_summarize_text` | `summarize_text` | returns deterministic text statistics |
+
+The `grep` and `ripgrep` helpers interpolate pattern values into shell command strings and use temporary files. Quotes and option-like patterns can change command interpretation. The implementation suppresses command stderr, has no elapsed-time or output cap, and unlinks its temporary file only after the normal command path. These are convenience utilities for trusted inputs in a controlled runtime, not a shell-isolation boundary. Verify binary availability, constrain pattern and input size, apply a process timeout and cleanup strategy where needed, and isolate untrusted workloads outside the application process.
+
+`text_filter_lines` compiles its pattern as a Ruby regular expression. Constrain pattern complexity and input size when patterns are not application-owned; type conversion does not prevent expensive regular-expression evaluation.
+
+The core gem also ships `DSPy::Tools::GitHubCLIToolset` at `dspy/tools/github_cli_toolset`. Its operations depend on the `gh` executable and the caller's GitHub authentication and repository permissions.
 
 ## LLM Usage
 
-The LLM interacts with each method as a separate tool:
+An agent selects the exported name, not the Ruby method name. This example uses the pure-Ruby `text_wc` operation; it does not expose the shell-backed `text_grep` or `text_rg` proxies to model-supplied arguments:
 
 ```json
 {
-  "thought": "I need to find all lines mentioning 'error'",
-  "action": "text_processing_grep",
+  "action": "text_wc",
   "action_input": {
-    "text": "line 1: ok\nline 2: error found\nline 3: ok",
-    "pattern": "error"
+    "text": "one two\nthree"
   }
 }
 ```
 
+Treat model-produced text as untrusted input and cap its byte size before processing it. A pure-Ruby operation avoids this Toolset's shell boundary, but its schema still does not impose resource limits or an elapsed-time deadline. Pass only the reviewed proxies an agent needs, and keep `max_iterations` and operation-level limits explicit.
+
 ## Testing
 
-Test toolsets like regular Ruby classes:
+Test both the Ruby operation and the exported proxy contract:
 
 ```ruby
-RSpec.describe MyToolset do
-  let(:toolset) { described_class.new }
-  
-  it "performs operations" do
-    result = toolset.operation_one(input: "test")
-    expect(result).to eq("expected")
-  end
-  
-  it "generates correct tools" do
+RSpec.describe TextStatsToolset do
+  it "counts words and exports stable names" do
+    expect(described_class.new.word_count(text: "one two")).to eq(2)
+
     tools = described_class.to_tools
-    expect(tools.map(&:name)).to include("my_tools_operation_one")
+    expect(tools.map(&:name)).to eq(%w[stats_word_count stats_line_count])
+    expect(tools.first.dynamic_call("text" => "one two")).to eq(2)
   end
 end
 ```
 
+For packaged built-ins, test in a clean subprocess against files listed by the gemspec. A normal spec process may already have loaded `dspy`, masking a missing direct-load dependency.
+
 ## Limitations
 
-- Methods must use keyword arguments for schema generation
-- Each method becomes a separate tool (no method chaining)
-- Shared state is isolated per toolset instance
-
-## Next Steps
-
-The toolset pattern works well for grouping related operations. The `TextProcessingToolset` provides text manipulation utilities, while the `GithubCliToolset` wraps GitHub CLI operations.
-
-Custom toolsets can wrap domain services by extending `Toolset`.
+- `.to_tools` calls `new` without arguments; constructor-required Toolsets cannot use this export path.
+- Tool parameters should be keyword arguments so schema requiredness and coercion are represented correctly.
+- Each exposed method becomes a separate proxy; method chaining is not exposed.
+- A direct proxy `call` delegates failures from the method. `dynamic_call` converts parsing, coercion, and method exceptions to an `"Error: ..."` string. Define and test the failure contract your application consumes.
+- Tool schemas do not cap input size, execution time, retries, or agent iterations.
 
 ## Runtime Boundaries {#runtime-boundaries}
 
-A tool schema tells the model how to call a method. It does not authorize the operation or isolate its side effects. The application must enforce permissions, validate external resources, handle failures, and bound the agent loop.
+A Toolset schema describes call shape and performs supported type conversion. It does not grant authorization, sanitize values for a shell or query, provide a sandbox, impose a timeout, isolate side effects, or make an operation idempotent. The application must enforce permissions and input policy, bound resource use and the agent loop, handle partial failures, and define retry and transaction behavior. `max_iterations` limits model-directed steps; it does not cancel a slow subprocess, network request, or tool method.
+
+Keep those controls in deterministic Ruby around or inside the tool. Use OS or container isolation when an operation can execute untrusted code or commands; a Sorbet schema is not that isolation.
 
 ## Design Decisions
 
-**Explicit Tool Exposure**: The `tool` DSL exposes only declared methods. This provides:
-- Clear documentation for each tool via the `description` parameter
-- Intentional tool interface design
-- Proper schema descriptions for LLM consumption
-- Type safety through Sorbet signatures
+The `tool` DSL exposes only declared methods. This keeps the model-facing interface explicit and gives each operation a stable name and description. Sorbet signatures keep the schema next to the Ruby implementation, while application-owned policy remains separate from schema generation.
+
+## Next Steps
+
+Apply the operational recipe in [Custom Toolsets](/dspy.rb/advanced/custom-toolsets/), then pass only the minimum reviewed proxies to a [module or bounded ReAct agent](/dspy.rb/core-concepts/modules/).
