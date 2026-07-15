@@ -7,7 +7,7 @@ last_modified_at: 2026-07-15 00:00:00 +0000
 ---
 # Installation & Provider Setup
 
-This page owns package and provider selection. To build and run a first program after choosing OpenAI, follow the [Quick Start](/dspy.rb/getting-started/quick-start/).
+Choose and configure a provider here. To build and run a first program with OpenAI, follow the [Quick Start](/dspy.rb/getting-started/quick-start/).
 
 ## Requirements
 
@@ -23,7 +23,7 @@ gem 'dspy'
 gem 'dspy-openai'
 ```
 
-Then install the bundle:
+Install the bundle:
 
 ```bash
 bundle install
@@ -31,7 +31,7 @@ bundle install
 
 Installing only `dspy` does not install an OpenAI SDK or adapter. If code configures an `openai/*`, `openrouter/*`, or `ollama/*` model without `dspy-openai`, `DSPy::LM` raises `DSPy::LM::MissingAdapterError`.
 
-The [package and capability matrix](/dspy.rb/getting-started/packages/) is the authority for every package's status, exact require path, dependencies, and limitations. Provider and model capabilities still vary after a package is installed.
+The [package and capability matrix](/dspy.rb/getting-started/packages/) lists every package's status, exact require path, dependencies, and limitations. Provider and model capabilities still vary after a package is installed.
 
 ## Choose a Provider Adapter {#provider-setup}
 
@@ -72,7 +72,7 @@ end
 
 With this form, a missing variable raises Ruby's `KeyError` before LM initialization. If an application passes `nil`, an empty string, or whitespace with `ENV['OPENAI_API_KEY']`, the OpenAI adapter raises `DSPy::LM::MissingAPIKeyError`.
 
-## Provider Configuration
+## Configure a Provider
 
 ### OpenAI
 

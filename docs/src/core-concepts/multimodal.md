@@ -21,8 +21,8 @@ DSPy.rb can pass images and supported PDF documents through raw chat or typed si
 - Claude 3.5 series (Sonnet, Haiku)
 
 ### Google Gemini Models
-- `gemini-2.5-flash` (fast, efficient)
-- `gemini-2.5-pro` (advanced reasoning)
+- `gemini-2.5-flash`
+- `gemini-2.5-pro`
 
 ## PDF Document Support
 
@@ -109,11 +109,11 @@ response = lm.raw_chat do |messages|
 end
 ```
 
-## Working with Images
+## Create Images
 
 ### Creating Images
 
-DSPy.rb provides the `DSPy::Image` class for handling images in various formats:
+`DSPy::Image` accepts a URL, base64 data, or byte data:
 
 ```ruby
 # From URL (OpenAI only)
@@ -332,9 +332,9 @@ File.open('image.jpg', 'rb') do |file|
 end
 ```
 
-## Working with Google Gemini Models
+## Send Images to Google Gemini Models
 
-Google Gemini models are designed with multimodal capabilities from the ground up:
+The Gemini adapter accepts base64 or byte image data:
 
 ```ruby
 # Configure Gemini model
@@ -398,12 +398,11 @@ puts response
 ### Google Gemini
 - **Base64 Only**: Images must be base64-encoded, URL references not supported
 - **No Detail Parameter**: The `detail` parameter is not supported
-- **Native Multimodal**: Built for multimodal from the ground up
 - **Token Usage**: Tracks token usage in response metadata
 
-## Error Handling
+## Handle Incompatible Image Inputs
 
-DSPy.rb validates image compatibility with your chosen provider and provides clear error messages:
+DSPy.rb raises `ArgumentError` or `DSPy::LM::IncompatibleImageFeatureError` for the incompatible model and input combinations below:
 
 ```ruby
 begin
@@ -443,13 +442,13 @@ rescue DSPy::LM::IncompatibleImageFeatureError => e
 end
 ```
 
-## Best Practices
+## Control Image Compatibility and Cost
 
-1. **Choose the Right Model**: Use vision-capable models for image tasks
-2. **Optimize Image Size**: Resize large images to reduce token usage
-3. **Use Appropriate Detail**: Use `low` detail for simple queries, `high` for detailed analysis
-4. **Handle Errors Gracefully**: Check for vision support before sending images
-5. **Consider Token Costs**: Images can consume significant tokens
+1. **Choose a vision-capable model** for image tasks.
+2. **Resize large images** to reduce token usage.
+3. **Set image detail deliberately**: use `low` for simple queries and `high` for detailed analysis.
+4. **Check provider compatibility** before sending images.
+5. **Measure token use** for multiple or large images.
 
 ## Example: Object Detection
 
@@ -496,7 +495,7 @@ puts "Tokens used: #{response.usage.total_tokens}"
 - **Text Recognition**: May struggle with small or rotated text
 - **Spatial Reasoning**: Limited precision for exact measurements
 
-## Examples
+## Run the Repository Examples
 
 Complete working examples are available in the repository:
 
@@ -507,18 +506,18 @@ Complete working examples are available in the repository:
 
 ### Image Analysis  
 - **File**: `examples/multimodal/image_analysis.rb`
-- **Features**: Comprehensive image analysis, color extraction, mood detection, artistic analysis
+- **Features**: Color extraction, mood detection, and artistic analysis fields
 - **Use Cases**: Art analysis, photography assessment, content moderation, image cataloging
 
-Both examples demonstrate:
+Both examples include:
 - Structured signatures with complex output types
 - Type-safe multimodal processing 
 - Error handling and provider compatibility
 - Integration with different vision models
 
-## Next Steps
+## Choose Provider and Output Types
 
 - Run the examples locally with your API keys
-- Explore custom signature designs for your use cases
-- Learn about [rich types](/dspy.rb/advanced/complex-types/) for advanced structured outputs
+- Define a signature for the output your application consumes
+- Use [rich types](/dspy.rb/advanced/complex-types/) for nested structured outputs
 - Check [provider documentation](/dspy.rb/production/troubleshooting/) for model-specific features

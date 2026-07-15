@@ -48,7 +48,7 @@ dispositions:
     discovery_review: [corpus, navigation, sitemap]
     risk_review: Keep provider caveats beside the types they constrain.
   - source: docs/src/core-concepts/signatures.md
-    measured_tokens: 2312
+    measured_tokens: 2300
     outcome: keep
     audience: Developer defining a typed LLM contract.
     reason: Inputs, outputs, instructions, nullable fields, and defaults form one reference task.
@@ -60,7 +60,7 @@ dispositions:
     discovery_review: [corpus, navigation, sitemap]
     risk_review: Preserve the validation-not-correctness semantic anchor.
   - source: docs/src/core-concepts/predictors.md
-    measured_tokens: 1453
+    measured_tokens: 1488
     outcome: split
     audience: Developer choosing and invoking a predictor.
     reason: Concurrent scheduling is application control flow independently sought after predictor selection.
@@ -72,7 +72,7 @@ dispositions:
     discovery_review: [corpus, navigation, sitemap, llms.txt, llms-full.txt]
     risk_review: Preserve predictor taxonomy and #predictor-comparison; retain the old fragment as an obvious canonical handoff.
   - source: docs/src/core-concepts/multimodal.md
-    measured_tokens: 1813
+    measured_tokens: 1797
     outcome: keep
     audience: Developer adding typed media inputs.
     reason: Media construction, provider constraints, and typed signature use share one runnable setup.
@@ -132,7 +132,7 @@ dispositions:
     discovery_review: [corpus, navigation, sitemap]
     risk_review: Callback definitions link to their new owner; Rails-specific use remains here.
   - source: docs/src/core-concepts/module-runtime-context.md
-    measured_tokens: 827
+    measured_tokens: 837
     outcome: split
     audience: Module author selecting and propagating runtime models.
     reason: Lifecycle callbacks are independently sought module-authoring behavior; LM resolution remains one coherent task.
@@ -144,7 +144,7 @@ dispositions:
     discovery_review: [corpus, navigation, sitemap, llms.txt, llms-full.txt]
     risk_review: Preserve the retained advanced route and migrate the already-active old-route fragment directly to the new owner.
   - source: docs/src/core-concepts/modules.md
-    measured_tokens: 1528
+    measured_tokens: 1530
     outcome: keep
     audience: Developer composing predictors into reusable behavior.
     reason: Forward semantics, composition, configuration, and serialization form the module contract.
@@ -155,6 +155,18 @@ dispositions:
     inbound_review: []
     discovery_review: [corpus, navigation, sitemap]
     risk_review: Keep the module contract ahead of advanced callbacks.
+  - source: docs/src/core-concepts/toolsets.md
+    measured_tokens: 1500
+    outcome: keep
+    audience: Developer defining and passing bounded tools to an agent.
+    reason: Definition, export, composition, agent handoff, and runtime boundaries form one Toolset contract.
+    canonical_definitions: [DSPy::Tools::Toolset, tool export, agent handoff]
+    example_owner: docs/src/core-concepts/toolsets.md
+    anchor_policy: rendered
+    anchors: [using-toolsets, how-it-works, runtime-boundaries]
+    inbound_review: [docs/src/getting-started/quick-start.md, docs/src/core-concepts/predictors.md]
+    discovery_review: [corpus, navigation, sitemap]
+    risk_review: Keep schema conversion distinct from authorization, isolation, resource limits, and subprocess cancellation.
   - source: docs/src/index.md
     measured_tokens: 2693
     outcome: keep

@@ -8,9 +8,9 @@ last_modified_at: 2025-07-21 00:00:00 +0000
 ---
 # Signatures
 
-Signatures define the interface between your application and language models. They specify inputs, outputs, and task descriptions using Sorbet types for basic type safety.
+Signatures define the interface between an application and a language model. They declare inputs, outputs, and task descriptions with Sorbet types; runtime validation rejects values outside the declared shape.
 
-## Basic Signature Structure
+## Declare a Signature
 
 ```ruby
 class TaskSignature < DSPy::Signature
@@ -26,9 +26,9 @@ class TaskSignature < DSPy::Signature
 end
 ```
 
-## Input Definition
+## Declare Inputs
 
-### Supported Types
+### Choose Sorbet Types
 
 ```ruby
 class BasicClassifier < DSPy::Signature
@@ -89,14 +89,14 @@ puts result.scheduled_date.class  # => Date
 puts result.event_datetime.class  # => DateTime
 ```
 
-### Timezone Considerations
+### Preserve Time Zones
 
 Following ActiveRecord conventions:
 - **Time** objects are automatically converted to UTC for consistent storage
 - **DateTime** objects preserve timezone information
 - **Date** objects are timezone-agnostic
 
-## Output Definition
+## Declare Outputs
 
 ### Using Enums for Controlled Outputs
 
@@ -216,9 +216,9 @@ For a standalone `T::Struct`, Sorbet treats a nilable `const` or `prop` as fully
 
 Provider adapters may tighten the base schema. For example, OpenAI strict structured outputs mark every property as required, including fields with DSPy defaults. In that mode, the model must return the key; the default remains useful for non-strict responses and direct Ruby construction. Inspect the adapter schema you deploy instead of assuming every provider preserves base DSPy omission rules.
 
-## Default Values (New in v0.7.0)
+## Default Missing Fields
 
-Default values make your signatures more flexible and handle missing LLM responses gracefully:
+Defaults supply declared values when construction or a language-model response omits a field:
 
 ```ruby
 class SmartSearch < DSPy::Signature
@@ -250,17 +250,13 @@ result = search.call(query: "Ruby programming")
 # If LLM doesn't return search_time_ms or cached, defaults are applied
 ```
 
-### How Default Values Work
+### Where Defaults Apply
 
-1. **Input Defaults**: Applied when creating the input struct
-   - Reduce boilerplate in your code
-   - Make APIs more user-friendly
-   
-2. **Output Defaults**: Applied when LLM response is missing fields
-   - Supply declared values when a response omits defaulted fields
-   - Prevent errors from incomplete responses
+1. **Input defaults** apply when creating the input struct and let callers omit declared fields.
 
-## Practical Examples
+2. **Output defaults** supply declared values when a response omits defaulted fields.
+
+## Signature Examples
 
 ### Email Classification
 
@@ -349,7 +345,7 @@ TextClassifier.output_json_schema  # Returns JSON schema for outputs
 
 ### BAML Schema Format (New in v0.28.2)
 
-BAML (Basically A Markup Language) is a compact schema format that reduces token usage by 84%+ compared to JSON Schema in Enhanced Prompting mode (`structured_outputs: false`). It provides a more readable, concise representation of your data structures.
+BAML (Basically A Markup Language) is a compact schema format for Enhanced Prompting mode (`structured_outputs: false`). The `TextClassifier` comparison below measures its character count against JSON Schema; measure tokens with the tokenizer for the model you deploy.
 
 **Configure BAML schema format:**
 
@@ -402,9 +398,7 @@ class TextClassifierOutput {
 }
 ```
 
-**Token Savings: 84.4%** (verified by integration tests)
-
-For rich signatures with nested types, BAML can reduce the characters used for schema guidance in Enhanced Prompting mode. Measure token counts with the tokenizer for the model you deploy.
+For rich signatures with nested types, BAML can reduce the characters used for schema guidance in Enhanced Prompting mode. Compare the generated schemas for your signature, and measure tokens with the tokenizer for the model you deploy.
 
 **Note**: BAML format applies only to Enhanced Prompting mode (`structured_outputs: false`). When using Structured Outputs mode (`structured_outputs: true`), OpenAI's native API receives the JSON Schema directly and BAML format has no effect.
 
@@ -558,7 +552,7 @@ puts result.reasoning  # => "The text uses positive language..."
 
 **Important**: If you define your own `:reasoning` field in a signature that will be used with ChainOfThought, it may cause conflicts or unexpected behavior.
 
-## Best Practices
+## Keep Signature Contracts Explicit
 
 ### 1. Clear and Specific Descriptions
 

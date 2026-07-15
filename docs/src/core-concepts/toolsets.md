@@ -15,7 +15,7 @@ Use a toolset when several operations belong to one capability and should share 
 
 Export only operations that an agent may call. A tool declaration is an interface, not permission to perform the operation.
 
-## Basic Usage {#using-toolsets}
+## Define and Export a Toolset {#using-toolsets}
 
 Direct-require the Toolset feature when a file does not otherwise load `dspy`:
 
@@ -83,7 +83,7 @@ The output begins with the eight exported names listed under [Text Processing Op
 Lines: 2, Words: 3, Characters: 13
 ```
 
-## How It Works
+## How Toolset Export Works {#how-it-works}
 
 1. The `tool` DSL records an exposed Ruby method, generated name, and description.
 2. `.to_tools` constructs one zero-argument Toolset instance.
@@ -275,6 +275,6 @@ Keep those controls in deterministic Ruby around or inside the tool. Use OS or c
 
 The `tool` DSL exposes only declared methods. This keeps the model-facing interface explicit and gives each operation a stable name and description. Sorbet signatures keep the schema next to the Ruby implementation, while application-owned policy remains separate from schema generation.
 
-## Next Steps
+## Apply Toolsets in an Agent
 
 Apply the operational recipe in [Custom Toolsets](/dspy.rb/advanced/custom-toolsets/), then pass only the minimum reviewed proxies to a [module or bounded ReAct agent](/dspy.rb/core-concepts/modules/).

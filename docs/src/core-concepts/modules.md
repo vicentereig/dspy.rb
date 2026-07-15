@@ -12,15 +12,15 @@ last_modified_at: 2025-10-07 00:00:00 +0000
 
 ## Choose a Module Boundary
 
-Modules provide:
+A module can own:
 - **Execution strategies** through built-in or custom modules
 - **Configuration** at the instance, fiber, or global level
 - **Composition** through explicit Ruby method calls and control flow
 - **Instrumentation** around each module call
 
-## Basic Module Structure
+## Subclass DSPy::Module
 
-### Creating a Custom Module
+### Define `forward`
 
 ```ruby
 class SentimentSignature < DSPy::Signature
@@ -57,7 +57,7 @@ puts result.sentiment    # => "positive"
 puts result.confidence   # => 0.9
 ```
 
-### Module with Configuration
+### Inject Module Configuration
 
 ```ruby
 class ClassificationSignature < DSPy::Signature
@@ -92,7 +92,7 @@ result = classifier.call(text: "This is a technical document")
 puts result.reasoning
 ```
 
-## Runtime Context Guidance
+## Override the Language Model at Runtime
 
 See [Module Runtime Context](/dspy.rb/advanced/module-runtime-context/) for fiber-local language model overrides and lifecycle callbacks.
 
@@ -158,7 +158,7 @@ class AdaptiveAnalyzer < DSPy::Module
 end
 ```
 
-## Working with Different Predictors
+## Compose Predictor Types
 
 ### Module Using Chain of Thought
 
@@ -308,17 +308,17 @@ These examples deliberately exclude `text_grep`, `text_rg`, and `text_filter_lin
 
 The core feature is `DSPy::Tools::GitHubCLIToolset`, loaded with `require "dspy/tools/github_cli_toolset"`. Do not pass its entire authenticated proxy set to a triage agent: that would expose broader repository and arbitrary GET API access than issue listing requires. Wrap only the required read operation with an application-owned repository allowlist, credential scope, command timeout, output cap, and failure redaction before giving it to `ReAct`.
 
-For more details on creating tools and toolsets, see the [Toolsets documentation](../toolsets).
+See [Toolsets](../toolsets) to define and export tools.
 
 ### Module Using CodeAct for Dynamic Programming
 
 CodeAct is available via the `dspy-code_act` gem. The complete Think-Code-Observe module example now lives in [`lib/dspy/code_act/README.md`](https://github.com/vicentereig/dspy.rb/blob/main/lib/dspy/code_act/README.md), alongside guidance on safety, observability, and advanced usage.
 
-## Extensibility
+## Define a Custom Execution Strategy
 
 ### Creating Custom Modules
 
-You can create custom modules to implement your own agent systems or inference frameworks, similar to how `DSPy::ReAct` (core) or `DSPy::CodeAct` (optional gem) are built. Custom modules are ideal for:
+Subclass `DSPy::Module` when the built-in modules do not define the required execution pattern, as `DSPy::ReAct` (core) and `DSPy::CodeAct` (optional gem) do. Custom modules can own:
 - Building specialized agent architectures
 - Implementing custom inference patterns
 - Creating domain-specific processing pipelines
@@ -422,9 +422,9 @@ describe DocumentProcessor do
 end
 ```
 
-## Best Practices
+## Keep Module Boundaries Narrow and Typed
 
-### 1. Single Responsibility
+### 1. Give a Module One Execution Job
 
 ```ruby
 # Good: Focused responsibility
@@ -459,7 +459,7 @@ class EmailProcessor < DSPy::Module
 end
 ```
 
-### 2. Clear Interfaces with Signatures
+### 2. Declare Interfaces with Signatures
 
 ```ruby
 class DocumentAnalysisSignature < DSPy::Signature
@@ -490,7 +490,7 @@ end
 
 ## Instruction Update Contract
 
-Teleprompters such as GEPA and MIPROv2 expect predictors to expose immutable update hooks so optimizers can safely swap instructions and few-shot examples. When you build a custom module that participates in optimization:
+Optimizers such as GEPA and MIPROv2 expect predictors to expose immutable update hooks so they can safely swap instructions and few-shot examples. When you build a custom module that participates in optimization:
 
 - Implement `with_instruction(new_instruction)` and return a new instance configured with the provided instruction.
 - Implement `with_examples(few_shot_examples)` when your module supports few-shot updates, also returning a new instance.
@@ -520,9 +520,9 @@ class SentimentPredictor < DSPy::Module
 end
 ```
 
-If a module omits these hooks, teleprompters now raise `DSPy::InstructionUpdateError` instead of mutating instance variables directly, making incompatibilities immediately visible.
+If a module omits these hooks, optimizers raise `DSPy::InstructionUpdateError` instead of mutating instance variables directly.
 
-## Basic Optimization Support
+## Expose Predictor Updates to Optimizers
 
 Modules can work with the optimization framework through their underlying predictors:
 

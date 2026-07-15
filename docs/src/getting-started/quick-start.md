@@ -7,7 +7,7 @@ last_modified_at: 2026-07-15 00:00:00 +0000
 ---
 # Quick Start
 
-This is the canonical install-to-first-result path. It uses OpenAI for one small sentiment classifier; model output can vary.
+This path uses OpenAI for one small sentiment classifier; model output can vary.
 
 ## Your First DSPy Program {#first-program}
 
@@ -93,7 +93,7 @@ puts result.confidence
 bundle exec ruby classify.rb
 ```
 
-You will see a sentiment value followed by a confidence value. Do not depend on a particular label, confidence, or wording: those depend on the model and request. When prediction succeeds, `result.sentiment` is a `Classify::Sentiment` and `result.confidence` is a `Float`.
+The program prints a sentiment value followed by a confidence value. Do not depend on a particular label, confidence, or wording: those depend on the model and request. When prediction succeeds, `result.sentiment` is a `Classify::Sentiment` and `result.confidence` is a `Float`.
 
 ## What the Boundary Guarantees
 
@@ -133,7 +133,7 @@ end
 
 The application owns the tool implementation, side effects, permissions, error handling, and iteration limits. `ReAct` only owns the bounded loop in which the model selects a tool or returns a result.
 
-## Next Steps
+## Choose the Next Abstraction {#next-steps}
 
 - Learn how [signatures and types](/dspy.rb/core-concepts/signatures/) define the task contract.
 - Choose among [predictors](/dspy.rb/core-concepts/predictors/).

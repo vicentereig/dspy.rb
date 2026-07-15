@@ -12,7 +12,7 @@ Start with a signature, choose a predictor, then wrap calls in a module when the
 ## The Programming Model
 
 ### [Signatures](./signatures/)
-Define what your LLM operations should do - the inputs and outputs. Think of them as type-safe contracts for AI operations.
+A signature declares typed inputs, outputs, and task instructions.
 
 ### [Predictors](./predictors/)
 Execute a signature with `Predict`, `ChainOfThought`, or a bounded `ReAct` tool loop.
@@ -23,15 +23,15 @@ Encapsulate predictor calls and compose them with ordinary Ruby control flow.
 ### Application State
 Keep conversation history, user preferences, checkpoints, and other durable state in application-owned storage. Pass the state a module needs through typed inputs.
 
-Once those three abstractions are clear, use the [Build selector](/dspy.rb/build/) for examples, pipelines, retrieval, multimodal inputs, Toolsets, and stateful agents. Runtime context, events, interception, Rails, storage, observability, and troubleshooting live under [Operate](/dspy.rb/production/).
+After these three abstractions, use the [Build selector](/dspy.rb/build/) for examples, pipelines, retrieval, multimodal inputs, Toolsets, and stateful agents. Runtime context, events, interception, Rails, storage, observability, and troubleshooting live under [Operate](/dspy.rb/production/).
 
-## Start Learning
+## Learn the Concepts in Prerequisite Order
 
-We recommend reading through these concepts in order:
+Read these concepts in order:
 
 1. Define an input/output contract with [Signatures](./signatures/).
 2. Execute it with [Predictors](./predictors/).
 3. Encapsulate and compose calls with [Modules](./modules/).
-4. Continue to [Examples](/dspy.rb/core-concepts/examples/) and [Toolsets](/dspy.rb/core-concepts/toolsets/) when you are ready to build.
+4. Continue to [Examples](/dspy.rb/core-concepts/examples/) and [Toolsets](/dspy.rb/core-concepts/toolsets/) to build with evaluation data and tools.
 
 Evaluation defines acceptable behavior. Optimizers use examples, metrics, and feedback to search supported program parameters.

@@ -4,11 +4,11 @@ name: Examples
 description: Type-safe training and evaluation data objects
 date: 2025-07-10 00:00:00 +0000
 ---
-# Examples
+# Examples and Expected Behavior
 
 Examples hold typed inputs and expected outputs for evaluation. `FewShotExample` also represents demonstrations that a predictor can include in provider-facing prompts.
 
-## Creating Basic Examples
+## Create Evaluation Examples
 
 ```ruby
 class ClassifyText < DSPy::Signature
@@ -61,9 +61,9 @@ examples = [
 ]
 ```
 
-## Type Safety and Validation
+## Validate Examples Against a Signature
 
-DSPy.rb validates example values against the signature's type constraints when the object is created:
+DSPy.rb validates example values against the signature's type constraints when the object is created. This validation constrains declared shape and types; a named metric applied to selected examples provides bounded evidence about task behavior and correctness.
 
 ```ruby
 # This will raise a validation error
@@ -78,7 +78,7 @@ invalid_example = DSPy::Example.new(
 # => ArgumentError: Type error in expected output for ClassifyText: ...
 ```
 
-## Working with Examples
+## Read and Evaluate Example Values
 
 ### Accessing Example Data
 
@@ -102,7 +102,7 @@ example.to_h
 # => { signature_class: "ClassifyText", input: {...}, expected: {...} }
 ```
 
-### Evaluating Predictions
+### Compare a Prediction with Expected Output
 
 ```ruby
 # Test if a prediction matches the expected output
@@ -117,7 +117,7 @@ else
 end
 ```
 
-### Batch Validation
+### Validate a Batch
 
 ```ruby
 # Validate multiple examples at once
@@ -138,7 +138,7 @@ validated_examples = DSPy::Example.validate_batch(ClassifyText, examples_data)
 
 ## Few-Shot Examples
 
-Few-shot examples provide context to improve model performance:
+Few-shot examples provide demonstrations that a predictor can include in provider-facing prompts. Measure their effect with evaluation examples and a metric:
 
 ```ruby
 # Create few-shot examples
@@ -208,7 +208,7 @@ registry = { "ClassifyText" => ClassifyText }
 reloaded_example = DSPy::Example.from_h(example_hash, signature_registry: registry)
 ```
 
-## Testing Examples
+## Test Example Validation
 
 ```ruby
 RSpec.describe DSPy::Example do
@@ -242,7 +242,7 @@ RSpec.describe DSPy::Example do
 end
 ```
 
-### Integration with Evaluation
+### Evaluate Examples with a Metric
 
 ```ruby
 # Examples work with the evaluation framework
@@ -271,7 +271,7 @@ results = evaluator.evaluate(examples)
 puts results.pass_rate  # Fraction of examples that passed
 ```
 
-## Usage with ChainOfThought
+## Attach Reasoning Demonstrations to ChainOfThought
 
 ```ruby
 # FewShotExamples can include reasoning for ChainOfThought
@@ -291,9 +291,9 @@ result = optimized_cot.call(text: "Amazing product!")
 puts result.reasoning  # Will include step-by-step reasoning
 ```
 
-## Best Practices
+## Build Representative Example Sets
 
-### 1. Balanced Examples
+### 1. Balance Output Categories
 
 ```ruby
 # Ensure balanced representation across all output categories
@@ -328,7 +328,7 @@ edge_case_examples = [
 ]
 ```
 
-### 3. Type Safety
+### 3. Match Signature Types
 
 ```ruby
 # Always ensure types match your signature

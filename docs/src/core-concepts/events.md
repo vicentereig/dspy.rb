@@ -11,7 +11,7 @@ DSPy.rb provides a structured event bus for module instrumentation and integrati
 
 ## Two Subscription Patterns
 
-DSPy provides two ways to subscribe to events, each suited to different use cases:
+Choose a subscription scope by listener lifetime:
 
 ### Pattern 1: Module-Scoped Subscriptions
 
@@ -43,7 +43,7 @@ end
 
 ## Emitting Events
 
-Use `DSPy.event` whenever something noteworthy happens:
+Call `DSPy.event` for application events that subscribers should receive:
 
 ```ruby
 DSPy.event('chain_of_thought.reasoning_complete', {
@@ -52,7 +52,7 @@ DSPy.event('chain_of_thought.reasoning_complete', {
 })
 ```
 
-Key points:
+Event naming, attributes, and types:
 
 - Event names are strings with dot-separated namespaces (`llm.generate`, `react.iteration_complete`, etc.).
 - Attributes must be JSON-serializable. DSPy automatically merges context (trace ID, module stack) and emits OpenTelemetry spans unless the event is marked internal.
@@ -68,11 +68,11 @@ DSPy.events.subscribe('*') do |event_name, attrs|
 end
 ```
 
-Notes:
+Wildcard and teardown rules:
 
 - Wildcards (`llm.*`) are supported. An exact string listens to one event.
 - `DSPy.events.unsubscribe(id)` removes a listener by subscription ID.
-- `DSPy.events.clear_listeners` is handy in tests to avoid cross-contamination.
+- Use `DSPy.events.clear_listeners` in tests to avoid cross-contamination.
 
 For custom tracking, create a class that manages subscriptions:
 
@@ -149,9 +149,9 @@ class ResearchReport < DSPy::Module
 end
 ```
 
-Because the `subscribe` call does not specify a scope, it listens to events emitted by the `ResearchReport` module **and** both nested `Predict` instances. You only need to opt into `scope: DSPy::Module::SubcriptionScope::SelfOnly` when you truly want to ignore descendants (for example, to log only the parent module's own `search.result` events).
+Because the `subscribe` call does not specify a scope, it listens to events emitted by the `ResearchReport` module **and** both nested `Predict` instances. Use `scope: DSPy::Module::SubcriptionScope::SelfOnly` to ignore descendants, for example when logging only the parent module's own `search.result` events.
 
-Additional details:
+Scope and metadata rules:
 
 - `DSPy::Module::SubcriptionScope::Descendants` is the default and covers the module plus nested modules. `SubcriptionScope::SelfOnly` restricts delivery to the module instance itself.
 - Instance methods `registered_module_subscriptions` and `unsubscribe_module_events` allow inspection and teardown (useful in long-running services or tests).
@@ -184,10 +184,10 @@ Events include:
 
 Use this metadata to power Langfuse filters, scoped metrics, or custom routing.
 
-## Best Practices
+## Choose Listener Ownership and Teardown
 
-- **Global observability?** Mount a single `'*'` listener that forwards events to your logging/metrics pipeline. Use module metadata to fan out to feature-specific sinks.
-- **Tight modules?** Prefer the per-module `subscribe` DSL so subscriptions live with the logic they instrument. Call `unsubscribe_module_events` in teardown hooks (e.g., when a job finishes) to prevent leaks.
+- **Global observability:** Mount a single `'*'` listener that forwards events to your logging or metrics pipeline. Use module metadata to fan out to feature-specific sinks.
+- **Module-owned instrumentation:** Use the per-module `subscribe` DSL so subscriptions live with the logic they instrument. Call `unsubscribe_module_events` in teardown hooks, such as when a job finishes, to prevent leaks.
 - **Testing:** Clear global listeners in `before`/`after` blocks and assert on collected events. For module-scoped specs, instantiate the module and inspect `registered_module_subscriptions`.
 - **Versioning:** These APIs ship in the main `dspy` gem. Upgrading the gem automatically brings the event bus and module listener features into every sub-gem (`dspy-code_act`, `dspy-o11y`, etc.) because they depend on the core runtime.
 

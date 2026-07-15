@@ -14,7 +14,7 @@ Predictors are modules that execute signatures. DSPy.rb provides `Predict` for o
 
 Executes a signature with one language-model request and converts the response to the declared output type.
 
-### Basic Usage
+### Call Predict
 
 ```ruby
 class ClassifyText < DSPy::Signature
@@ -48,7 +48,7 @@ puts result.topics       # => ["app", "features"]
 puts result.confidence   # => 0.92
 ```
 
-### Basic Configuration
+### Use the Configured Language Model
 
 ```ruby
 # Basic usage - uses global language model
@@ -61,11 +61,11 @@ Adds a `reasoning` field to the signature output. Whether that improves task qua
 
 ### When to Use ChainOfThought
 
-- Complex analysis requiring multiple steps
-- Mathematical or logical reasoning
 - Tasks where an explicit reasoning field helps the application or evaluator
+- Comparisons that evaluate the same task with and without that field
+- Mathematical or logical tasks whose intermediate reasoning the application needs to inspect
 
-### Basic Usage
+### Call ChainOfThought
 
 ```ruby
 class SolveMathProblem < DSPy::Signature
@@ -89,7 +89,7 @@ puts result.answer       # => "20 apples"
 puts result.solution_steps # => ["Start: 15 apples", "Give away 7: 15-7=8", "Buy 12 more: 8+12=20"]
 ```
 
-### Working with Reasoning
+### Read the Added Reasoning Field
 
 ```ruby
 class ComplexAnalysis < DSPy::Signature
@@ -128,7 +128,7 @@ puts result.recommendation
 
 Runs a bounded loop in which the model chooses a typed tool call or submits the final result.
 
-### Tool Definition
+### Define a Typed Tool
 
 ```ruby
 class WeatherTool < DSPy::Tools::Base
@@ -165,7 +165,7 @@ class SearchTool < DSPy::Tools::Base
 end
 ```
 
-### ReAct Agent Usage
+### Run a Bounded ReAct Agent
 
 ```ruby
 class TravelAssistant < DSPy::Signature
@@ -229,7 +229,7 @@ rescue DSPy::ReAct::MaxIterationsError => error
 end
 ```
 
-### Custom Tool Integration
+### Inject a Tool Dependency
 
 ```ruby
 class DatabaseTool < DSPy::Tools::Base
@@ -279,20 +279,20 @@ service_agent = DSPy::ReAct.new(
 - 📚 **Docs**: [`lib/dspy/code_act/README.md`](https://github.com/vicentereig/dspy.rb/blob/main/lib/dspy/code_act/README.md)
 - 🧪 **Tests**: run via the `DSPy CodeAct` GitHub Actions job
 
-The APIs and architectural guidance in this chapter still apply, but the implementation now evolves independently from the core gem.
+The predictor comparison still applies to CodeAct's execution strategy; its package-specific API evolves independently from the core gem.
 
 ## Predictor Comparison
 
-### Behavioral Characteristics
+### Compare Model-Directed Steps
 
 | Predictor | Model-directed steps | Best fit |
 |-----------|----------------------|----------|
 | **Predict** | One | Classification, extraction, transformation |
 | **ChainOfThought** | One, with a reasoning field | Tasks where explicit reasoning is useful |
 | **ReAct** | Up to `max_iterations` | Tool use where the model must choose the next action |
-| **CodeAct** | Up to its configured limit | Sandboxed code execution through the optional gem |
+| **CodeAct** | Up to its configured limit | Model-generated Ruby execution through the optional gem; the application supplies isolation |
 
-### Choosing the Right Predictor
+### Choose by Model-Directed Control
 
 ```ruby
 # Simple, fast tasks
@@ -436,7 +436,7 @@ end
 
 Concurrency is application-owned rather than a predictor type. See [Concurrent Predictions](/dspy.rb/advanced/concurrent-predictions/) for the runnable `Async::Barrier` pattern, failure policy, and measurement boundaries.
 
-## Best Practices
+## Choose Execution, Failure, and Observability Boundaries
 
 ### 1. Choose the Right Predictor
 
@@ -481,4 +481,4 @@ DSPy.configure do |config|
 end
 ```
 
-Predictors provide the core execution capabilities for DSPy applications with built-in observability and type safety.
+Predictors validate declared result types and emit module events. Evaluate task correctness separately with examples and a metric.

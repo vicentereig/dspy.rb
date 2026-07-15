@@ -10,7 +10,7 @@ last_modified_at: 2026-07-15 00:00:00 +0000
 
 Start with `dspy`, then add the package that owns the provider or optional feature you use. A gem's presence means its Ruby entry point is available. It does not mean every model or provider endpoint implements every capability.
 
-The table below is generated from [`package_capabilities.yml`](https://github.com/vicentereig/dspy.rb/blob/main/docs/src/_data/package_capabilities.yml), the canonical package inventory.
+The matrix is generated from [`package_capabilities.yml`](https://github.com/vicentereig/dspy.rb/blob/main/docs/src/_data/package_capabilities.yml), the canonical package inventory.
 
 ## Status labels
 

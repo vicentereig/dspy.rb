@@ -193,8 +193,8 @@ agent.configure { |c| c.lm = default_lm }           # Parent config won't overwr
 
 Callbacks are a separate module-authoring task. See [Module Lifecycle Callbacks](/dspy.rb/advanced/module-lifecycle-callbacks/) for the canonical `before`, `around`, and `after` definitions, order, inheritance, and failure boundary.
 
-## Next Steps
+## Continue to Observability, State, or Optimization {#next-steps}
 
-- Explore [Production Observability](/dspy.rb/production/observability/) for full telemetry pipelines.
-- Combine callbacks with [Stateful Agents](/dspy.rb/advanced/stateful-agents/) to scale conversational memory.
+- Add [Production Observability](/dspy.rb/production/observability/) when module events need a telemetry pipeline.
+- Combine callbacks with [Stateful Agents](/dspy.rb/advanced/stateful-agents/) when the application owns conversational memory.
 - Use the optimization guides under `/optimization/` once your modules expose the required instruction update contracts.

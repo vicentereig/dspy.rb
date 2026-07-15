@@ -12,7 +12,7 @@ DSPy.rb lets Ruby applications declare typed inputs and outputs for language-mod
 
 ## Run Your First Program
 
-Follow the [Quick Start](/dspy.rb/getting-started/quick-start/) for the sole complete install, configure, save, and run path.
+Follow the [Quick Start](/dspy.rb/getting-started/quick-start/) to install the gems, configure OpenAI, save the example, and run it.
 
 ## Choose a Provider or Package
 
