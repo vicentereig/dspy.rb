@@ -161,6 +161,47 @@ When changing APIs or adding features, update the docs:
 
 The documentation site is in `docs/` and built with Bridgetown. Always verify your changes build successfully.
 
+### Review Public Documentation Changes
+
+Use [`docs/editorial/public-doc-corpus.yml`](docs/editorial/public-doc-corpus.yml)
+to classify a changed file. The review applies to entries marked `public` or
+`history`; derived sources and excluded contributor, plan, and editorial files
+are not scanner inputs.
+
+For a meaning-changing edit:
+
+1. Complete the five prompts in the pull request template. The author
+   self-check supplies context; a reviewer makes the disposition.
+2. Run the informational scanner with the exact changed public/history paths,
+   not a directory or generated output. For example:
+
+   ```bash
+   ruby docs/scripts/audit_economical_writing.rb README.md docs/src/getting-started/quick-start.md
+   ```
+
+3. Search [`docs/editorial/semantic-anchors.yml`](docs/editorial/semantic-anchors.yml)
+   for each changed path and claim. List affected anchor IDs in the pull
+   request. If none apply, write `reviewed, none — reason`; do not create a
+   second anchor list.
+4. Leave every scanner candidate in the pull request's reviewer queue. The
+   reviewer assigns exactly one of `DELETE`, `EDIT`, `KEEP technical`, or
+   `KEEP voice` with a rationale. Findings are prompts for review: zero is not
+   required, and a word match does not fail CI.
+
+Use the typo-only path only when every edit is spelling, grammar, or punctuation
+and does not change meaning, headings, links, code, frontmatter, routes, or
+anchor locators. List the pages touched and confirm the restriction. Otherwise,
+use the full review and scanner queue.
+
+Escalate a disputed claim or semantic-anchor effect to a maintainer in the pull
+request before approval. `KEEP voice` also requires a durable existing or new
+exception in
+[`docs/editorial/house-voice-samples.yml`](docs/editorial/house-voice-samples.yml)
+with `audience`, `evidence`, `evidence_locator`, `scope`, `editor`, `reviewed_on`,
+and `re_review`; set `approval` to `rhetorical-form-only`. The exception covers
+the rhetorical form at that scope, never a new factual claim. Keep ordinary
+candidate dispositions in the pull request rather than adding another ledger.
+
 ## Getting Help
 
 - **Questions:** Open a [Discussion](https://github.com/vicentereig/dspy.rb/discussions)

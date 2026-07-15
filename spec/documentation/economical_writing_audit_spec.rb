@@ -13,6 +13,7 @@ RSpec.describe EconomicalWritingAudit do
   let(:fixtures_path) { root.join("docs/editorial/economical-writing-fixtures.yml") }
   let(:fixture_document) { YAML.safe_load_file(fixtures_path, aliases: false) }
   let(:fixtures) { fixture_document.fetch("samples") }
+  let(:review_gate_dry_runs) { fixture_document.fetch("review_gate_dry_runs") }
   let(:runner) { described_class::Runner.new(root: root) }
 
   def scan(text, path: "sample.md", outcome: nil)
@@ -53,6 +54,32 @@ RSpec.describe EconomicalWritingAudit do
   it "keeps automatic, simple, and robust from acting as blacklist words" do
     %w[automatic simple robust].each do |word|
       expect(scan("#{word.capitalize}.\n").fetch(:findings)).to be_empty
+    end
+  end
+
+  it "dry-runs representative review-gate files without turning candidates into failures" do
+    Dir.mktmpdir("economy-review-gate") do |directory|
+      temp_root = Pathname(directory)
+      rules = review_gate_dry_runs.map do |sample|
+        {"id" => sample.fetch("id"), "kind" => "public", "path" => sample.fetch("path")}
+      end
+      write_manifest(temp_root, rules)
+      review_gate_dry_runs.each do |sample|
+        write_file(temp_root, sample.fetch("path"), "#{sample.fetch('excerpt')}\n")
+      end
+
+      stdout = StringIO.new
+      stderr = StringIO.new
+      status = described_class::Runner.new(root: temp_root, stdout: stdout, stderr: stderr)
+                              .run(["--jsonl", *review_gate_dry_runs.map { _1.fetch("path") }])
+      findings = stdout.string.lines.map { JSON.parse(_1, symbolize_names: true) }
+
+      expect(status).to eq(0)
+      expect(stderr.string).to be_empty
+      review_gate_dry_runs.each do |sample|
+        categories = findings.select { _1.fetch(:path) == sample.fetch("path") }.map { _1.fetch(:category) }
+        expect(categories).to eq(sample.fetch("expected_categories")), sample.fetch("id")
+      end
     end
   end
 

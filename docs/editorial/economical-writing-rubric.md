@@ -176,6 +176,12 @@ replacement engine, or exact-copy trigger list. Future integration with the
 unified documentation gate in dspy.rb-2ey.10 and the review checklist in
 dspy.rb-2ey.17 remains informational; this audit adds no CI failure semantics.
 
+For a pull request, run the audit with the exact changed public/history paths
+and copy each reported candidate into the PR-local reviewer queue. Record one
+of `DELETE`, `EDIT`, `KEEP technical`, or `KEEP voice` plus a rationale or
+required charter-exception link; do not create a persistent ledger for ordinary
+candidates.
+
 Use [`economical-writing-fixtures.yml`](economical-writing-fixtures.yml) for
 shared reviewer calibration. Reviewers classify samples independently before
 reading the recorded adjudication.

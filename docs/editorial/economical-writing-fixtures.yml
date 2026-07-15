@@ -6,6 +6,27 @@ reviewers:
 default_outcome: Review economical-writing calibration prose.
 # `expected_categories` tests candidate generation only. The independent
 # verdicts remain human adjudication and never instruct the scanner to rewrite.
+review_gate_dry_runs:
+  - id: readme-unbounded-stacked-overclaim
+    path: README.md
+    excerpt: "DSPy.rb provides a powerful, seamless, and flexible framework."
+    expected_categories: [vague praise]
+  - id: article-portable-maxim
+    path: docs/src/_articles/review-gate-dry-run.md
+    excerpt: "AI needs a schema moment."
+    expected_categories: [AI aphorism]
+  - id: tutorial-scoped-automatic-boundary
+    path: docs/src/getting-started/review-gate-dry-run.md
+    excerpt: "Requiring sorbet/toon enables the T::Struct extensions automatically; adding the gem remains manual."
+    expected_categories: []
+  - id: code-and-quote-exclusions
+    path: docs/src/_articles/review-gate-exclusions.md
+    excerpt: |-
+      > AI needs a schema moment.
+      ```text
+      DSPy.rb provides a powerful, seamless, and flexible framework.
+      ```
+    expected_categories: []
 samples:
   - id: ai-aphorism-portable
     case: positive

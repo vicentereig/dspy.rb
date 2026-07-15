@@ -276,7 +276,7 @@ rules:
   # Explicitly separated internal material and repository operations prose.
   - id: excluded-repository-instructions
     kind: excluded
-    glob: '{AGENTS.md,CLAUDE.md,CONTRIBUTING.md,.beads/README.md}'
+    glob: '{AGENTS.md,CLAUDE.md,CONTRIBUTING.md,.beads/README.md,.github/PULL_REQUEST_TEMPLATE.md}'
     reason: Repository workflow or contributor instructions are outside the product-doc journey.
   - id: excluded-architecture-and-plans
     kind: excluded
