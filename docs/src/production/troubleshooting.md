@@ -148,11 +148,11 @@ DSPy.configure do |config|
   #   structured_outputs: true
   # )
 
-  # Anthropic with native structured outputs (default, recommended)
+  # Anthropic structured outputs
   # config.lm = DSPy::LM.new(
   #   "anthropic/claude-sonnet-4-5-20250929",
   #   api_key: ENV["ANTHROPIC_API_KEY"],
-  #   structured_outputs: true  # Default - uses output_config.format
+  #   structured_outputs: true
   # )
 
   # Anthropic with enhanced prompting (alternative)
@@ -164,7 +164,7 @@ DSPy.configure do |config|
 end
 ```
 
-Provider capabilities vary by model and SDK version. A provider prefix alone does not establish native schema support. With `anthropic` 1.28.0 or newer, `structured_outputs: true` uses native `output_config.format`; `false` uses enhanced prompting extraction.
+Provider capabilities vary by model and SDK version. A provider prefix alone does not establish native schema support. For Anthropic, `structured_outputs: true` (default) uses native `output_config.format`; requires `anthropic` gem >= 1.28.0.
 
 ## Application State Issues
 

@@ -2,17 +2,6 @@
 layout: docs
 name: Reasoning Effort & Temperature
 description: Configure extended thinking, effort tiers, and sampling for Anthropic models
-breadcrumb:
-- name: Advanced
-  url: "/advanced/"
-- name: Reasoning Effort & Temperature
-  url: "/advanced/reasoning/"
-prev:
-  name: Custom Metrics
-  url: "/advanced/custom-metrics/"
-next:
-  name: Production
-  url: "/production/"
 date: 2026-07-09 00:00:00 +0000
 ---
 # Reasoning Effort & Temperature

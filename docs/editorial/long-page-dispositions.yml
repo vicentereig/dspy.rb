@@ -181,7 +181,7 @@ dispositions:
     discovery_review: [corpus, navigation, sitemap]
     risk_review: Preserve task discovery and avoid turning selector cards into competing guides.
   - source: CHANGELOG.md
-    measured_tokens: 8486
+    measured_tokens: 8833
     outcome: keep
     audience: Maintainer or upgrader checking release history.
     reason: Chronology is the lookup structure; splitting at an arbitrary size would break release scanning and stable repository history.
