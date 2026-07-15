@@ -46,7 +46,7 @@ jobs:
     - name: Set up Bun
       uses: oven-sh/setup-bun@v2
       with:
-        bun-version: latest
+        bun-version: 1.3.14
     - name: Install root dependencies
       run: bundle install --jobs 4
     - name: Install documentation dependencies
@@ -93,6 +93,7 @@ jobs:
           gem: dspy
           command: bundle exec rspec --format documentation --pattern 'spec/**/*_spec.rb'
             --exclude-pattern 'spec/unit/**/*_spec.rb'
+          documentation: '1'
           install_arrow: 'true'
           install_openblas: 'true'
           datasets: '1'
@@ -272,6 +273,12 @@ jobs:
           # Arrow 23 headers use C++20 APIs such as std::span and std::popcount.
           export MAKEFLAGS='CXXFLAGS=-fPIC\ -std=gnu++20'
         fi
+        bundle install --jobs 4
+    - name: Install documentation Ruby dependencies
+      if: ${{ matrix.documentation == '1' }}
+      working-directory: docs
+      run: |
+        bundle config set --local path ../vendor/bundle
         bundle install --jobs 4
     - name: Run tests
       run: ${{ matrix.command }}

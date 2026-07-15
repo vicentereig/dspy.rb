@@ -22,6 +22,27 @@ RSpec.describe "documentation quality validators" do
     path.write(content, encoding: "UTF-8")
   end
 
+  def workflow_policy_fixture
+    paths = %w[
+      .ruby-version
+      .github/workflows/ruby.yml
+      .github/workflows/deploy.yml
+      docs/package.json
+      docs/bun.lock
+      docs/bridgetown.config.yml
+      docs/Dockerfile
+      spec/documentation/long_page_dispositions_spec.rb
+    ]
+    Dir.mktmpdir("workflow-policy") do |directory|
+      root = Pathname(directory)
+      paths.each do |path|
+        FileUtils.mkdir_p(root.join(path).dirname)
+        FileUtils.cp(QUALITY_ROOT.join(path), root.join(path))
+      end
+      yield root
+    end
+  end
+
   def link_fixture
     Dir.mktmpdir("docs-links") do |directory|
       output = Pathname(directory).join("output")
@@ -245,11 +266,12 @@ RSpec.describe "documentation quality validators" do
     expect(safety.first.command).to include("bundle", "exec", "ruby")
   end
 
-  it "keeps workflows on .ruby-version and the sole documentation command" do
+  it "keeps workflow runtimes pinned, installs frozen, and invokes the sole documentation command" do
     ruby_workflow = YAML.safe_load_file(QUALITY_ROOT.join(".github/workflows/ruby.yml"), aliases: true)
     deploy = QUALITY_ROOT.join(".github/workflows/deploy.yml").read(encoding: "UTF-8")
     docs_job = ruby_workflow.fetch("jobs").fetch("docs-quality")
     commands = docs_job.fetch("steps").filter_map { _1["run"] }.join("\n")
+    expect(DocumentationQuality::WorkflowRubyPolicy.new(root: QUALITY_ROOT).errors).to be_empty
     expect(commands).to include("ruby docs/scripts/check_documentation_quality.rb")
     expect(commands).not_to include("rbenv exec")
     expect(commands.scan("check_documentation_quality.rb").length).to eq(1)
@@ -259,12 +281,7 @@ RSpec.describe "documentation quality validators" do
   end
 
   it "rejects a workflow fixture with an unsupported hard-coded Ruby" do
-    Dir.mktmpdir("workflow-ruby") do |directory|
-      root = Pathname(directory)
-      FileUtils.mkdir_p(root.join(".github/workflows"))
-      %w[ruby.yml deploy.yml].each do |name|
-        FileUtils.cp(QUALITY_ROOT.join(".github/workflows", name), root.join(".github/workflows", name))
-      end
+    workflow_policy_fixture do |root|
       path = root.join(".github/workflows/deploy.yml")
       text = path.read(encoding: "UTF-8").sub(
         '${{ steps.ruby-version.outputs.version }}',
@@ -273,6 +290,84 @@ RSpec.describe "documentation quality validators" do
       path.write(text, encoding: "UTF-8")
       errors = DocumentationQuality::WorkflowRubyPolicy.new(root: root).errors.join("\n")
       expect(errors).to include("unsupported hard-coded Ruby literal", "must use the .ruby-version step output")
+    end
+  end
+
+  it "rejects Integration matrix changes that drop documentation coverage or its docs bundle" do
+    workflow_policy_fixture do |root|
+      path = root.join(".github/workflows/ruby.yml")
+      text = path.read(encoding: "UTF-8")
+                 .sub(
+                   "--exclude-pattern 'spec/unit/**/*_spec.rb'",
+                   "--exclude-pattern 'spec/unit/**/*_spec.rb' --exclude-pattern 'spec/documentation/**/*_spec.rb'"
+                 )
+                 .sub("documentation: '1'", "documentation: '0'")
+                 .sub(
+                   "bundle config set --local path ../vendor/bundle\n        bundle install --jobs 4",
+                   "bundle check"
+                 )
+      path.write(text, encoding: "UTF-8")
+
+      errors = DocumentationQuality::WorkflowRubyPolicy.new(root: root).errors.join("\n")
+      expect(errors).to include(
+        "DSPy Integration must keep full documentation specs in its command",
+        "DSPy Integration must opt into documentation bundle installation",
+        "test job must install cached docs/Gemfile dependencies before documentation-enabled matrix tests"
+      )
+    end
+  end
+
+  it "rejects floating Bun, mutable installs, and runtime drift outside workflows" do
+    workflow_policy_fixture do |root|
+      ruby_path = root.join(".github/workflows/ruby.yml")
+      replace_in(ruby_path, "bun-version: 1.3.14", "bun-version: latest")
+      replace_in(ruby_path, "bun install --frozen-lockfile", "bun install")
+      package_path = root.join("docs/package.json")
+      replace_in(package_path, '"packageManager": "bun@1.3.14"', '"packageManager": "bun@latest"')
+      FileUtils.mv(root.join("docs/bun.lock"), root.join("docs/bun.lockb"))
+      bridgetown_path = root.join("docs/bridgetown.config.yml")
+      replace_in(bridgetown_path, "- bun.lock", "- bun.lockb")
+      docker_path = root.join("docs/Dockerfile")
+      replace_in(docker_path, "FROM ruby:3.4.5-slim", "FROM ruby:3.2-slim")
+      replace_in(docker_path, 'bash -s "bun-v1.3.14"', "bash")
+      replace_in(docker_path, "COPY package.json bun.lock ./", "COPY package.json bun.lockb ./")
+      replace_in(docker_path, "RUN bun install --frozen-lockfile", "RUN bun install")
+
+      errors = DocumentationQuality::WorkflowRubyPolicy.new(root: root).errors.join("\n")
+      expect(errors).to include(
+        "setup-bun must pin Bun 1.3.14 exactly",
+        'must install Bun dependencies once with "bun install --frozen-lockfile"',
+        "packageManager must be bun@1.3.14",
+        "text lockfile is required",
+        "legacy binary lockfile must not be used",
+        "must exclude the text bun.lock and not the legacy binary lock",
+        "Ruby base image must match .ruby-version (3.4.5)",
+        "Bun installer must pin bun-v1.3.14",
+        "must copy the text bun.lock"
+      )
+    end
+  end
+
+  it "rejects documentation subprocesses coupled to rbenv" do
+    workflow_policy_fixture do |root|
+      path = root.join("spec/documentation/long_page_dispositions_spec.rb")
+      text = path.read(encoding: "UTF-8")
+                 .sub(
+                   'RbConfig.ruby, "-S", "bundle", "exec", "bridgetown", "build"',
+                   '"rbenv", "exec", "bundle", "exec", "bridgetown", "build"'
+                 )
+                 .gsub(
+                   'RbConfig.ruby, "scripts/validate_long_page_dispositions.rb"',
+                   '"rbenv", "exec", "ruby", "scripts/validate_long_page_dispositions.rb"'
+                 )
+      path.write(text, encoding: "UTF-8")
+
+      errors = DocumentationQuality::WorkflowRubyPolicy.new(root: root).errors.join("\n")
+      expect(errors).to include(
+        "documentation subprocesses must not invoke rbenv",
+        "Bridgetown build must use the active Ruby and Bundler",
+        "all four validator subprocesses must use RbConfig.ruby"
+      )
     end
   end
 end

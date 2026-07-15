@@ -6,7 +6,7 @@ This directory contains the DSPy.rb documentation site, built with Bridgetown an
 
 ### Prerequisites
 - Ruby from the repository's `.ruby-version` (the authoritative rbenv/CI version)
-- Bun 1.0+
+- Bun 1.3.14
 - Bundler
 
 `.tool-versions` retains Ruby 3.3.7 for asdf compatibility; it does not override
@@ -17,7 +17,7 @@ the `.ruby-version` pin used by this repository's documented commands and CI.
 1. From the repository's `docs/` directory, install dependencies:
 ```bash
 rbenv exec bundle install
-bun install
+bun install --frozen-lockfile
 ```
 
 2. From `docs/`, start the development server:
@@ -46,7 +46,7 @@ From the repository root, install both bundles and the asset dependencies once:
 rbenv exec bundle install
 cd docs
 rbenv exec bundle install
-bun install
+bun install --frozen-lockfile
 bunx playwright install chromium
 cd ..
 ```
@@ -60,7 +60,7 @@ ruby docs/scripts/check_documentation_quality.rb
 With rbenv, the repository's shim selects `.ruby-version` automatically;
 `rbenv exec` is an equivalent explicit wrapper.
 
-The command runs 21 fail-fast steps: it validates source structure and redirect
+The command runs 22 fail-fast steps: it validates source structure and redirect
 script escaping, runs only the explicitly marked Quick Start, Toolsets, and
 long-page snippet specs, cleans and builds the production site once, and
 validates rendered routes, fragments, packages, and `llms*.txt`.
@@ -149,5 +149,5 @@ rbenv exec bundle install
 
 If Bun reports missing front-end packages:
 ```bash
-bun install
+bun install --frozen-lockfile
 ```

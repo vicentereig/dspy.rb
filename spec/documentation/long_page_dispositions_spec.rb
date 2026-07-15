@@ -2,6 +2,7 @@
 
 require "open3"
 require "pathname"
+require "rbconfig"
 require "yaml"
 require "bundler"
 require "fileutils"
@@ -46,7 +47,7 @@ RSpec.describe "Long-page dispositions" do
     @build_log, @build_status = Bundler.with_unbundled_env do
       Open3.capture2e(
         { "BRIDGETOWN_ENV" => "production" },
-        "rbenv", "exec", "bundle", "exec", "bridgetown", "build",
+        RbConfig.ruby, "-S", "bundle", "exec", "bridgetown", "build",
         chdir: @docs.to_s
       )
     end
@@ -111,7 +112,7 @@ RSpec.describe "Long-page dispositions" do
     expect(@build_status).to be_success, @build_log
 
     validation, status = Open3.capture2e(
-      "rbenv", "exec", "ruby", "scripts/validate_long_page_dispositions.rb",
+      RbConfig.ruby, "scripts/validate_long_page_dispositions.rb",
       "--output", "output",
       chdir: docs.to_s
     )
@@ -160,7 +161,7 @@ RSpec.describe "Long-page dispositions" do
       file.write(YAML.dump(fabricated))
       file.flush
       validation, status = Open3.capture2e(
-        "rbenv", "exec", "ruby", "scripts/validate_long_page_dispositions.rb",
+        RbConfig.ruby, "scripts/validate_long_page_dispositions.rb",
         "--ledger", file.path,
         "--output", "output",
         chdir: docs.to_s
@@ -178,7 +179,7 @@ RSpec.describe "Long-page dispositions" do
       file.write(YAML.dump(unexplained))
       file.flush
       validation, status = Open3.capture2e(
-        "rbenv", "exec", "ruby", "scripts/validate_long_page_dispositions.rb",
+        RbConfig.ruby, "scripts/validate_long_page_dispositions.rb",
         "--ledger", file.path,
         "--output", "output",
         chdir: docs.to_s
@@ -194,7 +195,7 @@ RSpec.describe "Long-page dispositions" do
       page = artifact(mutated_output, "/production/observability/")
       page.write(page.read(encoding: "UTF-8").sub('id="observability"', 'id="removed-observability"'))
       validation, status = Open3.capture2e(
-        "rbenv", "exec", "ruby", "scripts/validate_long_page_dispositions.rb",
+        RbConfig.ruby, "scripts/validate_long_page_dispositions.rb",
         "--output", mutated_output.to_s,
         chdir: docs.to_s
       )

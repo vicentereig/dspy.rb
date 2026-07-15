@@ -72,6 +72,6 @@ exclude:
   - gemfiles
   - package.json
   - package-lock.json
-  - bun.lockb
+  - bun.lock
   - esbuild.config.js
   - frontend

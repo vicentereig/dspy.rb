@@ -1,5 +1,5 @@
 # Use official Ruby image
-FROM ruby:3.2-slim
+FROM ruby:3.4.5-slim
 
 # Install dependencies for Playwright and build tools
 RUN apt-get update && apt-get install -y \
@@ -34,18 +34,18 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /app
 
 # Install Bun
-RUN curl -fsSL https://bun.sh/install | bash
+RUN curl -fsSL https://bun.sh/install | bash -s "bun-v1.3.14"
 ENV PATH="/root/.bun/bin:$PATH"
 
 # Copy Gemfile and package.json first for better caching
 COPY Gemfile Gemfile.lock ./
-COPY package.json bun.lockb ./
+COPY package.json bun.lock ./
 
 # Install Ruby dependencies
 RUN bundle install
 
 # Install Node dependencies
-RUN bun install
+RUN bun install --frozen-lockfile
 
 # Install Playwright and browsers
 RUN bunx playwright install chromium
