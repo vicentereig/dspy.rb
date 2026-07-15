@@ -104,6 +104,33 @@ RSpec.describe 'ReAct BAML Schema Issues', type: :integration do
       # The output type is String, so final_answer should be string?
       expect(system_prompt).to match(/final_answer\s+string\?/)
     end
+
+    it 'defaults omitted tool_input to nil for finish actions' do
+      signature = agent.prompt.signature_class
+      action_type = signature.output_field_descriptors.fetch(:action).type
+
+      output = signature.output_schema.new(
+        thought: 'The task is complete.',
+        action: action_type.deserialize('finish'),
+        final_answer: 'Done.'
+      )
+
+      expect(output.tool_input).to be_nil
+    end
+
+    it 'still rejects a tool_input with the wrong type' do
+      signature = agent.prompt.signature_class
+      action_type = signature.output_field_descriptors.fetch(:action).type
+
+      expect do
+        signature.output_schema.new(
+          thought: 'Load the data.',
+          action: action_type.deserialize('load_data'),
+          tool_input: 'not an object',
+          final_answer: nil
+        )
+      end.to raise_error(TypeError)
+    end
   end
 
   describe 'HistoryEntry struct updates' do

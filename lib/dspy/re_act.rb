@@ -357,7 +357,7 @@ module DSPy
             description: "Reasoning about what to do next, considering the history and observations."
           const :action, action_enum_class,
             description: "The action to take. MUST be one of the tool names listed in `available_tools` input, or the literal string \"finish\" to provide the final answer."
-          const :tool_input, ToolInput,
+          const :tool_input, ToolInput, default: nil,
             description: "Input for the chosen tool action. Required when action is a tool name. MUST be a JSON object matching the tool's parameter schema. Set to null when action is \"finish\"."
           const :final_answer, T.nilable(output_field_type),
             description: "The final answer to return. Required when action is \"finish\". Must match the expected output type. Set to null when action is a tool name."
