@@ -94,7 +94,7 @@ DSPy::LM.new(
 )
 ```
 
-See [Reasoning Effort & Temperature](/advanced/reasoning/) for the full `temperature:`/`max_tokens:`/`reasoning:` configuration surface.
+See [Reasoning Effort & Temperature](/dspy.rb/advanced/reasoning/) for the full `temperature:`/`max_tokens:`/`reasoning:` configuration surface.
 
 ### Error: `DSPy::LM::ConfigurationError` for `DSPy::Reasoning`
 
@@ -104,7 +104,7 @@ See [Reasoning Effort & Temperature](/advanced/reasoning/) for the full `tempera
 DSPy::LM::ConfigurationError: claude-opus-4-6 does not support DSPy::Reasoning.xhigh.
 ```
 
-**Solution**: This is a deliberate, eager validation — it's cheaper to fail at `DSPy::LM.new` construction time than after a request round-trip. Check [Reasoning Effort & Temperature](/advanced/reasoning/) for which effort tiers and thinking modes each model family supports, and adjust your `DSPy::Reasoning` call or target model accordingly.
+**Solution**: This is a deliberate, eager validation — it's cheaper to fail at `DSPy::LM.new` construction time than after a request round-trip. Check [Reasoning Effort & Temperature](/dspy.rb/advanced/reasoning/) for which effort tiers and thinking modes each model family supports, and adjust your `DSPy::Reasoning` call or target model accordingly.
 
 ## API Key Issues
 

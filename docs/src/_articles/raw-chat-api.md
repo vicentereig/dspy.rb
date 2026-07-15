@@ -29,7 +29,7 @@ response = lm.raw_chat([
 puts response
 ```
 
-The return value is a plain `String`: the accumulated text content. `raw_chat` does not return the adapter's internal `DSPy::LM::Response` object or expose its `usage`/`metadata` — those are only observable through DSPy's instrumentation events (see [Observability](/production/observability/)), not through the return value.
+The return value is a plain `String`: the accumulated text content. `raw_chat` does not return the adapter's internal `DSPy::LM::Response` object or expose its `usage`/`metadata` — those are only observable through DSPy's instrumentation events (see [Observability](/dspy.rb/production/observability/)), not through the return value.
 
 Messages accept `system`, `user`, and `assistant` roles. DSPy.rb normalizes the hashes into `DSPy::LM::Message` objects and validates the role and content before calling the adapter.
 
