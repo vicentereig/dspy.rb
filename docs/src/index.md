@@ -186,7 +186,7 @@ class GitHubAssistant < DSPy::Signature
 end
 
 # Read-only GitHub CLI tools — inspect only, no writes
-tools = GitHubCLIToolset.to_tools
+tools = DSPy::Tools::GitHubCLIToolset.to_tools
 agent = DSPy::ReAct.new(
   GitHubAssistant,
   tools: tools,
