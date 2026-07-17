@@ -164,18 +164,19 @@ end
     <p class="mt-4 text-lg text-ink-2">Each runs from a checkout of the repository. Here is the piece that matters; the rest is in the example's README.</p>
   </div>
 
-  <!-- Featured 1 · github-assistant -->
-  <div class="mt-14">
-    <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-      <h3 class="font-serif text-xl font-semibold text-ink">An agent with a read-only toolset</h3>
-      <a href="https://github.com/vicentereig/dspy.rb/tree/main/examples/github-assistant" rel="noopener noreferrer" class="font-mono text-sm text-link underline underline-offset-4 decoration-1 hover:decoration-2 [overflow-wrap:anywhere]">examples/github-assistant <span aria-hidden="true">&rarr;</span></a>
+  <!-- Program · Agents & tools -->
+  <div class="mt-14 grid grid-cols-1 gap-x-10 gap-y-5 lg:grid-cols-[13rem_minmax(0,1fr)] lg:items-start">
+    <div class="lg:pt-1">
+      <p class="text-sm font-medium text-dspy-coral">Agents &amp; tools</p>
+      <h3 class="mt-2 font-serif text-xl font-semibold text-ink">A read-only GitHub agent</h3>
+      <p class="mt-2 text-ink-2">A <code>ReAct</code> agent handed the GitHub CLI as read-only tools &mdash; it inspects repos, issues, and pull requests, and cannot write.</p>
+      <a href="https://github.com/vicentereig/dspy.rb/tree/main/examples/github-assistant" rel="noopener noreferrer" class="mt-3 inline-block font-mono text-sm text-link underline underline-offset-4 decoration-1 hover:decoration-2 [overflow-wrap:anywhere]">examples/github-assistant <span aria-hidden="true">&rarr;</span></a>
     </div>
-    <p class="mt-2 max-w-2xl text-ink-2">A bounded <code>ReAct</code> agent handed the GitHub CLI as read-only tools. It inspects repositories, issues, and pull requests &mdash; and cannot write.</p>
-    <div class="mt-5 rounded-[10px] border border-rule p-1">
+    <div class="min-w-0 rounded-[10px] border border-rule p-1">
 <div markdown="1">
 ```ruby
 class GitHubAssistant < DSPy::Signature
-  description "Perform repository operations using the GitHub CLI"
+  description "Operate on a repo with the GitHub CLI"
 
   input do
     const :task, String
@@ -185,11 +186,15 @@ class GitHubAssistant < DSPy::Signature
 end
 
 # Read-only GitHub CLI tools — inspect only, no writes
-tools = DSPy::Tools::GitHubCLIToolset.to_tools
-agent = DSPy::ReAct.new(GitHubAssistant, tools: tools, max_iterations: 15)
+tools = GitHubCLIToolset.to_tools
+agent = DSPy::ReAct.new(
+  GitHubAssistant,
+  tools: tools,
+  max_iterations: 15
+)
 
 agent.call(
-  task: "List open pull requests and flag any ready for review",
+  task: "List open PRs and flag those ready for review",
   repository: "vicentereig/dspy.rb"
 ).result
 ```
@@ -197,22 +202,24 @@ agent.call(
     </div>
   </div>
 
-  <!-- Featured 2 · coffee-shop-agent -->
-  <div class="mt-14 border-t border-rule pt-14">
-    <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-      <h3 class="font-serif text-xl font-semibold text-ink">Union types choose the action</h3>
-      <a href="https://github.com/vicentereig/dspy.rb/tree/main/examples/coffee-shop-agent" rel="noopener noreferrer" class="font-mono text-sm text-link underline underline-offset-4 decoration-1 hover:decoration-2 [overflow-wrap:anywhere]">examples/coffee-shop-agent <span aria-hidden="true">&rarr;</span></a>
+  <!-- Program · Type-driven control -->
+  <div class="mt-14 grid grid-cols-1 gap-x-10 gap-y-5 border-t border-rule pt-14 lg:grid-cols-[13rem_minmax(0,1fr)] lg:items-start">
+    <div class="lg:pt-1">
+      <p class="text-sm font-medium text-dspy-coral">Type-driven control</p>
+      <h3 class="mt-2 font-serif text-xl font-semibold text-ink">Union types choose the action</h3>
+      <p class="mt-2 text-ink-2">The model returns one of several typed actions in a single union field; Ruby pattern matching dispatches on the <code>T::Struct</code> it chose.</p>
+      <a href="https://github.com/vicentereig/dspy.rb/tree/main/examples/coffee-shop-agent" rel="noopener noreferrer" class="mt-3 inline-block font-mono text-sm text-link underline underline-offset-4 decoration-1 hover:decoration-2 [overflow-wrap:anywhere]">examples/coffee-shop-agent <span aria-hidden="true">&rarr;</span></a>
     </div>
-    <p class="mt-2 max-w-2xl text-ink-2">The model returns one of several typed actions in a single union field. Ruby pattern matching dispatches on the <code>T::Struct</code> it chose.</p>
-    <div class="mt-5 rounded-[10px] border border-rule p-1">
+    <div class="min-w-0 rounded-[10px] border border-rule p-1">
 <div markdown="1">
 ```ruby
 class CoffeeShopSignature < DSPy::Signature
-  description "Analyze a customer request and take the right action"
+  description "Analyze a request and pick an action"
 
   input { const :customer_request, String }
   output do
-    const :action, T.any(          # one union field — no discriminator
+    # one typed action from a union
+    const :action, T.any(
       CoffeeShopActions::MakeDrink,
       CoffeeShopActions::RefundOrder,
       CoffeeShopActions::CallManager
@@ -220,32 +227,33 @@ class CoffeeShopSignature < DSPy::Signature
   end
 end
 
-# Ruby pattern-matches the typed action the model chose
-case result.action
+# Ruby pattern-matches the action the model chose
+case (action = result.action)
 when CoffeeShopActions::MakeDrink
-  "Making a #{result.action.size.serialize} #{result.action.drink_type}"
+  "Making a #{action.size.serialize} #{action.drink_type}"
 when CoffeeShopActions::RefundOrder
-  "Refunding $#{result.action.refund_amount}"
+  "Refunding $#{action.refund_amount}"
 when CoffeeShopActions::CallManager
-  "Escalating: #{result.action.issue}"
+  "Escalating: #{action.issue}"
 end
 ```
 </div>
     </div>
   </div>
 
-  <!-- Featured 3 · ade_optimizer_miprov2 -->
-  <div class="mt-14 border-t border-rule pt-14">
-    <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-      <h3 class="font-serif text-xl font-semibold text-ink">Optimize a classifier with MIPROv2</h3>
-      <a href="https://github.com/vicentereig/dspy.rb/tree/main/examples/ade_optimizer_miprov2" rel="noopener noreferrer" class="font-mono text-sm text-link underline underline-offset-4 decoration-1 hover:decoration-2 [overflow-wrap:anywhere]">examples/ade_optimizer_miprov2 <span aria-hidden="true">&rarr;</span></a>
+  <!-- Program · Optimization -->
+  <div class="mt-14 grid grid-cols-1 gap-x-10 gap-y-5 border-t border-rule pt-14 lg:grid-cols-[13rem_minmax(0,1fr)] lg:items-start">
+    <div class="lg:pt-1">
+      <p class="text-sm font-medium text-dspy-coral">Optimization</p>
+      <h3 class="mt-2 font-serif text-xl font-semibold text-ink">Compile a classifier with MIPROv2</h3>
+      <p class="mt-2 text-ink-2">Give the optimizer a program, a metric, and labelled examples; it searches instructions and demonstrations and keeps the best.</p>
+      <a href="https://github.com/vicentereig/dspy.rb/tree/main/examples/ade_optimizer_miprov2" rel="noopener noreferrer" class="mt-3 inline-block font-mono text-sm text-link underline underline-offset-4 decoration-1 hover:decoration-2 [overflow-wrap:anywhere]">examples/ade_optimizer_miprov2 <span aria-hidden="true">&rarr;</span></a>
     </div>
-    <p class="mt-2 max-w-2xl text-ink-2">Give the optimizer a program, a metric, and labelled examples. It searches instructions and demonstrations, then returns the program that scored highest.</p>
-    <div class="mt-5 rounded-[10px] border border-rule p-1">
+    <div class="min-w-0 rounded-[10px] border border-rule p-1">
 <div markdown="1">
 ```ruby
 class ADETextClassifier < DSPy::Signature
-  description "Decide if a clinical sentence describes an adverse drug event"
+  description "Flag adverse drug events in clinical text"
 
   input  { const :text, String }
   output { const :label, ADELabel }
