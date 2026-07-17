@@ -99,6 +99,7 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   [data-hm-enter] { animation: none; opacity: 1; transform: none; }
+  [data-agent-track] { scroll-behavior: auto; }
 }
 
 @tailwind base;

@@ -54,18 +54,38 @@ agent.call(question: "Weather in Valencia?").answer
   </div>
 </section>
 
-<!-- ==================== WALKTHROUGH — code as workbench ==================== -->
-<section class="mx-auto max-w-3xl px-6 lg:px-8 py-16 sm:py-24">
-  <p class="text-sm font-medium text-dspy-coral">The shape of an agent</p>
-  <h2 class="mt-2 font-serif font-bold text-ink text-3xl sm:text-4xl tracking-[-0.01em]">A model using tools in a bounded loop</h2>
-  <p class="mt-5 text-lg leading-8 text-ink-2">A signature defines the task and result. Ruby implements the tools and owns permissions, errors, side effects, and iteration limits.</p>
+<!-- ============= THE SHAPE OF AN AGENT — anatomy, then in the wild ============= -->
+<section class="mx-auto max-w-4xl px-6 lg:px-8 py-16 sm:py-24">
+  <div class="max-w-2xl">
+    <p class="text-sm font-medium text-dspy-coral">The shape of an agent</p>
+    <h2 class="mt-2 font-serif font-bold text-ink text-3xl sm:text-4xl tracking-[-0.01em]">A contract, a tool, a bounded loop</h2>
+    <p class="mt-5 text-lg leading-8 text-ink-2">A signature defines the task and result. Ruby implements the tools and owns permissions, errors, side effects, and iteration limits &mdash; the same shape every program on this page is built from.</p>
+  </div>
 
-  <h3 class="mt-14 font-serif font-semibold text-ink text-xl">Define the contract and tool</h3>
-  <p class="mt-3 text-ink-2">The signature types the agent's boundary. The tool exposes one narrow Ruby capability:</p>
+  <!-- Horizontal pipeline: Define → Run → Inspect (native snap; JS adds arrows/dots/keyboard) -->
+  <div class="mt-12" data-agent-pipeline>
+    <div data-agent-controls hidden class="mb-6 items-center gap-x-4">
+      <div class="flex gap-x-2">
+        <button type="button" data-agent-prev aria-label="Previous step" class="grid h-9 w-9 place-items-center rounded-full border border-rule text-ink-2 transition hover:border-ink hover:text-ink disabled:opacity-30 disabled:hover:border-rule disabled:hover:text-ink-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dspy-coral"><span aria-hidden="true">&larr;</span></button>
+        <button type="button" data-agent-next aria-label="Next step" class="grid h-9 w-9 place-items-center rounded-full border border-rule text-ink-2 transition hover:border-ink hover:text-ink disabled:opacity-30 disabled:hover:border-rule disabled:hover:text-ink-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dspy-coral"><span aria-hidden="true">&rarr;</span></button>
+      </div>
+      <ol data-agent-dots aria-hidden="true" class="flex items-center gap-x-2"></ol>
+      <span data-agent-status class="ml-auto font-mono text-xs text-ink-3">01 / 03</span>
+    </div>
+    <ol data-agent-track tabindex="0" role="list" aria-label="How an agent runs, in three steps" class="flex flex-col gap-10 lg:ml-[calc(50%-50vw)] lg:mr-[calc(50%-50vw)] lg:w-screen lg:flex-row lg:gap-6 lg:overflow-x-auto lg:scroll-smooth lg:snap-x lg:snap-mandatory lg:pb-3 lg:pl-[calc(50vw-28rem+2rem)] lg:pr-8 lg:scroll-pl-[calc(50vw-28rem+2rem)] lg:[scrollbar-width:none] lg:[&::-webkit-scrollbar]:hidden focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-dspy-coral">
+      <li class="agent-panel flex min-w-0 flex-col lg:shrink-0 lg:snap-start lg:basis-[38rem]">
+        <div data-agent-head>
+          <div class="flex items-baseline gap-x-3">
+            <span class="font-mono text-sm text-dspy-coral">01</span>
+            <h3 class="font-serif text-xl font-semibold text-ink">Define the contract and tool</h3>
+          </div>
+          <p class="mt-2 text-ink-2">The signature types the agent's boundary. The tool exposes one narrow Ruby capability.</p>
+        </div>
+        <div class="mt-4 rounded-[10px] border border-rule p-1">
 <div markdown="1">
 ```ruby
 class AnswerWeather < DSPy::Signature
-  description "Answer weather questions with the available tools"
+  description "Answer weather questions with tools"
 
   input do
     const :question, String
@@ -87,9 +107,17 @@ class WeatherTool < DSPy::Tools::Base
 end
 ```
 </div>
-
-  <h3 class="mt-14 font-serif font-semibold text-ink text-xl">Run a bounded tool loop</h3>
-  <p class="mt-3 text-ink-2"><code>ReAct</code> lets the model call the weather tool, observe its result, and finish with a typed answer:</p>
+        </div>
+      </li>
+      <li class="agent-panel flex min-w-0 flex-col lg:shrink-0 lg:snap-start lg:basis-[38rem]">
+        <div data-agent-head>
+          <div class="flex items-baseline gap-x-3">
+            <span class="font-mono text-sm text-dspy-coral">02</span>
+            <h3 class="font-serif text-xl font-semibold text-ink">Run a bounded tool loop</h3>
+          </div>
+          <p class="mt-2 text-ink-2"><code>ReAct</code> lets the model call the weather tool, observe its result, and finish with a typed answer.</p>
+        </div>
+        <div class="mt-4 rounded-[10px] border border-rule p-1">
 <div markdown="1">
 ```ruby
 agent = DSPy::ReAct.new(
@@ -102,9 +130,17 @@ result = agent.call(question: "What is the weather in Valencia?")
 puts result.answer
 ```
 </div>
-
-  <h3 class="mt-14 font-serif font-semibold text-ink text-xl">Inspect what happened</h3>
-  <p class="mt-3 text-ink-2">The answer follows the declared type. The history records tool choices and results:</p>
+        </div>
+      </li>
+      <li class="agent-panel flex min-w-0 flex-col lg:shrink-0 lg:snap-start lg:basis-[38rem]">
+        <div data-agent-head>
+          <div class="flex items-baseline gap-x-3">
+            <span class="font-mono text-sm text-dspy-coral">03</span>
+            <h3 class="font-serif text-xl font-semibold text-ink">Inspect what happened</h3>
+          </div>
+          <p class="mt-2 text-ink-2">The answer follows the declared type. The history records tool choices and results.</p>
+        </div>
+        <div class="mt-4 rounded-[10px] border border-rule p-1">
 <div markdown="1">
 ```ruby
 result.answer.class
@@ -115,16 +151,17 @@ result.history.each do |step|
 end
 ```
 </div>
+        </div>
+      </li>
+    </ol>
+  </div>
 
   <p class="mt-10 text-lg leading-8 text-ink-2">The model chooses whether to call a tool or finish; Ruby executes each tool and enforces the loop limit. Evaluate complete runs with examples and metrics, then use an optimizer to search for better instructions and demonstrations.</p>
-</section>
 
-<!-- ==================== WORKED EXAMPLES — real code ==================== -->
-<section class="mx-auto max-w-4xl px-6 lg:px-8 py-16 sm:py-24">
-  <div class="max-w-2xl">
-    <p class="text-sm font-medium text-dspy-coral">Worked examples</p>
-    <h2 class="mt-2 font-serif font-bold text-ink text-3xl sm:text-4xl tracking-[-0.01em]">The core of a few real programs</h2>
-    <p class="mt-4 text-lg text-ink-2">Each of these runs from a checkout of the repository. Here is the piece that matters; the rest is in the example's README.</p>
+  <!-- ===== Movement 2 — the same shape, real programs ===== -->
+  <div class="mt-20 max-w-2xl border-t border-rule pt-14">
+    <h3 class="font-serif font-bold text-ink text-2xl sm:text-3xl tracking-[-0.01em]">The same shape, real programs</h3>
+    <p class="mt-4 text-lg text-ink-2">Each runs from a checkout of the repository. Here is the piece that matters; the rest is in the example's README.</p>
   </div>
 
   <!-- Featured 1 · github-assistant -->

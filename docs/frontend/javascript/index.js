@@ -1,6 +1,7 @@
 // Basic JavaScript for DSPy.rb documentation site
 import Plausible from 'plausible-tracker'
 import './mobile-navigation.js'
+import './agent-pipeline.js'
 
 // Initialize Plausible analytics  
 const plausible = Plausible({
