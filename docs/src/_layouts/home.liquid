@@ -1,89 +1,14 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full">
+<!-- Hallmark · genre: editorial · macrostructure: Workbench · design-system: design.md · designed-as-app -->
+<html lang="en">
 {% render "head", title_suffix: "DSPy.rb - Typed LLM Systems in Ruby" %}
-<body class="h-full font-sans overflow-x-hidden">
-  <div class="bg-white">
-    {% assign docs_nav = site.data.documentation_navigation %}
-    {% render "header", docs_nav: docs_nav %}
+<body class="min-h-screen font-sans overflow-x-hidden bg-paper text-ink-2">
+  {% assign docs_nav = site.data.documentation_navigation %}
+  {% render "header", docs_nav: docs_nav %}
 
-    <!-- Hero Section -->
-    <div class="relative isolate pt-14">
-      {{ content }}
-    </div>
-  </div>
-
-  <!-- Features Section -->
-  <div class="bg-white py-12 sm:py-24">
-    <div class="mx-auto max-w-7xl px-6 lg:px-8">
-      <div class="mx-auto max-w-2xl lg:text-center">
-        <h2 class="text-base font-semibold leading-7 text-dspy-coral">Build against explicit boundaries</h2>
-        <p class="mt-2 text-3xl font-bold font-serif tracking-tight text-gray-900 sm:text-4xl">Build typed programs and bounded agents</p>
-        <p class="mt-6 text-lg leading-8 text-gray-600"><a href="https://github.com/vicentereig/dspy.rb" rel="noopener noreferrer">DSPy.rb</a> combines typed contracts, composable modules, evaluation, and explicit prompt optimization.</p>
-      </div>
-      <div class="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-4xl">
-        <dl class="grid max-w-xl grid-cols-1 gap-x-8 gap-y-10 lg:max-w-none lg:grid-cols-2 lg:gap-y-16">
-          <div class="relative pl-16">
-            <dt class="text-base font-semibold leading-7 text-gray-900">
-              <div class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-dspy-link">
-                <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z" />
-                </svg>
-              </div>
-              Typed Contracts
-            </dt>
-            <dd class="mt-2 text-base leading-7 text-gray-600">Define agent inputs and outputs with Sorbet types. The contract enforces what the model returns before your code sees it.</dd>
-          </div>
-          <div class="relative pl-16">
-            <dt class="text-base font-semibold leading-7 text-gray-900">
-              <div class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-dspy-link">
-                <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
-                </svg>
-              </div>
-              Composable Modules
-            </dt>
-            <dd class="mt-2 text-base leading-7 text-gray-600">Build agents from small, tested modules. Chain reasoning steps, give agents tools, and compose everything with Ruby control flow.</dd>
-          </div>
-          <div class="relative pl-16">
-            <dt class="text-base font-semibold leading-7 text-gray-900">
-              <div class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-dspy-link">
-                <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 16.875h3.375m0 0h3.375m-3.375 0V13.5m0 3.375v3.375M6 10.5h2.25a2.25 2.25 0 002.25-2.25V6a2.25 2.25 0 00-2.25-2.25H6A2.25 2.25 0 003.75 6v2.25A2.25 2.25 0 006 10.5zm0 9.75h2.25A2.25 2.25 0 0010.5 18v-2.25a2.25 2.25 0 00-2.25-2.25H6a2.25 2.25 0 00-2.25 2.25V18A2.25 2.25 0 006 20.25zm9.75-9.75H18a2.25 2.25 0 002.25-2.25V6A2.25 2.25 0 0018 3.75h-2.25A2.25 2.25 0 0013.5 6v2.25a2.25 2.25 0 002.25 2.25z" />
-                </svg>
-              </div>
-              Evaluation
-            </dt>
-            <dd class="mt-2 text-base leading-7 text-gray-600">Compare program behavior against chosen examples and metrics before a change ships.</dd>
-          </div>
-          <div class="relative pl-16">
-            <dt class="text-base font-semibold leading-7 text-gray-900">
-              <div class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-dspy-link">
-                <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M7.864 4.243A7.5 7.5 0 0119.5 10.5c0 2.92-.556 5.709-1.568 8.268M5.742 6.364A7.465 7.465 0 004.5 10.5a7.464 7.464 0 01-1.15 3.993m1.989 3.559A11.209 11.209 0 008.25 10.5a3.75 3.75 0 117.5 0c0 .527-.021 1.049-.064 1.565M12 10.5a14.94 14.94 0 01-3.6 9.75m6.633-4.596a18.666 18.666 0 01-2.485 5.33" />
-                </svg>
-              </div>
-              Prompt Optimization
-            </dt>
-            <dd class="mt-2 text-base leading-7 text-gray-600">Give the optimizer examples and a metric. It searches instructions and demonstrations, then persists the prompts that score highest.</dd>
-          </div>
-        </dl>
-      </div>
-    </div>
-  </div>
-
-  <!-- CTA Section -->
-  <div class="border-t border-gray-200 bg-gray-50">
-    <div class="px-6 py-12 sm:px-6 sm:py-24 lg:px-8">
-      <div class="mx-auto max-w-2xl text-center">
-        <h2 class="text-3xl font-bold font-serif tracking-tight text-gray-900 sm:text-4xl">Build your first typed program</h2>
-        <p class="mx-auto mt-6 max-w-xl text-lg leading-8 text-gray-600">Define the contract, evaluate the output, and run an optimizer when examples, a metric, and a budget are ready.</p>
-        <div class="mt-10 flex items-center justify-center gap-x-6">
-          <a href="{{ '/getting-started/' | relative_url }}" class="rounded-md bg-dspy-coral px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[#e05d3d] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dspy-coral">Get started</a>
-          <a href="https://github.com/vicentereig/dspy.rb" rel="noopener noreferrer" class="text-sm font-semibold leading-6 text-gray-900 hover:text-dspy-link">View on GitHub <span aria-hidden="true">&rarr;</span></a>
-        </div>
-      </div>
-    </div>
-  </div>
+  <main class="pt-16">
+    {{ content }}
+  </main>
 
   {% render "footer" %}
 </body>

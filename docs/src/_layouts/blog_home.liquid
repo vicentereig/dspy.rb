@@ -1,20 +1,21 @@
 <!DOCTYPE html>
+<!-- Hallmark · genre: editorial · macrostructure: Editorial list · design-system: design.md · designed-as-app -->
 <html lang="en" class="h-full">
 {% render "head", title_suffix: "DSPy.rb - Typed LLM Systems in Ruby" %}
-<body class="h-full font-sans">
-  <div class="bg-white">
+<body class="h-full font-sans bg-paper text-ink-2">
+  <div class="bg-paper">
     {% assign docs_nav = site.data.documentation_navigation %}
     {% render "header", docs_nav: docs_nav %}
 
     <!-- Main Content -->
-    <div class="px-6 pt-20 lg:px-8">
+    <div class="px-6 pt-24 lg:px-8">
       <div class="mx-auto max-w-2xl py-16">
         <!-- Simple Header -->
-        <header class="mb-12">
-          <h1 class="font-serif text-2xl font-medium tracking-tight text-gray-900 sm:text-3xl" style="letter-spacing: -0.02em;">
+        <header class="mb-12 border-b border-rule pb-8">
+          <h1 class="font-serif font-semibold tracking-[-0.02em] text-ink text-[clamp(2rem,4vw,2.75rem)] leading-tight">
             Learning in Drublic
           </h1>
-          <p class="mt-2 text-base text-gray-500" style="font-family: 'Newsreader', Georgia, serif;">
+          <p class="mt-3 text-lg text-ink-3" style="font-family: 'Newsreader', Georgia, serif;">
             Engineering notes on typed LLM programs, agents, evaluation, and Ruby.
           </p>
         </header>
@@ -22,14 +23,14 @@
         <!-- Blog posts list -->
         {% assign blog_posts = collections.articles.resources %}
         {% if blog_posts.size > 0 %}
-          <ul class="space-y-6" style="list-style: none; padding: 0; margin: 0;">
+          <ul class="divide-y divide-rule" style="list-style: none; padding: 0; margin: 0;">
             {% for post in blog_posts %}
-              <li>
-                <a href="{{ post.relative_url }}" class="text-dspy-coral underline hover:text-gray-900" style="text-underline-offset: 3px; font-family: 'Newsreader', Georgia, serif; font-size: 1.0625rem;">
+              <li class="py-5 first:pt-0">
+                <a href="{{ post.relative_url }}" class="font-serif text-ink underline decoration-dspy-coral/50 underline-offset-4 hover:decoration-dspy-coral hover:decoration-2" style="font-size: 1.1875rem;">
                   {{ post.data.title }}
                 </a>
                 {% if post.data.description %}
-                <p class="mt-1 text-sm text-gray-500 leading-snug" style="font-family: 'Newsreader', Georgia, serif;">
+                <p class="mt-1.5 text-ink-3 leading-snug" style="font-family: 'Newsreader', Georgia, serif;">
                   {{ post.data.description }}
                 </p>
                 {% endif %}
@@ -37,7 +38,7 @@
             {% endfor %}
           </ul>
         {% else %}
-          <p class="text-gray-500" style="font-family: 'Newsreader', Georgia, serif;">No posts yet. Check back soon.</p>
+          <p class="text-ink-3" style="font-family: 'Newsreader', Georgia, serif;">No posts yet. Check back soon.</p>
         {% endif %}
       </div>
     </div>

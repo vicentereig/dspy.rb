@@ -1,31 +1,32 @@
 <!DOCTYPE html>
+<!-- Hallmark · genre: editorial · macrostructure: Long Document · design-system: design.md · designed-as-app -->
 <html lang="en" class="h-full">
 {% render "head" %}
-<body class="h-full font-sans overflow-x-hidden">
-  <div class="bg-white">
+<body class="h-full font-sans overflow-x-hidden bg-paper text-ink-2">
+  <div class="bg-paper">
     {% assign docs_nav = site.data.documentation_navigation %}
     {% render "header", docs_nav: docs_nav %}
 
-    <article class="relative isolate bg-white px-6 pt-20 pb-32 lg:px-8">
-  <div class="mx-auto max-w-2xl text-base leading-7 text-gray-700">
-    <header class="mb-10">
-      <h1 class="font-serif text-2xl font-medium tracking-tight text-gray-900 sm:text-3xl" style="letter-spacing: -0.02em;">
+    <article class="relative isolate bg-paper px-6 pt-24 pb-32 lg:px-8">
+  <div class="mx-auto max-w-2xl text-base leading-7 text-ink-2">
+    <header class="mb-10 border-b border-rule pb-8">
+      <h1 class="font-serif font-semibold tracking-[-0.02em] text-ink text-[clamp(2rem,4vw,2.75rem)] leading-tight">
         {{ page.title }}
       </h1>
-      <p class="mt-2 text-base text-gray-500" style="font-family: 'Newsreader', Georgia, serif;">
-        {{ page.date | date: "%B %Y" }} – <a href="{{ '/' | relative_url }}" class="text-gray-500 no-underline hover:text-gray-900 hover:underline" style="text-underline-offset: 3px;">{{ page.author | default: "Vicente Reig Rincón de Arellano" }}</a>
+      <p class="mt-3 text-base text-ink-3" style="font-family: 'Newsreader', Georgia, serif;">
+        {{ page.date | date: "%B %Y" }} – <a href="{{ '/' | relative_url }}" class="text-ink-3 no-underline hover:text-ink hover:underline" style="text-underline-offset: 3px;">{{ page.author | default: "Vicente Reig Rincón de Arellano" }}</a>
       </p>
     </header>
 
     <div class="post-content prose prose-lg prose-gray max-w-none
-                prose-headings:font-serif prose-headings:font-medium prose-headings:tracking-tight
-                prose-h2:text-xl prose-h2:mt-12 prose-h2:mb-3
+                prose-headings:font-serif prose-headings:font-semibold prose-headings:tracking-[-0.01em] prose-headings:text-ink
+                prose-h2:text-2xl prose-h2:mt-14 prose-h2:mb-3
                 prose-h3:text-lg prose-h3:mt-8 prose-h3:mb-2 prose-h3:font-semibold
-                prose-p:text-gray-700 prose-p:leading-relaxed
-                prose-a:text-inherit prose-a:underline prose-a:decoration-dspy-coral/40 hover:prose-a:decoration-dspy-coral
-                prose-strong:text-gray-900 prose-strong:font-semibold
+                prose-p:text-ink-2 prose-p:leading-relaxed
+                prose-a:text-inherit prose-a:underline prose-a:decoration-dspy-coral/50 prose-a:underline-offset-2 hover:prose-a:decoration-dspy-coral
+                prose-strong:text-ink prose-strong:font-semibold
                 prose-code:text-gray-900 prose-code:bg-stone-100 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:font-mono prose-code:text-sm prose-code:before:content-[''] prose-code:after:content-['']
-                prose-blockquote:border-l-dspy-coral prose-blockquote:pl-6 prose-blockquote:italic prose-blockquote:text-gray-600
+                prose-blockquote:border-l-dspy-coral prose-blockquote:pl-6 prose-blockquote:italic prose-blockquote:text-ink-3
                 prose-img:rounded-lg
                 prose-pre:!p-0 prose-pre:!bg-transparent prose-pre:!border-0
                 [&_pre.highlight]:!bg-[#1a1a1a] [&_pre.highlight]:!p-8 [&_pre.highlight]:!overflow-x-auto [&_pre.highlight]:!rounded-lg
@@ -35,12 +36,12 @@
       {{ content }}
     </div>
 
-    <footer class="mt-16 pt-8 border-t border-gray-200 flex justify-between items-center flex-wrap gap-4">
-      <a href="{{ '/blog/' | relative_url }}" class="text-sm text-dspy-coral underline hover:text-gray-900" style="text-underline-offset: 3px; font-family: 'Newsreader', Georgia, serif;">
+    <footer class="mt-16 pt-8 border-t border-rule flex justify-between items-center flex-wrap gap-4">
+      <a href="{{ '/blog/' | relative_url }}" class="text-sm text-link underline underline-offset-4 hover:decoration-2" style="font-family: 'Newsreader', Georgia, serif;">
         &larr; Back to Writing
       </a>
       {% if page.category %}
-      <span class="text-xs text-gray-500 uppercase tracking-wider">{{ page.category }}</span>
+      <span class="text-xs text-ink-3 uppercase tracking-wider">{{ page.category }}</span>
       {% endif %}
     </footer>
   </div>

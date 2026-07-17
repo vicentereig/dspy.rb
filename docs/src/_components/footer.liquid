@@ -1,29 +1,23 @@
-<!-- Footer Component -->
-<footer class="bg-white">
-  <div class="mx-auto max-w-7xl overflow-hidden px-6 py-20 sm:py-24 lg:px-8">
-    <nav class="-mb-6 columns-2 sm:flex sm:justify-center sm:space-x-12" aria-label="Footer">
-      <div class="pb-6">
-        <a href="{{ '/getting-started/' | relative_url }}" class="text-sm leading-6 text-gray-600 hover:text-gray-900">Documentation</a>
+<!-- Footer Component — mast-headed editorial (see design.md) -->
+<footer class="border-t border-rule bg-paper">
+  <div class="mx-auto max-w-6xl px-6 py-14 lg:px-8">
+    <div class="flex flex-col gap-y-8 sm:flex-row sm:items-start sm:justify-between">
+      <div class="max-w-xs">
+        <a href="{{ '/' | relative_url }}" class="text-xl font-serif font-semibold text-ink tracking-[-0.01em]">DSPy.rb</a>
+        <p class="mt-3 text-sm leading-6 text-ink-3">Typed AI agents in Ruby — Sorbet contracts, model tools, evaluation, and prompt optimization.</p>
       </div>
-      <div class="pb-6">
-        <a href="https://github.com/vicentereig/dspy.rb" rel="noopener noreferrer" class="text-sm leading-6 text-gray-600 hover:text-gray-900">GitHub</a>
-      </div>
-      <div class="pb-6">
-        <a href="https://github.com/vicentereig/dspy.rb/discussions" rel="noopener noreferrer" class="text-sm leading-6 text-gray-600 hover:text-gray-900">Community</a>
-      </div>
-      <div class="pb-6">
-        <a href="https://github.com/vicentereig/dspy.rb/blob/main/CONTRIBUTING.md" rel="noopener noreferrer" class="text-sm leading-6 text-gray-600 hover:text-gray-900">Contributing</a>
-      </div>
-      <div class="pb-6">
-        <a href="{{ '/llms.txt' | relative_url }}" class="text-sm leading-6 text-gray-600 hover:text-gray-900">llms.txt</a>
-      </div>
-      <div class="pb-6">
-        <a href="{{ '/llms-full.txt' | relative_url }}" class="text-sm leading-6 text-gray-600 hover:text-gray-900">llms-full.txt</a>
-      </div>
-    </nav>
-    <p class="mt-10 text-center text-xs leading-5 text-gray-500">
-      &copy; 2024–{{ 'now' | date: '%Y' }} <a href="https://github.com/vicentereig/dspy.rb" rel="noopener noreferrer">DSPy.rb</a>. All rights reserved.
-      Created by <a href="https://vicente.services" rel="noopener noreferrer" class="text-dspy-coral hover:text-[#e05d3d]">Vicente Reig Rincon de Arellano</a>.
+      <nav class="flex flex-wrap gap-x-8 gap-y-3" aria-label="Footer">
+        <a href="{{ '/getting-started/' | relative_url }}" class="text-sm leading-6 text-ink-2 hover:text-ink">Documentation</a>
+        <a href="https://github.com/vicentereig/dspy.rb" rel="noopener noreferrer" class="text-sm leading-6 text-ink-2 hover:text-ink">GitHub</a>
+        <a href="https://github.com/vicentereig/dspy.rb/discussions" rel="noopener noreferrer" class="text-sm leading-6 text-ink-2 hover:text-ink">Community</a>
+        <a href="https://github.com/vicentereig/dspy.rb/blob/main/CONTRIBUTING.md" rel="noopener noreferrer" class="text-sm leading-6 text-ink-2 hover:text-ink">Contributing</a>
+        <a href="{{ '/llms.txt' | relative_url }}" class="text-sm leading-6 text-ink-2 hover:text-ink">llms.txt</a>
+        <a href="{{ '/llms-full.txt' | relative_url }}" class="text-sm leading-6 text-ink-2 hover:text-ink">llms-full.txt</a>
+      </nav>
+    </div>
+    <p class="mt-12 border-t border-rule pt-6 text-xs leading-5 text-ink-3">
+      &copy; 2024–{{ 'now' | date: '%Y' }} <a href="https://github.com/vicentereig/dspy.rb" rel="noopener noreferrer" class="hover:text-ink">DSPy.rb</a>.
+      Created by <a href="https://vicente.services" rel="noopener noreferrer" class="text-dspy-coral hover:text-[color:var(--color-accent-hover)]">Vicente Reig Rincón de Arellano</a>.
     </p>
   </div>
 </footer>

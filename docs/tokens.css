@@ -1,0 +1,41 @@
+/* Hallmark · design-system: design.md · genre: editorial
+ * Portable token export for the DSPy.rb docs. The site's index.css imports
+ * these into :root; tailwind.config.js maps its color utilities onto them.
+ */
+:root {
+  /* Color — warm editorial paper/ink, exact brand accent */
+  --color-paper:        oklch(98.8% 0.006 70);
+  --color-paper-2:      oklch(96.6% 0.008 70);
+  --color-ink:          oklch(22% 0.02 50);
+  --color-ink-2:        oklch(42% 0.02 55);
+  --color-ink-3:        oklch(55% 0.015 60);
+  --color-rule:         oklch(90% 0.01 70);
+  --color-accent:       oklch(69.4% 0.169 35.3);
+  --color-accent-hover: oklch(62% 0.17 35);
+  --color-accent-ink:   oklch(99% 0 0);
+  --color-link:         oklch(52% 0.10 166);
+  --color-highlight:    oklch(87.7% 0.071 169.7);
+  --color-focus:        oklch(69.4% 0.169 35.3);
+
+  /* Type */
+  --font-display: "Newsreader", Georgia, serif;
+  --font-body:    "Manrope", system-ui, sans-serif;
+  --font-mono:    "JetBrains Mono", "Fira Code", Consolas, Monaco, monospace;
+  --tracking-display: -0.02em;
+
+  --text-display:   clamp(2.5rem, 6vw, 4.5rem);
+  --text-display-s: clamp(2rem, 4.5vw, 3rem);
+
+  /* Spacing — 4pt scale */
+  --space-3xs: 0.25rem; --space-2xs: 0.5rem;  --space-xs: 0.75rem;
+  --space-sm:  1rem;    --space-md:  1.5rem;   --space-lg: 2rem;
+  --space-xl:  3rem;    --space-2xl: 4.5rem;   --space-3xl: 7rem;
+
+  /* Motion */
+  --ease-out:  cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-short: 220ms;
+
+  /* Radii */
+  --radius-input: 6px;
+  --radius-card:  10px;
+}

@@ -11,7 +11,7 @@
   font-style: normal;
   font-weight: 400 800;
   font-display: swap;
-  src: url(/fonts/manrope-variable.woff2) format('woff2');
+  src: url(../../../fonts/manrope-variable.woff2) format('woff2');
 }
 
 @font-face {
@@ -19,7 +19,7 @@
   font-style: normal;
   font-weight: 400 700;
   font-display: swap;
-  src: url(/fonts/newsreader-variable.woff2) format('woff2');
+  src: url(../../../fonts/newsreader-variable.woff2) format('woff2');
 }
 
 @font-face {
@@ -27,16 +27,16 @@
   font-style: italic;
   font-weight: 700;
   font-display: swap;
-  src: url(/fonts/newsreader-italic-700.woff2) format('woff2');
+  src: url(../../../fonts/newsreader-italic-700.woff2) format('woff2');
 }
 
-/* JetBrains Mono for code */
+/* JetBrains Mono for code — self-hosted variable font */
 @font-face {
   font-family: 'JetBrains Mono';
   font-style: normal;
   font-weight: 400 700;
   font-display: swap;
-  src: url('https://fonts.gstatic.com/s/jetbrainsmono/v18/tDbY2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKxjPVmUsaaDhw.woff2') format('woff2');
+  src: url(../../../fonts/jetbrains-mono-variable.woff2) format('woff2');
 }
 
 /* ==========================================================================
@@ -44,14 +44,61 @@
    ========================================================================== */
 
 :root {
-  --color-accent: #f26f4e;
-  --color-link: #4aa885;
-  --color-highlight: #a8e6cf;
+  /* Color — warm editorial paper/ink, exact brand accent (see design.md) */
+  --color-paper:        oklch(98.8% 0.006 70);
+  --color-paper-2:      oklch(96.6% 0.008 70);
+  --color-ink:          oklch(22% 0.02 50);
+  --color-ink-2:        oklch(42% 0.02 55);
+  --color-ink-3:        oklch(55% 0.015 60);
+  --color-rule:         oklch(90% 0.01 70);
+  --color-accent:       oklch(69.4% 0.169 35.3);
+  --color-accent-hover: oklch(62% 0.17 35);
+  --color-accent-ink:   oklch(99% 0 0);
+  --color-link:         oklch(52% 0.10 166);
+  --color-highlight:    oklch(87.7% 0.071 169.7);
+  --color-focus:        oklch(69.4% 0.169 35.3);
+
+  /* Type */
+  --tracking-display: -0.02em;
+  --text-display:   clamp(2.5rem, 6vw, 4.5rem);
+  --text-display-s: clamp(2rem, 4.5vw, 3rem);
+
+  /* Spacing — 4pt scale */
+  --space-3xs: 0.25rem; --space-2xs: 0.5rem;  --space-xs: 0.75rem;
+  --space-sm:  1rem;    --space-md:  1.5rem;   --space-lg: 2rem;
+  --space-xl:  3rem;    --space-2xl: 4.5rem;   --space-3xl: 7rem;
+
+  /* Motion */
+  --ease-out:  cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-short: 220ms;
+
+  /* Radii */
+  --radius-input: 6px;
+  --radius-card:  10px;
 }
 
 ::selection {
-  background-color: #a8e6cf;
-  color: #1a1a1a;
+  background-color: var(--color-highlight);
+  color: var(--color-ink);
+}
+
+/* Editorial base — warm paper, one quiet entrance fade */
+body {
+  background-color: var(--color-paper);
+  color: var(--color-ink-2);
+}
+
+@keyframes hm-enter {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+[data-hm-enter] {
+  animation: hm-enter var(--dur-short) var(--ease-out) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-hm-enter] { animation: none; opacity: 1; transform: none; }
 }
 
 @tailwind base;

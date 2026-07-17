@@ -7,11 +7,19 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        'dspy-coral': '#f26f4e',
-        'dspy-link': '#4aa885',
-        'dspy-highlight': '#a8e6cf',
-        'dspy-muted': '#666',
-        'dspy-dark': '#111827',
+        // Mapped onto the OKLCH design tokens (see design.md / tokens.css)
+        'dspy-coral': 'var(--color-accent)',
+        'dspy-link': 'var(--color-link)',
+        'dspy-highlight': 'var(--color-highlight)',
+        'dspy-muted': 'var(--color-ink-3)',
+        'dspy-dark': 'var(--color-ink)',
+        // Editorial surface + ink scale
+        'paper': 'var(--color-paper)',
+        'paper-2': 'var(--color-paper-2)',
+        'ink': 'var(--color-ink)',
+        'ink-2': 'var(--color-ink-2)',
+        'ink-3': 'var(--color-ink-3)',
+        'rule': 'var(--color-rule)',
       },
       fontFamily: {
         'serif': ['Newsreader', 'Georgia', 'serif'],
