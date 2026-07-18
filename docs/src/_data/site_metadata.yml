@@ -2,7 +2,9 @@
 title: DSPy.rb
 tagline: Typed LLM Programs and Agents for Ruby
 description: DSPy.rb is a Ruby-native implementation of DSPy's programming model for typed LLM programs and agents.
-author: Vicente Reig Rincon de Arellano
+author:
+  name: Vicente Reig Rincon de Arellano
+  twitter: highwayvaquero
 # Use host-only URL so canonical tags don't duplicate the base_path.
 url: "https://oss.vicente.services"
 

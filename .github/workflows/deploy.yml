@@ -20,6 +20,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          # bridgetown-sitemap derives lastmod from each source file's git history.
+          fetch-depth: 0
 
       - name: Read Ruby version from .ruby-version
         id: ruby-version

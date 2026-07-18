@@ -35,6 +35,9 @@ jobs:
       LANGFUSE_SECRET_KEY: test-secret-key-no-network
     steps:
     - uses: actions/checkout@v4
+      with:
+        # Keep sitemap lastmod values meaningful in the documentation build.
+        fetch-depth: 0
     - name: Read Ruby version from .ruby-version
       id: ruby-version
       run: echo "version=$(cat .ruby-version)" >> $GITHUB_OUTPUT

@@ -35,17 +35,32 @@ defaults:
       type: "pages"
     values:
       layout: "default"
+      image:
+        path: /images/og/default.png
+        height: 630
+        width: 1200
+        alt: DSPy.rb — typed AI agents in Ruby
   - scope:
       path: ""
       type: "docs"
     values:
       layout: "default"
+      image:
+        path: /images/og/default.png
+        height: 630
+        width: 1200
+        alt: DSPy.rb — typed AI agents in Ruby
   - scope:
       path: ""
       type: "articles"
     values:
       layout: "default"
       schema_type: "TechArticle"
+      image:
+        path: /images/og/default.png
+        height: 630
+        width: 1200
+        alt: DSPy.rb — typed AI agents in Ruby
 
 # Plugins
 plugins:
