@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.2] - 2026-07-18
+
 ### `dspy`
 
 #### Added
@@ -21,10 +23,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Missing adapter diagnostics** - Adapter load failures now retain the package-specific installation message.
 - **Score data type signatures** - Marked `DSPy::Scores::DataType.deserialize` as the typed override it implements.
 
+### `dspy-code_act`
+
+#### Changed
+
+- **Explicit signature omission** - CodeAct now preserves signature field descriptors and enforces required output fields. A nilable field remains required unless it declares a default such as `default: nil`.
+
 ### `dspy-anthropic`
 
 #### Added
-- **Reasoning effort, token, and sampling options** (#256, #257) - Added `reasoning:`, `temperature:`, and `max_tokens:` support to `DSPy::LM.new` for Anthropic. A model-family capability registry validates effort levels, thinking budgets, token bounds, and sampling combinations before the request is sent. Thanks to Lennart ([@paulp-aus](https://github.com/paulp-aus)) for the implementation.
+- **Reasoning effort, token, and sampling options** (#256, #257) - Added `reasoning:`, `temperature:`, and `max_tokens:` support to `DSPy::LM.new` for Anthropic. A model-family capability registry validates effort levels, thinking budgets, token bounds, and sampling combinations before the request is sent. Thanks to [@paulp-aus](https://github.com/paulp-aus) for the implementation.
 
 #### Changed
 - **Stable structured-output API** - Anthropic structured outputs now use `output_config: { format:, effort: }` with `client.messages.create` and `stream`, replacing the deprecated Beta `output_format`/`betas` path. Structured output and reasoning effort can now share one request.
@@ -52,6 +60,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Fixed
 - **Documentation accuracy** (#262) - Corrected `raw_chat` examples to return a `String`, documented usage through `lm.tokens`, and aligned Gemini metadata guidance with the public instrumentation boundary.
 - **Signature and Toolset guidance** - Corrected nullable-versus-omittable semantics, consolidated the canonical Toolset example, and added deterministic executable coverage for both.
+
+### Contributors
+
+- Thanks to Abdelrahman Alzboon ([@a-zboon](https://github.com/a-zboon)) for opening #247 and prompting a public reasoning API.
+- Thanks to [@paulp-aus](https://github.com/paulp-aus) for reporting #256 and #259, implementing #257, verifying the live Anthropic API, and carrying the work through two review rounds.
+- Thanks to Lennart Melzer ([@lennart](https://github.com/lennart)) for encouraging the Anthropic work and serving as a sounding board.
 
 ## [1.0.1] - 2026-06-12
 

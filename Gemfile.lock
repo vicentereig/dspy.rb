@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    dspy (1.0.1)
+    dspy (1.0.2)
       async (~> 2.29)
       concurrent-ruby (~> 1.3)
       dry-configurable (~> 1.0)
@@ -11,9 +11,9 @@ PATH
       sorbet-runtime (~> 0.5)
       sorbet-schema (~> 0.3)
       sorbet-toon (~> 0.1)
-    dspy-anthropic (1.0.5)
+    dspy-anthropic (1.0.6)
       anthropic (>= 1.28.0, < 2.0)
-      dspy (>= 0.30.1, < 2.0)
+      dspy (>= 1.0.2, < 2.0)
     dspy-datasets (1.0.2)
       dspy (>= 0.30)
       red-parquet (>= 21.0)
@@ -42,7 +42,7 @@ PATH
     dspy-openai (1.0.3)
       dspy (>= 0.30.1, < 2.0)
       openai (>= 0.57.0, < 1.0)
-    dspy-ruby_llm (0.1.1)
+    dspy-ruby_llm (0.1.2)
       dspy (>= 0.30.1, < 2.0)
       ruby_llm (>= 1.14.1, < 2.0)
     dspy-schema (1.0.2)
