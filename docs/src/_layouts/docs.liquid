@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!-- Hallmark · genre: editorial · macrostructure: Long Document · design-system: design.md · designed-as-app -->
 <html lang="en" class="h-full bg-paper">
-{% render "head", title_suffix: "DSPy.rb Documentation" %}
+{% render "head", title_suffix: "DSPy.rb Documentation", page: page, site: site %}
 {% assign current_doc_url = page.relative_url | remove_first: site.base_path %}
 <body class="h-full overflow-x-hidden font-sans bg-paper text-ink-2" data-doc-url="{{ current_doc_url }}">
   {% assign docs_nav = site.data.documentation_navigation %}

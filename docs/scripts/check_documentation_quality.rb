@@ -93,6 +93,7 @@ module DocumentationQuality
         Step.new(name: "Build production site and assets once", command: %w[bun run build], chdir: @docs.to_s, environment: production_environment)
       ]
       rendered = [
+        ["Rendered search discovery", [ruby, scripts.join("validate_search_discovery.rb").to_s, @docs.join("output").to_s]],
         ["Rendered navigation", [ruby, scripts.join("validate_documentation_navigation.rb").to_s, "--output", @docs.join("output").to_s]],
         ["Rendered redirects and fragments", [ruby, scripts.join("validate_url_redirects.rb").to_s, "--output", @docs.join("output").to_s]],
         ["Rendered long pages, sitemap, and LLM references", [ruby, scripts.join("validate_long_page_dispositions.rb").to_s, "--output", @docs.join("output").to_s]],

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!-- Hallmark · genre: editorial · macrostructure: Long Document · design-system: design.md · designed-as-app -->
 <html lang="en" class="h-full">
-{% render "head" %}
+{% render "head", page: page, site: site %}
 <body class="h-full font-sans overflow-x-hidden bg-paper text-ink-2">
   <div class="bg-paper">
     {% assign docs_nav = site.data.documentation_navigation %}

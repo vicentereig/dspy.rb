@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-{% render "head" %}
+{% render "head", page: page, site: site %}
 <body>
   {% assign docs_nav = site.data.documentation_navigation %}
   {% render "header", docs_nav: docs_nav %}

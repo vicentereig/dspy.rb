@@ -260,7 +260,7 @@ RSpec.describe "documentation quality validators" do
     steps = pipeline.send(:steps)
     safety = steps.select { _1.command.include?("scripts/test_url_redirect_safety.rb") }
 
-    expect(steps.length).to eq(22)
+    expect(steps.length).to eq(23)
     expect(safety.length).to eq(1)
     expect(safety.first.chdir).to eq(QUALITY_ROOT.join("docs").to_s)
     expect(safety.first.command).to include("bundle", "exec", "ruby")

@@ -25,5 +25,15 @@
   <script defer src="{{ '/_bridgetown/static/js/index.js' | relative_url }}"></script>
   
   <!-- Structured Data -->
-  {% render "structured_data" %}
+  {% render "structured_data",
+    dspy_version: site.config.dspy_version,
+    page_relative_url: page.relative_url,
+    page_schema_type: page.schema_type,
+    page_canonical_url: page.canonical_url,
+    page_title: page.title,
+    page_description: page.description,
+    page_date: page.date,
+    page_last_modified_at: page.last_modified_at,
+    page_image: page.image
+  %}
 </head>

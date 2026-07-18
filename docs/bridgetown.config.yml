@@ -45,6 +45,7 @@ defaults:
       type: "articles"
     values:
       layout: "default"
+      schema_type: "TechArticle"
 
 # Plugins
 plugins:

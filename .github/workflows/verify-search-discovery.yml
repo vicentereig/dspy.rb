@@ -1,0 +1,26 @@
+name: Verify deployed search discovery
+
+on:
+  workflow_run:
+    workflows: ["Deploy to GitHub Pages"]
+    types: [completed]
+  workflow_dispatch:
+
+jobs:
+  verify-search-discovery:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify sitemap and robots declarations
+        run: |
+          curl --fail --silent --show-error --retry 3 \
+            https://oss.vicente.services/dspy.rb/sitemap.xml \
+            --output /tmp/dspy-sitemap.xml
+          curl --fail --silent --show-error --retry 3 \
+            https://oss.vicente.services/dspy.rb/robots.txt \
+            --output /tmp/dspy-robots.txt
+          grep -Fq '<urlset' /tmp/dspy-sitemap.xml
+          grep -Fq 'Sitemap: https://oss.vicente.services/dspy.rb/sitemap.xml' \
+            /tmp/dspy-robots.txt
