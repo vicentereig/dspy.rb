@@ -352,6 +352,10 @@ optimized_program = result.optimized_program
       <dd class="text-ink-2">Install <code>dspy-anthropic</code>. Verify model capabilities before relying on structured output, tools, media, or streaming.</dd>
     </div>
     <div class="grid grid-cols-1 sm:grid-cols-[10rem_1fr] gap-x-8 gap-y-1 py-5">
+      <dt class="font-serif text-lg font-semibold text-ink">RubyLLM</dt>
+      <dd class="text-ink-2">Install <code>dspy-ruby_llm</code> to route models through <a href="https://rubyllm.com" rel="noopener noreferrer" class="text-link underline underline-offset-4 decoration-1 hover:decoration-2">RubyLLM</a>&rsquo;s registry with the <code>ruby_llm/&hellip;</code> prefix. It reaches every provider RubyLLM supports and reuses an existing RubyLLM configuration.</dd>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-[10rem_1fr] gap-x-8 gap-y-1 py-5">
       <dt class="font-serif text-lg font-semibold text-ink">Local &amp; compatible</dt>
       <dd class="text-ink-2">Use Ollama or an OpenAI-compatible endpoint. Confirm the server and model support each capability your agent needs.</dd>
     </div>
