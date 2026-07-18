@@ -168,7 +168,7 @@ dispositions:
     discovery_review: [corpus, navigation, sitemap]
     risk_review: Keep schema conversion distinct from authorization, isolation, resource limits, and subprocess cancellation.
   - source: docs/src/index.md
-    measured_tokens: 2423
+    measured_tokens: 2728
     outcome: keep
     audience: Documentation visitor selecting a task path.
     reason: This is a selector and orientation surface, not a linear guide; sections serve distinct entry audiences without duplicating task definitions.

@@ -16,7 +16,7 @@ anchors:
     successor_contract: Name typed agents, model-backed programs, and Ruby without implying autonomous improvement or upstream compatibility.
     evidence: [{path: docs/editorial/dspy-port-positioning.md, locator: "## Verdict"}]
     duplicates:
-      - {path: docs/src/index.md, locator: '<h1 class="text-4xl font-bold font-serif tracking-tight text-gray-900 sm:text-6xl">Build typed AI agents in Ruby</h1>', disposition: specialize-agent-entry}
+      - {path: docs/src/index.md, locator: "Build typed AI agents in Ruby", disposition: specialize-agent-entry}
       - {path: docs/src/llms.txt.erb, locator: "Build typed agents and model-backed programs in Ruby", disposition: derive-or-link}
 
   - id: readme-three-beat-contrast

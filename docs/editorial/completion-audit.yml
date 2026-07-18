@@ -224,10 +224,10 @@ findings:
     status: resolved
     reason: The high-traffic layout promised working agents and certain improvement without a metric or application boundary.
     verification:
-      - {path: docs/src/_layouts/home.liquid, absent: "Build with confidence", present: "Build against explicit boundaries"}
-      - {path: docs/src/_layouts/home.liquid, absent: "Everything you need to ship agents that work", present: "Build typed programs and bounded agents"}
-      - {path: docs/src/_layouts/home.liquid, absent: "Know whether a change improves output", present: "Compare program behavior against chosen examples and metrics"}
-      - {path: docs/src/_layouts/home.liquid, absent: "Ready to ship agents that work?", present: "Build your first typed program"}
+      - {path: docs/src/index.md, absent: "Build with confidence", present: "Keep state, limits, errors, and side effects in Ruby."}
+      - {path: docs/src/index.md, absent: "Everything you need to ship agents that work", present: "A contract, a tool, a bounded loop"}
+      - {path: docs/src/index.md, absent: "Know whether a change improves output", present: "Evaluate complete runs with examples and metrics"}
+      - {path: docs/src/index.md, absent: "Ready to ship agents that work?", present: "Build typed AI agents in Ruby"}
       - {path: docs/src/index.md, absent: "Everything you love about Ruby", present: "Ruby types and control flow for agents and model-backed programs"}
   - id: blog-layout-positioning
     category: voice

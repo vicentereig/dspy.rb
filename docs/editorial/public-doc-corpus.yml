@@ -298,7 +298,7 @@ rules:
     reason: ADRs, plans, editorial working notes, and todos are internal decision records.
   - id: excluded-docs-operations
     kind: excluded
-    glob: '{docs/README.md,docs/SEO_KEYWORD_STRATEGY.md,docs/datasets_parquet_migration_plan.md,docs/medium_article.md}'
+    glob: '{docs/README.md,docs/SEO_KEYWORD_STRATEGY.md,docs/datasets_parquet_migration_plan.md,docs/design.md,docs/medium_article.md}'
     reason: Documentation-site operations, strategy, and drafts are not public product documentation.
   - id: excluded-issue-note
     kind: excluded
