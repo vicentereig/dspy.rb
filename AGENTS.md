@@ -61,22 +61,11 @@ Do not advertise `srb tc` or RuboCop as required gates unless their dependencies
 
 Keep pure tests separate from tests that contact an LLM. Use public synthetic inputs. Do not record live requests or replace VCR cassettes without explicit authorization. Inspect cassette diffs for secrets.
 
-## Manual DSPy docs deployment to Fly
+## Publishing
 
-`oss.vicente.services` is served by the `vicente.services` Fly app. It is not served by the DSPy.rb GitHub Pages artifact.
+Not every downstream publication runs on a source push. When publishing an exact commit, use the maintainer-approved release procedure and record the revision in the release handoff.
 
-A push to DSPy.rb does not automatically rebuild the Fly image. After pushing a docs commit, dispatch the website workflow manually with the exact DSPy revision:
-
-```bash
-DSPY_SHA="$(git rev-parse HEAD)"
-gh workflow run deploy.yml -R vicentereig/vicente.services -f dspy_ref="$DSPY_SHA"
-```
-
-The website workflow checks out that SHA, builds `docs/`, assembles it under `/dspy.rb/`, records the SHA in `BUILD-METADATA.txt`, and deploys the pinned OpenResty image to Fly.
-
-Do not add `GH_TOKEN` or another cross-repository credential to the public DSPy.rb workflow. Manual dispatch is intentional. The separate `vicentereig.github.io` GitHub Pages surface must remain available because it provides the 301 compatibility redirects to `oss.vicente.services`.
-
-After deployment, verify the app health endpoint, the docs route, and Fly logs. Plausible pageviews are asynchronous and may be filtered or lost during a restart; Fly logs remain the traffic audit source.
+Do not add cross-repository credentials to a public workflow. Keep publication credentials in the approved private secret store.
 
 ## Delegation
 
