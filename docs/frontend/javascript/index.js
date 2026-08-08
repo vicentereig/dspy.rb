@@ -11,8 +11,8 @@ const plausible = Plausible({
   hashMode: true // Enable hashed page path tracking
 })
 
-// Enable automatic page view tracking
-plausible.enableAutoPageviews()
+// Pageviews are recorded by the shared OpenResty runtime; keep browser
+// tracking for outbound links and the custom events below.
 
 // Track outbound links
 function trackOutboundLinks() {
