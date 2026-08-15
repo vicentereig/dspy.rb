@@ -3,6 +3,8 @@ layout: docs
 name: Evaluation Framework
 description: Evaluate DSPy.rb programs against typed examples and explicit metrics
 date: 2025-07-10 00:00:00 +0000
+agent_consultation_cta:
+  placement: evaluation
 ---
 # Evaluation Framework
 

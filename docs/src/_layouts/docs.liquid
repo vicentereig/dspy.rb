@@ -40,6 +40,7 @@
       <div class="mx-auto max-w-4xl min-w-0 px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
         {% render "documentation_breadcrumb", docs_nav: docs_nav, current_url: current_doc_url %}
         <article class="prose prose-gray max-w-none prose-headings:font-serif prose-headings:break-words prose-code:break-words prose-pre:overflow-x-auto">{{ content }}</article>
+        {% if page.agent_consultation_cta %}{% render "agent_consultation_cta", cta: page.agent_consultation_cta %}{% endif %}
         {% render "documentation_context_exits", docs_nav: docs_nav, current_url: current_doc_url %}
         {% render "documentation_prev_next", docs_nav: docs_nav, current_url: current_doc_url %}
       </div>

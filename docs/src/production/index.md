@@ -4,6 +4,8 @@ title: Production Guide
 description: Deploy and operate DSPy.rb applications in production
 date: 2025-07-10 00:00:00 +0000
 last_modified_at: 2026-07-15 00:00:00 +0000
+agent_consultation_cta:
+  placement: production
 ---
 # Production Guide
 

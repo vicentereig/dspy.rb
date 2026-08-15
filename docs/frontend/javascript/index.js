@@ -65,6 +65,19 @@ function trackFileDownloads() {
   })
 }
 
+// Track the contextual architecture-consultation link separately from generic outbound links.
+function trackAgentConsultationCta() {
+  document.addEventListener('click', function(e) {
+    const link = e.target.closest('[data-agent-consultation-cta]')
+    if (!link) return
+
+    window.trackCustomEvent('agent_consultation_cta_clicked', {
+      placement: link.dataset.ctaPlacement,
+      cta_version: link.dataset.ctaVersion
+    })
+  })
+}
+
 // Track 404 errors
 function track404Errors() {
   // Check if current page is a 404
@@ -90,6 +103,7 @@ window.trackCustomEvent = function(eventName, properties = {}) {
 // Initialize all tracking
 trackOutboundLinks()
 trackFileDownloads()
+trackAgentConsultationCta()
 track404Errors()
 
 // Add any interactive functionality here

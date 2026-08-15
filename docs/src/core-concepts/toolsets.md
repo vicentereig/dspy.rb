@@ -4,6 +4,8 @@ name: Toolsets
 description: Define, export, and operate related typed Ruby tools
 date: 2025-07-11 00:00:00 +0000
 last_modified_at: 2026-07-15 00:00:00 +0000
+agent_consultation_cta:
+  placement: toolsets
 ---
 # Toolsets
 
