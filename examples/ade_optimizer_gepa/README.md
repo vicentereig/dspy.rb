@@ -4,7 +4,7 @@ This example downloads an Adverse Drug Event dataset slice, evaluates a typed cl
 
 ## Prerequisites
 
-- the repository's pinned Ruby 3.4.5 and Bundler
+- the Ruby version in the repository's `.ruby-version` and Bundler
 - `dspy-gepa` in the bundle (`DSPY_WITH_GEPA=1 rbenv exec bundle install` in this monorepo)
 - a provider key for the selected model; the default is `openai/gpt-4o-mini`
 - network access for the dataset download and provider calls

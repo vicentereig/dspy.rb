@@ -21,7 +21,7 @@ These instructions apply to agents working in DSPy.rb. User and system instructi
 
 ## Environment
 
-- Use the Ruby version in `.ruby-version` (currently 3.4.5).
+- Use the Ruby version in `.ruby-version` (currently 3.4.12).
 - Install Ruby dependencies with `rbenv exec bundle install`.
 - Use the `DSPY_WITH_*` flags documented in `Gemfile` and CI for optional providers and sibling gems.
 - Copy `.env.sample` to `.env` when needed. Never commit `.env`, API keys, provider tokens, customer data, or recorded secrets.

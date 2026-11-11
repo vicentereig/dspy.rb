@@ -328,7 +328,8 @@ RSpec.describe "documentation quality validators" do
       bridgetown_path = root.join("docs/bridgetown.config.yml")
       replace_in(bridgetown_path, "- bun.lock", "- bun.lockb")
       docker_path = root.join("docs/Dockerfile")
-      replace_in(docker_path, "FROM ruby:3.4.5-slim", "FROM ruby:3.2-slim")
+      ruby_version = root.join(".ruby-version").read.strip
+      replace_in(docker_path, "FROM ruby:#{ruby_version}-slim", "FROM ruby:3.2-slim")
       replace_in(docker_path, 'bash -s "bun-v1.3.14"', "bash")
       replace_in(docker_path, "COPY package.json bun.lock ./", "COPY package.json bun.lockb ./")
       replace_in(docker_path, "RUN bun install --frozen-lockfile", "RUN bun install")
@@ -341,7 +342,7 @@ RSpec.describe "documentation quality validators" do
         "text lockfile is required",
         "legacy binary lockfile must not be used",
         "must exclude the text bun.lock and not the legacy binary lock",
-        "Ruby base image must match .ruby-version (3.4.5)",
+        "Ruby base image must match .ruby-version (#{ruby_version})",
         "Bun installer must pin bun-v1.3.14",
         "must copy the text bun.lock"
       )
