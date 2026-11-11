@@ -1,5 +1,5 @@
 # Use official Ruby image
-FROM ruby:3.4.5-slim
+FROM ruby:3.4.12-slim
 
 # Install dependencies for Playwright and build tools
 RUN apt-get update && apt-get install -y \
