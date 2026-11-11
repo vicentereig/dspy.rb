@@ -26,8 +26,8 @@ RSpec.describe DSPy::Gemini::LM::SchemaConverter do
       expect(result).to be_a(Hash)
       expect(result[:type]).to eq("object")
       expect(result[:properties]).to be_a(Hash)
-      expect(result[:properties][:answer]).to eq({ type: "string" })
-      expect(result[:properties][:confidence]).to eq({ type: "number" })
+      expect(result[:properties][:answer]).to eq({ type: "string", description: "Generated answer" })
+      expect(result[:properties][:confidence]).to eq({ type: "number", description: "Confidence score" })
       expect(result[:required]).to contain_exactly("answer", "confidence")
     end
     
@@ -112,6 +112,99 @@ RSpec.describe DSPy::Gemini::LM::SchemaConverter do
     
   end
   
+  describe 'nullable JSON Schema conversion' do
+    it 'preserves nullable arrays, scalars and array item types' do
+      signature = Class.new(DSPy::Signature) do
+        output do
+          const :choices, T.nilable(T::Array[String]), default: nil
+          const :hint, T.nilable(String), default: nil
+          const :count, T.nilable(Integer), default: nil
+          const :score, T.nilable(Float), default: nil
+          const :enabled, T.nilable(T::Boolean), default: nil
+          const :items, T::Array[T.nilable(String)]
+        end
+      end
+
+      properties = described_class.to_gemini_format(signature).fetch(:properties)
+
+      expect(properties[:choices]).to eq(type: ['array', 'null'], items: { type: 'string' })
+      expect(properties[:hint]).to eq(type: ['string', 'null'])
+      expect(properties[:count]).to eq(type: ['integer', 'null'])
+      expect(properties[:score]).to eq(type: ['number', 'null'])
+      expect(properties[:enabled]).to eq(type: ['boolean', 'null'])
+      expect(properties.dig(:items, :items)).to eq(type: ['string', 'null'])
+    end
+
+    it 'preserves nested nullable fields, descriptions and object constraints' do
+      stub_const('NullableChoiceCheck', Class.new(T::Struct) do
+        const :prompt, String, description: 'Ask the learner a question.'
+        const :choices, T.nilable(T::Array[String]), default: nil,
+          description: 'Three or four answer options, or null.'
+      end)
+      signature = Class.new(DSPy::Signature) do
+        output do
+          const :checks, T::Array[NullableChoiceCheck], description: 'Ordered checks.'
+          const :optional_check, T.nilable(NullableChoiceCheck), default: nil
+        end
+      end
+
+      result = described_class.to_gemini_format(signature)
+      check = result.dig(:properties, :checks, :items)
+      expect(result.dig(:properties, :checks, :description)).to eq('Ordered checks.')
+      expect(check.dig(:properties, :choices)).to eq(
+        type: ['array', 'null'], items: { type: 'string' },
+        description: 'Three or four answer options, or null.'
+      )
+      expect(check.dig(:properties, :prompt, :description)).to eq('Ask the learner a question.')
+      expect(check[:required]).to contain_exactly('_type', 'prompt')
+      expect(check[:additionalProperties]).to be(false)
+      expect(check.dig(:properties, :_type)).to eq(type: 'string', enum: ['NullableChoiceCheck'])
+      optional_check = result.dig(:properties, :optional_check)
+      expect(optional_check[:type]).to eq(['object', 'null'])
+      expect(optional_check[:properties]).to eq(check[:properties])
+      expect(optional_check[:additionalProperties]).to be(false)
+    end
+
+    it 'keeps null branches in unions and schemas for hash values' do
+      signature = Class.new(DSPy::Signature) do
+        output do
+          const :value, T.any(String, Integer, NilClass)
+          const :labels, T::Hash[String, T.nilable(String)]
+        end
+      end
+
+      result = described_class.to_gemini_format(signature)
+      expect(result.dig(:properties, :value, :anyOf)).to contain_exactly(
+        { type: 'string' }, { type: 'integer' }, { type: 'null' }
+      )
+      expect(result.dig(:properties, :labels, :additionalProperties)).to eq(type: ['string', 'null'])
+    end
+
+    it 'converts constants inside definitions without changing the source schema' do
+      source = {
+        '$schema': 'https://json-schema.org/draft/2020-12/schema',
+        type: 'object', additionalProperties: false, required: ['item'],
+        properties: { item: { '$ref': '#/$defs/Item' } },
+        '$defs': {
+          Item: {
+            type: 'object', additionalProperties: false,
+            properties: { enabled: { type: 'boolean', const: false } }
+          }
+        }
+      }
+      original = Marshal.load(Marshal.dump(source))
+      signature = Class.new(DSPy::Signature)
+      allow(signature).to receive(:output_json_schema).and_return(source)
+
+      result = described_class.to_gemini_format(signature)
+      expect(result).not_to have_key(:'$schema')
+      expect(result[:additionalProperties]).to be(false)
+      expect(result.dig(:properties, :item)).to eq('$ref': '#/$defs/Item')
+      expect(result.dig(:'$defs', :Item, :properties, :enabled)).to eq(type: 'boolean', enum: [false])
+      expect(source).to eq(original)
+    end
+  end
+
   describe '.supports_structured_outputs?' do
     it 'returns true for Gemini 2.0 Flash models' do
       expect(described_class.supports_structured_outputs?("gemini/gemini-2.0-flash")).to eq(true)
