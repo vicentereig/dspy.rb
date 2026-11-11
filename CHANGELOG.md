@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [dspy-gemini 1.0.5] - 2026-11-11
+
+### Fixed
+
+- **Nullable Gemini outputs** (#263, #264) - Nullable arrays retain their array item schemas instead of becoming strings. Nullable scalars, field descriptions, and object constraints also survive conversion, including nested fields. This removes a mismatch between Gemini's requested output and DSPy's response types. Thanks to [@kyonkopa](https://github.com/kyonkopa) for the report and fix.
+
+### Development and CI
+
+- **Supported CI runtime** (#265) - The development and CI pin moves from Ruby 3.4.5 to 3.4.12. Documentation and Pages builds use Ubuntu 24.04, which supports the pinned Playwright version.
+
 ## [1.0.2] - 2026-07-18
 
 ### `dspy`
