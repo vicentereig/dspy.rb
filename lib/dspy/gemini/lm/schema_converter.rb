@@ -45,8 +45,8 @@ module DSPy
           # Get the output JSON schema from the signature class
           output_schema = signature_class.output_json_schema
 
-          # Convert to Gemini format (OpenAPI 3.0 Schema subset - not related to OpenAI)
-          convert_dspy_schema_to_gemini(output_schema)
+          # response_json_schema accepts JSON Schema, including nullable type arrays.
+          convert_property_to_gemini(output_schema)
         end
 
         sig { params(model: String).returns(T::Boolean) }
@@ -73,87 +73,34 @@ module DSPy
 
         private
 
-        sig { params(dspy_schema: T::Hash[Symbol, T.untyped]).returns(T::Hash[Symbol, T.untyped]) }
-        def self.convert_dspy_schema_to_gemini(dspy_schema)
-          # For Gemini's responseJsonSchema, we need pure JSON Schema format
-          # Remove OpenAPI-specific fields like "$schema"
-          result = {
-            type: "object",
-            properties: {},
-            required: []
-          }
-
-          # Convert properties
-          properties = dspy_schema[:properties] || {}
-          properties.each do |prop_name, prop_schema|
-            result[:properties][prop_name] = convert_property_to_gemini(prop_schema)
-          end
-
-          # Set required fields
-          result[:required] = (dspy_schema[:required] || []).map(&:to_s)
-
-          result
-        end
-
         sig { params(property_schema: T::Hash[Symbol, T.untyped]).returns(T::Hash[Symbol, T.untyped]) }
         def self.convert_property_to_gemini(property_schema)
-          # Handle oneOf/anyOf schemas (union types) - Gemini supports these in responseJsonSchema
-          if property_schema[:oneOf]
-            return {
-              oneOf: property_schema[:oneOf].map { |schema| convert_property_to_gemini(schema) },
-              description: property_schema[:description]
-            }.compact
-          end
+          # Preserve types and constraints instead of rebuilding nodes from scalar
+          # type names: Sorbet represents nilable fields as type: [type, "null"].
+          result = property_schema.reject { |key, _| key == :"$schema" || key == :const }
 
-          if property_schema[:anyOf]
-            return {
-              anyOf: property_schema[:anyOf].map { |schema| convert_property_to_gemini(schema) },
-              description: property_schema[:description]
-            }.compact
-          end
+          # Keep the existing const-to-enum conversion, including false/null values.
+          result[:enum] = [property_schema[:const]] if property_schema.key?(:const)
 
-          case property_schema[:type]
-          when "string"
-            result = { type: "string" }
-            # Gemini responseJsonSchema doesn't support const, so convert to single-value enum
-            # See: https://ai.google.dev/api/generate-content#FIELDS.response_json_schema
-            if property_schema[:const]
-              result[:enum] = [property_schema[:const]]
-            elsif property_schema[:enum]
-              result[:enum] = property_schema[:enum]
+          [:properties, :"$defs", :definitions].each do |key|
+            if property_schema[key].is_a?(Hash)
+              result[key] = property_schema[key].transform_values { |schema| convert_property_to_gemini(schema) }
             end
-            result
-          when "integer"
-            { type: "integer" }
-          when "number"
-            { type: "number" }
-          when "boolean"
-            { type: "boolean" }
-          when "array"
-            {
-              type: "array",
-              items: convert_property_to_gemini(property_schema[:items] || { type: "string" })
-            }
-          when "object"
-            result = { type: "object" }
-
-            if property_schema[:properties]
-              result[:properties] = {}
-              property_schema[:properties].each do |nested_prop, nested_schema|
-                result[:properties][nested_prop] = convert_property_to_gemini(nested_schema)
-              end
-
-              # Set required fields for nested objects
-              if property_schema[:required]
-                result[:required] = property_schema[:required].map(&:to_s)
-              end
-            end
-
-            result
-          else
-            # Default to string for unknown types
-            { type: "string" }
           end
+
+          [:items, :additionalProperties].each do |key|
+            if property_schema[key].is_a?(Hash)
+              result[key] = convert_property_to_gemini(property_schema[key])
+            end
+          end
+
+          [:oneOf, :anyOf, :allOf, :prefixItems].each do |key|
+            if property_schema[key].is_a?(Array)
+              result[key] = property_schema[key].map { |schema| convert_property_to_gemini(schema) }
+            end
+          end
+
+          result
         end
 
         sig { params(schema: T::Hash[Symbol, T.untyped], current_depth: Integer).returns(Integer) }
