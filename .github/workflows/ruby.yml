@@ -13,7 +13,7 @@ permissions:
 jobs:
   docs-quality:
     name: Documentation quality
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     env:
       DSPY_WITH_OPENAI: '1'
       DSPY_WITH_GEMINI: '1'
